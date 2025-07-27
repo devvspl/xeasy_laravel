@@ -6,7 +6,7 @@
     <div class="page-content">
         <div class="container-fluid">
             <x-theme.breadcrumb :title="ucwords(str_replace('-', ' ', Request::path()))" :breadcrumbs="[
-                ['label' => 'Dashboards', 'url' => route('dashboard')],
+                ['label' => 'Dashboards', 'url' => route('home')],
                 ['label' => ucwords(str_replace('-', ' ', Request::path()))],
             ]" />
 

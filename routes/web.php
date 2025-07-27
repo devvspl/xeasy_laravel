@@ -1,85 +1,88 @@
 <?php
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\admin\DashboardController;
-use App\Http\Controllers\admin\PermissionController;
-use App\Http\Controllers\admin\PermissionGroupController;
-use App\Http\Controllers\admin\RolesController;
-use App\Http\Controllers\admin\MenuController;
-use App\Http\Controllers\admin\UsersController;
-use App\Http\Controllers\admin\SettingController;
-use App\Http\Controllers\admin\ReportController;
-use App\Http\Controllers\admin\FinancialYearController;
-use App\Http\Controllers\admin\FilterController;
-use App\Http\Controllers\ChatController;
-use App\Http\Controllers\admin\ClaimViewController;
-use App\Http\Controllers\admin\APIManagerController;
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
-Route::get('', function () {
-    return redirect()->route('login');
-});
-Route::get('clear-all-cache', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('route:clear');
-    Artisan::call('config:clear');
-    Artisan::call('view:clear');
-    Artisan::call('optimize:clear');
-    return response()->json(['message' => 'All caches cleared successfully.']);
-});
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\admin\{DashboardController, PermissionController, PermissionGroupController, RolesController, UsersController, MenuController, SettingController, ReportController, FinancialYearController, FilterController, ClaimViewController, APIManagerController};
+
+
+Route::get('/', fn() => redirect()->route('login'));
+
+
 Auth::routes();
+
+
 Route::middleware('auth')->group(function () {
+
+
+    Route::get('clear-caches', [Controller::class, 'clearAllCaches'])->name('system.clear_caches');
+
+
     Route::get('home', [HomeController::class, 'index'])->name('home');
-    Route::get('dashboard', [DashboardController::class, 'overview'])->name('dashboard');
-    Route::post('admin/overview/filter', [DashboardController::class, 'filter'])->name('admin.overview.filter');
-    Route::resource('permissions', PermissionController::class);
-    Route::resource('permission-groups', PermissionGroupController::class);
+
+    Route::resource('permission-groups', PermissionGroupController::class)->names('permission_groups');
+    Route::resource('permissions', PermissionController::class)->names('permissions');
     Route::post('permissions/assign', [PermissionController::class, 'assignPermissions'])->name('permissions.assign');
-    Route::get('permissions-list', [PermissionController::class, 'getAllPermissions'])->name('permissions.all');
-    Route::resource('roles', RolesController::class);
-    Route::get('get-roles', [RolesController::class, 'getRoles'])->name('roles.getRoles');
-    Route::resource('users', UsersController::class);
+    Route::get('permissions-list', [PermissionController::class, 'getAllPermissions'])->name('permissions.list');
+    Route::resource('roles', RolesController::class)->names('roles');
+    Route::get('roles/list', [RolesController::class, 'getRoles'])->name('roles.list');
+
+    Route::resource('users', UsersController::class)->names('users');
     Route::get('users/{id}/permissions', [PermissionController::class, 'getPermissions'])->name('users.permissions');
     Route::post('users/{id}/permissions/assign', [PermissionController::class, 'assignPermission'])->name('users.permissions.assign');
     Route::post('users/{id}/permissions/revoke', [PermissionController::class, 'revokePermission'])->name('users.permissions.revoke');
     Route::get('profile', [UsersController::class, 'profile'])->name('users.profile');
-    Route::resource('menu', MenuController::class);
-    Route::get('menu-list', [MenuController::class, 'menuList'])->name('menu.all');
-    Route::get('menus/{menu}/logs', [MenuController::class, 'getLogs'])->name('menus.logs');
-    Route::resource('financial', FinancialYearController::class);
-    Route::get('settings', [SettingController::class, 'index'])->name('settings');
-    Route::get('company', [SettingController::class, 'company'])->name('company');
-    Route::get('get-company-config/{id}', [SettingController::class, 'getCompanyConfig'])->name('company.config.get');
-    Route::post('save-config', [SettingController::class, 'saveCompanyConfig'])->name('company.config.save');
-    Route::get('claim-report', [ReportController::class, 'claimReport'])->name('admin.claim_report');
-    Route::get('daily-activity', [ReportController::class, 'dailyActivity'])->name('daily-activity');
-    Route::get('functions', [ReportController::class, 'getFunction'])->name('report.functions');
-    Route::get('verticals', [ReportController::class, 'getVertical'])->name('report.verticals');
-    Route::get('departments', [ReportController::class, 'getDepartment'])->name('report.departments');
-    Route::get('claim-types', [ReportController::class, 'getClaimTypes'])->name('report.claim_types');
-    Route::post('filter-claims', [ReportController::class, 'filterClaims'])->name('report.filter_claims');
-    Route::post('expense-claims/export', [ReportController::class, 'export'])->name('expense-claims.export');
-    Route::post('daily-activity/data', [ReportController::class, 'getDailyActivityData'])->name('daily-activity.data');
-    Route::post('daily-activity/export', [ReportController::class, 'exportDailyActivity'])->name('daily-activity.export');
-    Route::post('employees/by-department', [FilterController::class, 'getEmployeesByDepartment']);
-    Route::post('verticals/by-function', [FilterController::class, 'getVerticalsByFunction']);
-    Route::post('departments/by-vertical', [FilterController::class, 'getDepartmentsByVertical']);
-    Route::post('sub-departments/by-department', [FilterController::class, 'getSubDepartmentsByDepartment']);
-    Route::post('employees/by-department', [FilterController::class, 'getEmployeesByDepartment']);
-    Route::get('get-claim-detail-view', [ClaimViewController::class, 'getClaimDetailView']);
-    Route::get('chat', [ChatController::class, 'index'])->name('chat');
-    Route::get('chat/messages', [ChatController::class, 'fetchMessages']);
-    Route::post('chat/send', [ChatController::class, 'sendMessage']);
-    Route::get('chat/users', [ChatController::class, 'fetchUsers']);
-    Route::post('chat/message/delete/{id}', [ChatController::class, 'delete'])->name('chat.message.delete');
-    Route::resource('api-manager', APIManagerController::class)->names('api-manager');
-    Route::get('fields-mapping/{claim_id}', [APIManagerController::class, 'showMappingPage'])->name('fields.mapping.page');
-    Route::get('get-columns/{table}', [APIManagerController::class, 'getColumns'])->name('get.columns');
-    Route::post('map-fields', [APIManagerController::class, 'mapFields'])->name('map.fields');
-    Route::get('get-tables', [APIManagerController::class, 'getTables'])->name('get.tables');
-    Route::post('fields-mapping/{claim_id}', [APIManagerController::class, 'storeFieldMapping'])->name('fields.mapping.store-fields-mapping');
-    Route::get('fields/mapping/{claim_id}', [APIManagerController::class, 'getFieldMappings'])->name('fields.mapping.get');
-    Route::post('settings/theme', [SettingController::class, 'saveThemeSettings'])->name('theme.save');
-    Route::post('settings/general', [SettingController::class, 'saveGeneralSettings'])->name('settings.general.save');
-    Route::get('settings/general', [SettingController::class, 'getGeneralSettings'])->name('settings.general.get');
+
+
+    Route::resource('menu', MenuController::class)->names('menu');
+    Route::get('menu/list', [MenuController::class, 'menuList'])->name('menu.list');
+    Route::get('menu/{menu}/logs', [MenuController::class, 'getLogs'])->name('menu.logs');
+
+
+    Route::resource('financial', FinancialYearController::class)->names('financial');
+
+
+    // Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('settings', [SettingController::class, 'index'])->name('settings');
+        Route::get('company', [SettingController::class, 'company'])->name('company');
+        Route::get('company-config/{id}', [SettingController::class, 'getCompanyConfig'])->name('company_config.get');
+        Route::post('save-config', [SettingController::class, 'saveCompanyConfig'])->name('company_config.save');
+        Route::post('theme', [SettingController::class, 'saveThemeSettings'])->name('theme.save');
+        Route::get('general', [SettingController::class, 'getGeneralSettings'])->name('general.get');
+        Route::post('general', [SettingController::class, 'saveGeneralSettings'])->name('general.save');
+    // });
+
+
+    // Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('claim-report', [ReportController::class, 'claimReport'])->name('claim-report');
+        Route::get('daily-activity', [ReportController::class, 'dailyActivity'])->name('daily_activity');
+        Route::post('daily-activity/data', [ReportController::class, 'getDailyActivityData'])->name('daily_activity.data');
+        Route::post('daily-activity/export', [ReportController::class, 'exportDailyActivity'])->name('daily_activity.export');
+        Route::post('filter-claims', [ReportController::class, 'filterClaims'])->name('filter_claims');
+        Route::post('expense-claims/export', [ReportController::class, 'export'])->name('expense_claims.export');
+    // });
+
+
+    Route::prefix('filters')->name('filters.')->group(function () {
+        Route::post('employees/by-department', [FilterController::class, 'getEmployeesByDepartment'])->name('employees.by_department');
+        Route::post('verticals/by-function', [FilterController::class, 'getVerticalsByFunction'])->name('verticals.by_function');
+        Route::post('departments/by-vertical', [FilterController::class, 'getDepartmentsByVertical'])->name('departments.by_vertical');
+        Route::post('sub-departments/by-department', [FilterController::class, 'getSubDepartmentsByDepartment'])->name('sub_departments.by_department');
+    });
+
+
+    Route::get('claims/detail-view', [ClaimViewController::class, 'getClaimDetailView'])->name('claims.detail_view');
+
+
+
+    Route::resource('api-manager', APIManagerController::class)->names('api_manager');
+    Route::get('api/fields-mapping/{claim_id}', [APIManagerController::class, 'showMappingPage'])->name('api.fields_mapping.page');
+    Route::post('api/fields-mapping/{claim_id}', [APIManagerController::class, 'storeFieldMapping'])->name('api.fields_mapping.store');
+    Route::get('api/fields/mapping/{claim_id}', [APIManagerController::class, 'getFieldMappings'])->name('api.fields_mapping.get');
+    Route::get('api/tables', [APIManagerController::class, 'getTables'])->name('api.tables');
+    Route::get('api/columns/{table}', [APIManagerController::class, 'getColumns'])->name('api.columns');
+    Route::post('api/map-fields', [APIManagerController::class, 'mapFields'])->name('api.map_fields');
 });

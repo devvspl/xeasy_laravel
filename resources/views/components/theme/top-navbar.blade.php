@@ -153,8 +153,8 @@
                 <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
                     <button type="button"
                         class="btn btn-icon btn-topbar material-shadow-none btn-ghost-secondary rounded-circle"
-                        id="page-header-notifications-dropdown" data-bs-toggle="dropdown"
-                        data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
+                        id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                        aria-haspopup="true" aria-expanded="false">
                         <i class='bx bx-bell fs-22'></i>
                         <span
                             class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">3<span
@@ -177,8 +177,8 @@
                                 <ul class="nav nav-tabs dropdown-tabs nav-tabs-custom" data-dropdown-tabs="true"
                                     id="notificationItemsTab" role="tablist">
                                     <li class="nav-item waves-effect waves-light">
-                                        <a class="nav-link active" data-bs-toggle="tab" href="#all-noti-tab"
-                                            role="tab" aria-selected="true">
+                                        <a class="nav-link active" data-bs-toggle="tab" href="#all-noti-tab" role="tab"
+                                            aria-selected="true">
                                             All (4)
                                         </a>
                                     </li>
@@ -312,8 +312,7 @@
                                         </div>
                                     </div>
                                     <div class="my-3 text-center view-all">
-                                        <button type="button"
-                                            class="btn btn-soft-success waves-effect waves-light">View
+                                        <button type="button" class="btn btn-soft-success waves-effect waves-light">View
                                             All Notifications <i class="ri-arrow-right-line align-middle"></i></button>
                                     </div>
                                 </div>
@@ -427,29 +426,28 @@
                                         </div>
                                     </div>
                                     <div class="my-3 text-center view-all">
-                                        <button type="button"
-                                            class="btn btn-soft-success waves-effect waves-light">View
+                                        <button type="button" class="btn btn-soft-success waves-effect waves-light">View
                                             All Messages <i class="ri-arrow-right-line align-middle"></i></button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade p-4" id="alerts-tab" role="tabpanel"
-                                aria-labelledby="alerts-tab"></div>
+                            <div class="tab-pane fade p-4" id="alerts-tab" role="tabpanel" aria-labelledby="alerts-tab">
+                            </div>
                             <div class="notification-actions" id="notification-actions">
                                 <div class="d-flex text-muted justify-content-center">
                                     Select
                                     <div id="select-content" class="text-body fw-semibold px-1">0</div>
                                     Result <button type="button" class="btn btn-link link-danger p-0 ms-3"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#removeNotificationModal">Remove</button>
+                                        data-bs-toggle="modal" data-bs-target="#removeNotificationModal">Remove</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="dropdown ms-sm-3 header-item topbar-user">
-                    <button type="button" class="btn material-shadow-none" style="padding: 0 5px" id="page-header-user-dropdown"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn material-shadow-none" style="padding: 0 5px"
+                        id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
                         <span class="d-flex align-items-center">
                             <img class="rounded-circle header-profile-user"
                                 src="{{ URL::to('/') }}/assets/images/users/avatar-1.jpg" alt="Header Avatar">
@@ -474,10 +472,14 @@
                                 class="align-middle">Help</span></a>
                         <div class="dropdown-divider"></div>
                         @can('View Setting')
-                            <a class="dropdown-item" href="{{ route('settings') }}"><span
-                                    class="badge bg-success-subtle text-success mt-1 float-end">New</span><i
-                                    class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span
-                                    class="align-middle">Settings</span></a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                href="{{ route('settings') }}">
+                                <div>
+                                    <i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i>
+                                    <span class="align-middle">Settings</span>
+                                </div>
+                                <span class="badge bg-success-subtle text-success mt-1">New</span>
+                            </a>
                         @endcan
                         <a class="dropdown-item" href="#"><i
                                 class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span

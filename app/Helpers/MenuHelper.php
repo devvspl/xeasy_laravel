@@ -4,7 +4,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 if (!function_exists('hasPermission')) {
-    function hasPermission($permissionKey) {
+    function hasPermission($permissionKey)
+    {
         $user = Auth::user();
         if (!$user) {
             return false;
@@ -14,16 +15,19 @@ if (!function_exists('hasPermission')) {
     }
 }
 if (!function_exists('getMenuTree')) {
-    function getUserRoleName($id) {
+    function getUserRoleName($id)
+    {
         return User::select('master_roles.role_name')->leftJoin('master_roles', 'users.role_id', '=', 'master_roles.id')->where('users.id', $id)->first();
     }
-    function getMenuTree($roleId) {
+    function getMenuTree($roleId)
+    {
         if ($roleId == 1) {
             return MasterMenu::where('status', 1)->orderBy('order')->get();
         }
         return MasterMenu::select('menus.*')->leftJoin('tbl_role_menu_access', 'menus.id', '=', 'tbl_role_menu_access.menu_id')->where('menus.status', 1)->where('tbl_role_menu_access.role_id', $roleId)->orderBy('menus.order')->get();
     }
-    function buildMenuTree($menuItems, $parentId = null) {
+    function buildMenuTree($menuItems, $parentId = null)
+    {
         $branch = [];
         foreach ($menuItems as $menu) {
             if ($menu->parent_id == $parentId) {
@@ -33,10 +37,12 @@ if (!function_exists('getMenuTree')) {
         }
         return $branch;
     }
-    function hasChildren($menuItems, $parentId) {
+    function hasChildren($menuItems, $parentId)
+    {
         return $menuItems->contains('parent_id', $parentId);
     }
-    function renderMenuTree($menuTree, $menuItems, $level = 1) {
+    function renderMenuTree($menuTree, $menuItems, $level = 1)
+    {
         if (empty($menuTree)) {
             return;
         }

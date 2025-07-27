@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Artisan;
 
 class Controller extends BaseController
 {
@@ -26,5 +27,17 @@ class Controller extends BaseController
             'success' => false,
             'message' => $message
         ], $code);
+    }
+
+    public function clearAllCaches()
+    {
+        Artisan::call('cache:clear');
+        Artisan::call('route:clear');
+        Artisan::call('config:clear');
+        Artisan::call('view:clear');
+        Artisan::call('optimize:clear');
+
+        return $this->jsonSuccess([], 'All caches cleared successfully.');
+
     }
 }
