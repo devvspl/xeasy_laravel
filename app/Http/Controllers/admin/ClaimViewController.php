@@ -3,8 +3,10 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ExpenseClaim;
-class ClaimViewController extends Controller {
-    public function getClaimDetailView(Request $request) {
+class ClaimViewController extends Controller
+{
+    public function getClaimDetailView(Request $request)
+    {
         $request->validate(['claim_id' => 'required', 'expid' => 'required']);
         $claimId = $request->input('claim_id');
         $expid = $request->input('expid');
