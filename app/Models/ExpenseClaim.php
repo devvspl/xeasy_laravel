@@ -9,6 +9,8 @@ class ExpenseClaim extends Model
     protected $connection = 'expense';
     protected $primaryKey = 'ExpId';
     public $timestamps = false;
+    protected $table;
+
     protected $fillable = [
         'ExpId',
         'ClaimId',
@@ -73,9 +75,20 @@ class ExpenseClaim extends Model
         'App_Odometer',
         'temp_punch_id'
     ];
+
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = $this->tableName();
+    }
+
     public static function tableName(): string
     {
         $yearId = session('year_id');
-        return 'expense.y' . $yearId . '_expenseclaims';
+        if (!$yearId) {
+            throw new \Exception('Session year_id is not set.');
+        }
+        return 'y' . $yearId . '_expenseclaims';
     }
 }

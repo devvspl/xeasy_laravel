@@ -45,25 +45,26 @@ Route::middleware('auth')->group(function () {
     Route::resource('financial', FinancialYearController::class)->names('financial');
 
 
-    // Route::prefix('settings')->name('settings.')->group(function () {
-        Route::get('settings', [SettingController::class, 'index'])->name('settings');
-        Route::get('company', [SettingController::class, 'company'])->name('company');
-        Route::get('company-config/{id}', [SettingController::class, 'getCompanyConfig'])->name('company_config.get');
-        Route::post('save-config', [SettingController::class, 'saveCompanyConfig'])->name('company_config.save');
-        Route::post('theme', [SettingController::class, 'saveThemeSettings'])->name('theme.save');
-        Route::get('general', [SettingController::class, 'getGeneralSettings'])->name('general.get');
-        Route::post('general', [SettingController::class, 'saveGeneralSettings'])->name('general.save');
-    // });
+
+    Route::get('settings', [SettingController::class, 'index'])->name('settings');
+    Route::get('company', [SettingController::class, 'company'])->name('company');
+    Route::get('company-config/{id}', [SettingController::class, 'getCompanyConfig'])->name('company_config.get');
+    Route::post('save-config', [SettingController::class, 'saveCompanyConfig'])->name('company_config.save');
+    Route::post('theme', [SettingController::class, 'saveThemeSettings'])->name('theme.save');
+    Route::get('general', [SettingController::class, 'getGeneralSettings'])->name('general.get');
+    Route::post('general', [SettingController::class, 'saveGeneralSettings'])->name('general.save');
 
 
-    // Route::prefix('reports')->name('reports.')->group(function () {
-        Route::get('claim-report', [ReportController::class, 'claimReport'])->name('claim-report');
-        Route::get('daily-activity', [ReportController::class, 'dailyActivity'])->name('daily_activity');
-        Route::post('daily-activity/data', [ReportController::class, 'getDailyActivityData'])->name('daily_activity.data');
-        Route::post('daily-activity/export', [ReportController::class, 'exportDailyActivity'])->name('daily_activity.export');
-        Route::post('filter-claims', [ReportController::class, 'filterClaims'])->name('filter_claims');
-        Route::post('expense-claims/export', [ReportController::class, 'export'])->name('expense_claims.export');
-    // });
+
+
+    Route::get('claim-report', [ReportController::class, 'claimReport'])->name('claim-report');
+    Route::get('claim-detail', [ClaimViewController::class, 'getClaimDetailView']);
+    Route::get('daily-activity', [ReportController::class, 'dailyActivity'])->name('daily_activity');
+    Route::post('daily-activity/data', [ReportController::class, 'getDailyActivityData'])->name('daily_activity.data');
+    Route::post('daily-activity/export', [ReportController::class, 'exportDailyActivity'])->name('daily_activity.export');
+    Route::post('filter-claims', [ReportController::class, 'filterClaims'])->name('filter_claims');
+    Route::post('expense-claims/export', [ReportController::class, 'export'])->name('expense_claims.export');
+
 
 
     Route::prefix('filters')->name('filters.')->group(function () {

@@ -472,10 +472,11 @@ $(document).ready(function () {
 
     $(document).on("click", "#viewClaimDetail", function () {
         var claimId = $(this).data("claim-id");
+        var expId = $(this).data("expid");
         $.ajax({
-            url: "/get-claim-detail-view",
+            url: "/claim-detail",
             method: "GET",
-            data: { claim_id: claimId },
+            data: { claim_id: claimId, expid : expId },
             success: function (response) {
                 $("#claimDetailContent").html(response.html);
             },
