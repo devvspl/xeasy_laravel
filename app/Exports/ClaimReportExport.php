@@ -10,13 +10,14 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Events\AfterSheet;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use Illuminate\Support\Facades\DB;
 
-
-class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithStyles, WithEvents, WithTitle, WithChunkReading
+class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithStyles, WithEvents, WithTitle, WithChunkReading, ShouldQueue
 {
     protected $filters;
     protected $columns;
@@ -24,12 +25,10 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
     protected $sheetName;
     protected $protectSheets;
     protected $table;
-    protected $query;
     protected $rowNumber;
 
-    public function __construct($query, array $filters, array $columns, string $sheetName = 'Claims', bool $protectSheets = false, $table)
+    public function __construct(array $filters, array $columns, string $sheetName = 'Claims', bool $protectSheets = false, $table)
     {
-        $this->query = $query;
         $this->filters = $filters;
         $this->columns = $columns;
         $this->totals = [];
@@ -41,7 +40,198 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
 
     public function query()
     {
-        return $this->query;
+        return $this->buildClaimQuery($this->filters, $this->table, false, $this->columns);
+    }
+
+    private function buildClaimQuery(array $filters, string $table, bool $forCount = false, $columns = null)
+    {
+        $columns = is_array($columns) ? $columns : [];
+        $query = DB::table("{$table}");
+        if ($forCount) {
+            $query->select("{$table}.ExpId");
+        } elseif (!empty($columns)) {
+            $selects = [];
+            if (in_array('exp_id', $columns)) {
+                $selects[] = "{$table}.ExpId as ExpId";
+            }
+            if (in_array('claim_id', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.ClaimId) as ClaimId");
+            }
+            if (in_array('claim_type', $columns)) {
+                $selects[] = DB::raw("MAX(claimtype.ClaimName) as claim_type_name");
+            }
+            if (in_array('claim_status', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.ClaimAtStep) as ClaimAtStep");
+            }
+            if (in_array('emp_name', $columns)) {
+                $selects[] = DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name");
+            }
+            if (in_array('emp_code', $columns)) {
+                $selects[] = DB::raw("MAX(hrims.hrm_employee.EmpCode) as employee_code");
+            }
+            if (in_array('month', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth");
+            }
+            if (in_array('upload_date', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.CrDate) as CrDate");
+            }
+            if (in_array('bill_date', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.BillDate) as BillDate");
+            }
+            if (in_array('function', $columns)) {
+                $selects[] = DB::raw("MAX(hrims.core_functions.function_name) as function_name");
+            }
+            if (in_array('vertical', $columns)) {
+                $selects[] = DB::raw("MAX(hrims.core_verticals.vertical_name) as vertical_name");
+            }
+            if (in_array('department', $columns)) {
+                $selects[] = DB::raw("MAX(hrims.core_departments.department_name) as department_name");
+            }
+            if (in_array('sub_department', $columns)) {
+                $selects[] = DB::raw("MAX(hrims.core_sub_department_master.sub_department_name) as sub_department_name");
+            }
+            if (in_array('policy', $columns)) {
+                $selects[] = DB::raw("MAX(hrims.hrm_master_eligibility_policy.PolicyName) as policy_name");
+            }
+            if (in_array('vehicle_type', $columns)) {
+                $selects[] = DB::raw("MAX(hrims.hrm_employee_eligibility.VehicleType) as vehicle_type");
+            }
+            if (in_array('odomtr_opening', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.odomtr_opening) as odomtr_opening");
+            }
+            if (in_array('odomtr_closing', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.odomtr_closing) as odomtr_closing");
+            }
+            if (in_array('TotKm', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.TotKm) as TotKm");
+            }
+            if (in_array('WType', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.WType) as WType");
+            }
+            if (in_array('RatePerKM', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.RatePerKM) as RatePerKM");
+            }
+            if (in_array('FilledAmt', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.FilledTAmt) as FilledTAmt");
+            }
+            if (in_array('FilledDate', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.FilledDate) as FilledDate");
+            }
+            if (in_array('VerifyAmt', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.VerifyTAmt) as VerifyTAmt");
+            }
+            if (in_array('VerifyTRemark', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.VerifyTRemark) as VerifyTRemark");
+            }
+            if (in_array('VerifyDate', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.VerifyDate) as VerifyDate");
+            }
+            if (in_array('ApprAmt', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.ApprTAmt) as ApprTAmt");
+            }
+            if (in_array('ApprTRemark', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.ApprTRemark) as ApprTRemark");
+            }
+            if (in_array('ApprDate', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.ApprDate) as ApprDate");
+            }
+            if (in_array('FinancedTAmt', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.FinancedTAmt) as FinancedTAmt");
+            }
+            if (in_array('FinancedTRemark', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.FinancedTRemark) as FinancedTRemark");
+            }
+            if (in_array('FinancedDate', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.FinancedDate) as FinancedDate");
+            }
+            if (empty($selects)) {
+                $selects[] = "{$table}.ExpId as ExpId";
+            }
+            $query->select($selects);
+        } else {
+            $query->select([
+                "{$table}.ExpId as ExpId",
+                DB::raw("MAX(claimtype.ClaimName) as claim_type_name"),
+                DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name"),
+                DB::raw("MAX(hrims.hrm_employee.EmpCode) as employee_code"),
+                DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth"),
+                DB::raw("MAX({$table}.CrDate) as CrDate"),
+                DB::raw("MAX({$table}.BillDate) as BillDate"),
+                DB::raw("MAX({$table}.FilledTAmt) as FilledTAmt"),
+                DB::raw("MAX({$table}.ClaimAtStep) as ClaimAtStep"),
+                DB::raw("MAX({$table}.ClaimId) as ClaimId"),
+            ]);
+        }
+        $query->leftJoin('claimtype', "{$table}.ClaimId", '=', 'claimtype.ClaimId');
+        $query->leftJoin('hrims.hrm_employee', "{$table}.CrBy", '=', 'hrims.hrm_employee.EmployeeID');
+        if (!empty($filters['function_ids']) || !empty($filters['vertical_ids']) || !empty($filters['department_ids']) || !empty($filters['sub_department_ids']) || in_array('function', $columns) || in_array('vertical', $columns) || in_array('department', $columns)) {
+            $query->leftJoin('hrims.hrm_employee_general', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_general.EmployeeID');
+            if (in_array('function', $columns)) {
+                $query->leftJoin('hrims.core_functions', "hrims.core_functions.id", '=', 'hrims.hrm_employee_general.EmpFunction');
+            }
+            if (in_array('vertical', $columns)) {
+                $query->leftJoin('hrims.core_verticals', "hrims.core_verticals.id", '=', 'hrims.hrm_employee_general.EmpVertical');
+            }
+            if (in_array('department', $columns)) {
+                $query->leftJoin('hrims.core_departments', "hrims.core_departments.id", '=', 'hrims.hrm_employee_general.DepartmentId');
+            }
+            if (in_array('sub_department', $columns)) {
+                $query->leftJoin('hrims.core_sub_department_master', "hrims.core_sub_department_master.id", '=', 'hrims.hrm_employee_general.SubDepartmentId');
+            }
+            if (!empty($filters['function_ids'])) {
+                $query->whereIn('hrims.hrm_employee_general.EmpFunction', $filters['function_ids']);
+            }
+            if (!empty($filters['vertical_ids'])) {
+                $query->whereIn('hrims.hrm_employee_general.EmpVertical', $filters['vertical_ids']);
+            }
+            if (!empty($filters['department_ids'])) {
+                $query->whereIn('hrims.hrm_employee_general.DepartmentId', $filters['department_ids']);
+            }
+            if ((isset($filters['sub_department_ids']) && !empty($filters['sub_department_ids']))) {
+                $query->whereIn('hrims.hrm_employee_general.SubDepartmentId', $filters['sub_department_ids'] ?? []);
+            }
+        }
+        if (!empty($filters['policy_ids']) || !empty($filters['vehicle_types']) || in_array('policy', $columns) || in_array('vehicle_type', $columns)) {
+            $query->leftJoin('hrims.hrm_employee_eligibility', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_eligibility.EmployeeID');
+            if (in_array('policy', $columns)) {
+                $query->leftJoin('hrims.hrm_master_eligibility_policy', "hrims.hrm_master_eligibility_policy.PolicyId", '=', 'hrims.hrm_employee_eligibility.VehiclePolicy');
+            }
+            if (!empty($filters['policy_ids'])) {
+                $query->whereIn('hrims.hrm_employee_eligibility.VehiclePolicy', $filters['policy_ids']);
+            }
+            if (!empty($filters['vehicle_types'])) {
+                $query->whereIn('hrims.hrm_employee_eligibility.VehicleType', $filters['vehicle_types']);
+            }
+        }
+        if (!empty($filters['user_ids'])) {
+            $query->whereIn('hrims.hrm_employee.EmpCode', $filters['user_ids']);
+        }
+        if (!empty($filters['months'])) {
+            $query->whereIn("{$table}.ClaimMonth", $filters['months']);
+        }
+        if (!empty($filters['claim_type_ids'])) {
+            if (in_array(7, $filters['claim_type_ids'])) {
+                $query->where("{$table}.ClaimId", 7);
+                if (!empty($filters['wheeler_type'])) {
+                    $query->where("{$table}.WType", $filters['wheeler_type']);
+                }
+            } else {
+                $query->whereIn("{$table}.ClaimId", $filters['claim_type_ids']);
+            }
+        }
+        if (!empty($filters['claim_statuses'])) {
+            $query->whereIn("{$table}.ClaimAtStep", $filters['claim_statuses']);
+        }
+        if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+            $dateColumn = match ($filters['date_type']) {
+                'billDate' => 'BillDate',
+                'uploadDate' => 'CrDate',
+                'filledDate' => 'FilledDate',
+                default => 'BillDate',
+            };
+            $query->whereBetween("{$table}.{$dateColumn}", [$filters['from_date'], $filters['to_date']]);
+        }
+        return $query->groupBy("{$table}.ExpId")->orderBy("{$table}.ExpId", 'asc');
     }
 
     public function chunkSize(): int

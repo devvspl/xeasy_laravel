@@ -15,6 +15,7 @@ use App\Exports\ClaimTypeWiseClaimReportExport;
 use App\Exports\DepartmentWiseClaimReportExport;
 use App\Exports\MonthWiseClaimReportExport;
 use App\Exports\DailyActivityReportExport;
+use App\Notifications\ExportReadyNotification;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -272,14 +273,17 @@ class ReportController extends Controller
             return response()->json(['error' => 'Please select at least one column to export'], 400);
         }
         try {
-            $query = $this->buildClaimQuery($filters, $table, false, $columns);
             $export = match ($reportType) {
-                'month_wise' => new MonthWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table), 'department_wise' => new DepartmentWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table), 'claim_type_wise' => new ClaimTypeWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
-                default => new ClaimReportExport($query, $filters, $columns, 'Claims', $protectSheets, $table),
+                'month_wise' => new MonthWiseClaimReportExport($filters, $columns, $protectSheets, $table), 'department_wise' => new DepartmentWiseClaimReportExport($filters, $columns, $protectSheets, $table), 'claim_type_wise' => new ClaimTypeWiseClaimReportExport($filters, $columns, $protectSheets, $table),
+                default => new ClaimReportExport($filters, $columns, 'Claims', $protectSheets, $table),
             };
-            return Excel::download($export, 'expense_claims_' . date('Ymd_His') . '.xlsx');
+            $fileName = 'expense_claims_' . date('Ymd_His') . '.xlsx';
+            \Excel::queue($export, $fileName, 'public');
+            $user = $request->user();
+            $downloadUrl = \Storage::url($fileName);
+            return response()->json(['message' => 'Export is being processed. You will be notified when it is ready.', 'download_url' => $downloadUrl]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Could not export claims: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Could not queue export: ' . $e->getMessage()], 500);
         }
     }
     public function getDailyActivityData(Request $request)

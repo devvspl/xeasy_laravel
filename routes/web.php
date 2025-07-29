@@ -67,12 +67,10 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::prefix('filters')->name('filters.')->group(function () {
-        Route::post('employees/by-department', [FilterController::class, 'getEmployeesByDepartment'])->name('employees.by_department');
-        Route::post('verticals/by-function', [FilterController::class, 'getVerticalsByFunction'])->name('verticals.by_function');
-        Route::post('departments/by-vertical', [FilterController::class, 'getDepartmentsByVertical'])->name('departments.by_vertical');
-        Route::post('sub-departments/by-department', [FilterController::class, 'getSubDepartmentsByDepartment'])->name('sub_departments.by_department');
-    });
+    Route::post('employees/by-department', [FilterController::class, 'getEmployeesByDepartment'])->name('employees.by_department');
+    Route::post('verticals/by-function', [FilterController::class, 'getVerticalsByFunction'])->name('verticals.by_function');
+    Route::post('departments/by-vertical', [FilterController::class, 'getDepartmentsByVertical'])->name('departments.by_vertical');
+    Route::post('sub-departments/by-department', [FilterController::class, 'getSubDepartmentsByDepartment'])->name('sub_departments.by_department');
 
 
     Route::get('claims/detail-view', [ClaimViewController::class, 'getClaimDetailView'])->name('claims.detail_view');
