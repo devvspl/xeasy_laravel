@@ -85,7 +85,7 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
             'ApprAmt' => 'Approved Amount',
             'ApprTRemark' => 'Approval Remark',
             'ApprDate' => 'Approval Date',
-            'FinancedAmt' => 'Financed Amount',
+            'FinancedTAmt' => 'Financed Amount',
             'FinancedTRemark' => 'Finance Remark',
             'FinancedDate' => 'Finance Date',
         ];
@@ -124,19 +124,19 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
         $data = [];
         foreach ($this->columns as $index => $column) {
             $value = match ($column) {
-                'exp_id' => $row->ExpId ?? 'N/A',
-                'claim_id' => $row->ClaimId ?? 'N/A',
-                'claim_type' => $row->claim_type_name ?? 'N/A',
-                'claim_status' => $statusMap[$row->ClaimAtStep] ?? 'N/A',
-                'emp_name' => $row->employee_name ?? 'N/A',
-                'emp_code' => $row->employee_code ?? 'N/A',
-                'function' => $row->function_name ?? 'N/A',
-                'vertical' => $row->vertical_name ?? 'N/A',
-                'department' => $row->department_name ?? 'N/A',
-                'sub_department' => $row->sub_department_name ?? 'N/A',
+                'exp_id' => $row->ExpId ?? '',
+                'claim_id' => $row->ClaimId ?? '',
+                'claim_type' => $row->claim_type_name ?? '',
+                'claim_status' => $statusMap[$row->ClaimAtStep] ?? '',
+                'emp_name' => $row->employee_name ?? '',
+                'emp_code' => $row->employee_code ?? '',
+                'function' => $row->function_name ?? '',
+                'vertical' => $row->vertical_name ?? '',
+                'department' => $row->department_name ?? '',
+                'sub_department' => $row->sub_department_name ?? '',
                 'policy' => $row->policy_name ?? '',
                 'vehicle_type' => $row->vehicle_type ?? '',
-                'month' => $monthMap[$row->ClaimMonth] ?? 'N/A',
+                'month' => $monthMap[$row->ClaimMonth] ?? '',
                 'upload_date' => $row->CrDate ?? '',
                 'bill_date' => $row->BillDate ?? '',
                 'FilledAmt' => $row->FilledTAmt ?? '',
@@ -144,21 +144,21 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
                 'odomtr_opening' => $row->odomtr_opening ?? '',
                 'odomtr_closing' => $row->odomtr_closing ?? '',
                 'TotKm' => $row->TotKm ?? 0,
-                'WType' => $wheelerMap[$row->WType] ?? 'N/A',
+                'WType' => $wheelerMap[$row->WType] ?? '',
                 'RatePerKM' => $row->RatePerKM ?? 0,
                 'VerifyAmt' => $row->VerifyTAmt ?? 0,
-                'VerifyTRemark' => $row->VerifyTRemark ?? 'N/A',
+                'VerifyTRemark' => $row->VerifyTRemark ?? '',
                 'VerifyDate' => $row->VerifyDate ?? '',
                 'ApprAmt' => $row->ApprTAmt ?? 0,
-                'ApprTRemark' => $row->ApprTRemark ?? 'N/A',
+                'ApprTRemark' => $row->ApprTRemark ?? '',
                 'ApprDate' => $row->ApprDate ?? '',
-                'FinancedAmt' => $row->FinancedTAmt ?? 0,
-                'FinancedTRemark' => $row->FinancedTRemark ?? 'N/A',
+                'FinancedTAmt' => $row->FinancedTAmt ?? 0,
+                'FinancedTRemark' => $row->FinancedTRemark ?? '',
                 'FinancedDate' => $row->FinancedDate ?? '',
                 default => '',
             };
 
-            if (in_array($column, ['FilledAmt', 'TotKm', 'RatePerKM', 'VerifyAmt', 'ApprAmt', 'FinancedAmt']) && is_numeric($value)) {
+            if (in_array($column, ['FilledAmt', 'TotKm', 'RatePerKM', 'VerifyAmt', 'ApprAmt', 'FinancedTAmt']) && is_numeric($value)) {
                 $this->totals[$index] = ($this->totals[$index] ?? 0) + $value;
             }
 
@@ -199,7 +199,7 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
             'ApprAmt' => 'e.ApprTAmt',
             'ApprTRemark' => 'e.ApprTRemark',
             'ApprDate' => 'e.ApprDate',
-            'FinancedAmt' => 'e.FinancedTAmt',
+            'FinancedTAmt' => 'e.FinancedTAmt',
             'FinancedTRemark' => 'e.FinancedTRemark',
             'FinancedDate' => 'e.FinancedDate',
         ];

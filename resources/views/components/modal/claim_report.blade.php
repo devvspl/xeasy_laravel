@@ -283,7 +283,7 @@
                                     <div class="col-md-3">
                                         <div class="form-check">
                                             <input class="form-check-input column-checkbox" type="checkbox"
-                                                value="FinancedAmt" id="colFinancedAmt" checked>
+                                                value="FinancedTAmt" id="colFinancedAmt" checked>
                                             <label class="form-check-label" for="colFinancedAmt">Financed Amt</label>
                                         </div>
                                     </div>
