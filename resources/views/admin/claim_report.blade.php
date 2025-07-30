@@ -116,8 +116,8 @@
                                             <div class="col-md-3">
                                                 <label for="claimStatusSelect" class="form-label mt-1">Claim Status</label>
                                                 <select class="form-select" id="claimStatusSelect" multiple>
-                                                    <option value="1">Draft</option>
-                                                    <option value="2">Submitted</option>
+                                                    <option value="1">Deactivate</option>
+                                                    <option value="2">Draft/Submitted</option>
                                                     <option value="3">Filled</option>
                                                     <option value="4">Approved</option>
                                                     <option value="5">Financed</option>
@@ -127,13 +127,13 @@
                                         @endcan
                                         <div class="col-md-3">
                                             <label for="fromDate" class="form-label mt-1">From</label>
-                                            <input type="text" class="form-control flatpickr" id="fromDate"
-                                                value="{{ date('Y-m-d') }}">
+                                            <input type="text" placeholder="Select From Date" class="form-control flatpickr"
+                                                id="fromDate" value="{{ date('Y-m-d') }}">
                                         </div>
                                         <div class="col-md-3">
                                             <label for="toDate" class="form-label mt-1">To</label>
-                                            <input type="text" class="form-control flatpickr" id="toDate"
-                                                value="{{ date('Y-m-d') }}">
+                                            <input type="text" placeholder="Select To Date" class="form-control flatpickr"
+                                                id="toDate" value="{{ date('Y-m-d') }}">
                                         </div>
                                         <div class="col-md-4 d-flex align-items-end">
                                             <div class="form-check me-3">
@@ -201,6 +201,24 @@
                                                             </select>
                                                         </div>
                                                     @endcan
+                                                </div>
+                                                <div class="row p-3">
+                                                    <div class="col-md-12 d-flex align-items-end">
+                                                        <div class="form-check me-3">
+                                                            <input class="form-check-input" type="radio" name="claim_filter_type"
+                                                                id="deactivateAfterFilling" value="deactivate_after_filling">
+                                                            <label class="form-check-label" for="deactivateAfterFilling">
+                                                                Deactivate After Filling
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check me-3">
+                                                            <input class="form-check-input" type="radio" name="claim_filter_type"
+                                                                id="expense_sunday_holiday" value="expense_sunday_holiday">
+                                                            <label class="form-check-label" for="expense_sunday_holiday">
+                                                                Expense (Sunday & Holiday)
+                                                            </label>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

@@ -21,6 +21,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Auth;
 class ReportController extends Controller
 {
     public function claimReport()
@@ -39,36 +40,11 @@ class ReportController extends Controller
         $fromDate = $request->query('fromDate', date('Y-m-d'));
         $toDate = $request->query('toDate', date('Y-m-d'));
         $table = ExpenseClaim::tableName();
-
-        $data = DB::table("$table as ec")
-            ->leftJoin('hrims.hrm_employee_general as eg', 'ec.CrBy', '=', 'eg.EmployeeID')
-            ->leftJoin('hrims.hrm_employee as emp', 'ec.CrBy', '=', 'emp.EmployeeID')
-            ->leftJoin('hrims.core_verticals as cv', 'cv.id', '=', 'eg.EmpVertical')
-            ->leftJoin('hrims.core_departments as cd', 'cd.id', '=', 'eg.DepartmentId')
-            ->leftJoin('hrims.core_grades as cg', 'cg.id', '=', 'eg.GradeId')
-            ->select(
-                DB::raw("CONCAT_WS(' ', emp.Fname, emp.Sname, emp.Lname) AS EmployeeName"),
-                'emp.EmpCode',
-                'cg.grade_name',
-                'cv.vertical_name',
-                'cd.department_name',
-                DB::raw('COUNT(ec.ExpId) AS TotalClaimsUploaded')
-            )
-            ->whereBetween(DB::raw('DATE(ec.CrDate)'), [$fromDate, $toDate])
-            ->whereIn('ec.CrBy', function ($query) use ($table) {
-                $query->select('ec_inner.CrBy')
-                    ->from("$table as ec_inner")
-                    ->groupBy('ec_inner.CrBy')
-                    ->havingRaw('SUM(CASE WHEN DATE(ec_inner.BillDate) = DATE(ec_inner.CrDate) THEN 1 ELSE 0 END) = COUNT(*)');
-            })
-            ->groupBy('emp.EmployeeID', 'emp.Fname', 'emp.Sname', 'emp.Lname', 'emp.EmpCode', 'cg.grade_name', 'cv.vertical_name', 'cd.department_name')
-            ->orderByDesc('TotalClaimsUploaded')
-            ->orderBy('emp.EmpCode')
-            ->get();
-
+        $data = DB::table("$table as ec")->leftJoin('hrims.hrm_employee_general as eg', 'ec.CrBy', '=', 'eg.EmployeeID')->leftJoin('hrims.hrm_employee as emp', 'ec.CrBy', '=', 'emp.EmployeeID')->leftJoin('hrims.core_verticals as cv', 'cv.id', '=', 'eg.EmpVertical')->leftJoin('hrims.core_departments as cd', 'cd.id', '=', 'eg.DepartmentId')->leftJoin('hrims.core_grades as cg', 'cg.id', '=', 'eg.GradeId')->select(DB::raw("CONCAT_WS(' ', emp.Fname, emp.Sname, emp.Lname) AS EmployeeName"), 'emp.EmpCode', 'cg.grade_name', 'cv.vertical_name', 'cd.department_name', DB::raw('COUNT(ec.ExpId) AS TotalClaimsUploaded'))->whereBetween(DB::raw('DATE(ec.CrDate)'), [$fromDate, $toDate])->whereIn('ec.CrBy', function ($query) use ($table) {
+            $query->select('ec_inner.CrBy')->from("$table as ec_inner")->groupBy('ec_inner.CrBy')->havingRaw('SUM(CASE WHEN DATE(ec_inner.BillDate) = DATE(ec_inner.CrDate) THEN 1 ELSE 0 END) = COUNT(*)');
+        })->groupBy('emp.EmployeeID', 'emp.Fname', 'emp.Sname', 'emp.Lname', 'emp.EmpCode', 'cg.grade_name', 'cv.vertical_name', 'cd.department_name')->orderByDesc('TotalClaimsUploaded')->orderBy('emp.EmpCode')->get();
         return view('admin.top_rating_employee', compact('data', 'fromDate', 'toDate'));
     }
-
     public function dailyActivity()
     {
         return view(view:
@@ -242,6 +218,20 @@ class ReportController extends Controller
         if (!empty($filters['claim_statuses'])) {
             $query->whereIn("{$table}.ClaimAtStep", $filters['claim_statuses']);
         }
+        if (!empty($filters['claim_filter_type']) && $filters['claim_filter_type'] == 'deactivate_after_filling') {
+            $query->where("{$table}.ClaimAtStep", 1)->where("{$table}.ClaimStatus", 'Deactivate')->where("{$table}.FilledDate", '!=', '0000-00-00')->where("{$table}.FilledBy", '>', 0)->where("{$table}.FilledTAmt", '>', 0)->where("{$table}.ClaimId", '!=', 0);
+        }
+        if (!empty($filters['claim_filter_type']) && $filters['claim_filter_type'] == 'expense_sunday_holiday') {
+            $query->leftJoin('hrims.hrm_employee_attendance as ho', function ($join) use ($table) {
+                $join->on('ho.AttDate', '=', "{$table}.BillDate")
+                    ->where('ho.AttValue', '=', 'HO')
+                    ->where('ho.Year', '=', date("Y"));
+            });
+            $query->where(function ($q) use ($table) {
+                $q->whereRaw("DAYOFWEEK({$table}.BillDate) = 1")
+                    ->orWhereNotNull('ho.AttDate');
+            });
+        }
         if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
             $dateColumn = match ($filters['date_type']) {
                 'billDate' => 'BillDate', 'uploadDate' => 'CrDate', 'filledDate' => 'FilledDate',
@@ -254,7 +244,7 @@ class ReportController extends Controller
     public function filterClaims(Request $request)
     {
         try {
-            $filters = ['function_ids' => $request->input('function_ids', []), 'vertical_ids' => $request->input('vertical_ids', []), 'department_ids' => $request->input('department_ids', []), 'sub_department_ids' => $request->input('sub_department_ids', []), 'user_ids' => $request->input('user_ids', []), 'months' => $request->input('months', []), 'claim_type_ids' => $request->input('claim_type_ids', []), 'claim_statuses' => $request->input('claim_statuses', []), 'from_date' => $request->input('from_date'), 'to_date' => $request->input('to_date'), 'date_type' => $request->input('date_type', 'billDate'), 'policy_ids' => $request->input('policy_ids', []), 'vehicle_types' => $request->input('vehicle_types', []), 'wheeler_type' => $request->input('wheeler_type'),];
+            $filters = ['function_ids' => $request->input('function_ids', []), 'vertical_ids' => $request->input('vertical_ids', []), 'department_ids' => $request->input('department_ids', []), 'sub_department_ids' => $request->input('sub_department_ids', []), 'user_ids' => $request->input('user_ids', []), 'months' => $request->input('months', []), 'claim_type_ids' => $request->input('claim_type_ids', []), 'claim_statuses' => $request->input('claim_statuses', []), 'from_date' => $request->input('from_date'), 'to_date' => $request->input('to_date'), 'date_type' => $request->input('date_type', 'billDate'), 'policy_ids' => $request->input('policy_ids', []), 'vehicle_types' => $request->input('vehicle_types', []), 'wheeler_type' => $request->input('wheeler_type'), 'claim_filter_type' => $request->input('claim_filter_type')];
             $table = ExpenseClaim::tableName();
             $countQuery = $this->buildClaimQuery($filters, $table, true);
             $totalRecords = $countQuery->get()->count();
@@ -290,7 +280,34 @@ class ReportController extends Controller
                 }
                 return '<span class="badge ' . $badgeClass . ' badge-border">' . $statusText . '</span>';
             })->addColumn('action', function ($row) {
-                return '<button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-claim-id=' . $row->ClaimId . ' data-expid=' . $row->ExpId . ' data-bs-target="#claimDetailModal" id="viewClaimDetail"><i class="ri-eye-fill"></i></button>';
+                $dropdownId = 'dropdownMenuLink' . $row->ExpId;
+                $html = '
+                <div class="dropdown">
+                    <a href="#" role="button" id="' . $dropdownId . '" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="ri-more-2-fill"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="' . $dropdownId . '">
+                        <li>
+                            <a class="dropdown-item view-claim" href="#" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#claimDetailModal" 
+                            data-claim-id="' . $row->ClaimId . '" 
+                            data-expid="' . $row->ExpId . '">
+                            View
+                            </a>
+                        </li>';
+                if ($row->ClaimAtStep == 1) {
+                    $html .= '
+                        <li>
+                            <a class="dropdown-item return-claim" href="#" 
+                            data-claim-id="' . $row->ClaimId . '" 
+                            data-expid="' . $row->ExpId . '">
+                            Return
+                            </a>
+                        </li>';
+                }
+                $html .= '</ul></div>';
+                return $html;
             })->rawColumns(['ClaimAtStep', 'action'])->make(true);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Could not load claims: ' . $e->getMessage()], 500);
@@ -311,9 +328,7 @@ class ReportController extends Controller
         try {
             $query = $this->buildClaimQuery($filters, $table, false, $columns);
             $export = match ($reportType) {
-                'month_wise' => new MonthWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
-                'department_wise' => new DepartmentWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
-                'claim_type_wise' => new ClaimTypeWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
+                'month_wise' => new MonthWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table), 'department_wise' => new DepartmentWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table), 'claim_type_wise' => new ClaimTypeWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
                 default => new ClaimReportExport($query, $filters, $columns, 'Claims', $protectSheets, $table),
             };
             return Excel::download($export, 'expense_claims_' . date('Ymd_His') . '.xlsx');
@@ -324,7 +339,6 @@ class ReportController extends Controller
     public function sameDayCkaimUpload()
     {
         return Excel::download(new SameDayUploadClaimExport('y7_expenseclaims'), 'SameDayUpload.xlsx');
-
     }
     public function getDailyActivityData(Request $request)
     {
@@ -349,5 +363,16 @@ class ReportController extends Controller
         $fromDate = $request->input('fromDate');
         $toDate = $request->input('toDate');
         return Excel::download(new DailyActivityReportExport($fromDate, $toDate), 'daily_activity_report_' . $fromDate . '_to_' . $toDate . '.xlsx');
+    }
+    public function returnClaim(Request $request)
+    {
+        $request->validate(['expid' => 'required|integer', 'claim_id' => 'required|integer',]);
+        $table = ExpenseClaim::tableName();
+        $updated = DB::table($table)->where('ExpId', $request->expid)->update(['ClaimStatus' => 'Submitted', 'ClaimAtStep' => 2, 'RtnBy' => Auth::id()]);
+        if ($updated) {
+            return $this->jsonSuccess([], 'Claim returned successfully.');
+        } else {
+            return $this->jsonError('No record updated.');
+        }
     }
 }

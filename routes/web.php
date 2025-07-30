@@ -64,8 +64,8 @@ Route::middleware('auth')->group(function () {
     Route::post('daily-activity/export', [ReportController::class, 'exportDailyActivity'])->name('daily_activity.export');
     Route::post('filter-claims', [ReportController::class, 'filterClaims'])->name('filter_claims');
     Route::post('expense-claims/export', [ReportController::class, 'export'])->name('expense_claims.export');
-
     Route::get('top-rating-employee', [ReportController::class, 'topRatingEmployee']);
+    Route::post('/claims/return', [ReportController::class, 'returnClaim']);
 
 
     Route::get('same_date', [ReportController::class, 'sameDayCkaimUpload']);

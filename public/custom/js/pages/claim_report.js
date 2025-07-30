@@ -308,12 +308,8 @@ $(document).ready(function () {
     });
 
     let table = null;
-    if ($("#searchButton").length) {
-        if ($.fn.DataTable.isDataTable("#claimReportTable")) {
-            table.destroy();
-            $("#claimReportTable").empty();
-        }
 
+    function initializeDataTable() {
         table = $("#claimReportTable").DataTable({
             ordering: false,
             searching: true,
@@ -329,6 +325,10 @@ $(document).ready(function () {
                     ),
                 },
                 data: function (d) {
+                    // Get current checkbox state on each request
+                    d.claim_filter_type = $("input[name='claim_filter_type']:checked").val();
+
+                    // other filters
                     d.function_ids = $("#functionSelect").val() || [];
                     d.vertical_ids = $("#verticalSelect").val() || [];
                     d.department_ids = $("#departmentSelect").val() || [];
@@ -358,6 +358,27 @@ $(document).ready(function () {
                 { data: "ClaimAtStep" },
                 { data: "action", orderable: false, searchable: false },
             ],
+            destroy: true, // allow reinitializing if needed
+        });
+    }
+
+    if ($("#searchButton").length) {
+        initializeDataTable();
+
+        $("#searchButton").on("click", function () {
+            if (table) {
+                startSimpleLoader({ currentTarget: this });
+                table.ajax.reload(function () {
+                    endSimpleLoader({ currentTarget: $("#searchButton")[0] });
+                });
+            } else {
+                endSimpleLoader({ currentTarget: $("#searchButton")[0] });
+                showAlert(
+                    "danger",
+                    "ri-error-warning-line",
+                    "DataTable not initialized"
+                );
+            }
         });
     } else {
         showAlert(
@@ -366,22 +387,6 @@ $(document).ready(function () {
             "Search button not found. DataTable not initialized"
         );
     }
-
-    $("#searchButton").on("click", function () {
-        if (table) {
-            startSimpleLoader({ currentTarget: this });
-            table.ajax.reload(function () {
-                endSimpleLoader({ currentTarget: $("#searchButton")[0] });
-            });
-        } else {
-            endSimpleLoader({ currentTarget: $("#searchButton")[0] });
-            showAlert(
-                "danger",
-                "ri-error-warning-line",
-                "DataTable not initialized"
-            );
-        }
-    });
 
     $("#exportModal").on("show.bs.modal", function () {
         const modalFilters = $("#modalFilters");
@@ -399,7 +404,6 @@ $(document).ready(function () {
             alert("Please select at least one column to export.");
             return;
         }
-
         const filters = {
             function_ids: $("#functionSelect").val() || [],
             vertical_ids: $("#verticalSelect").val() || [],
@@ -415,6 +419,7 @@ $(document).ready(function () {
             policy_ids: $("#policySelect").val() || [],
             wheeler_type: $("#wheelerTypeSelect").val() || [],
             vehicle_types: $("#vehicleTypeSelect").val() || [],
+            claim_filter_type: $("input[name='claim_filter_type']:checked").val(),
         };
 
         $.ajax({
@@ -476,7 +481,7 @@ $(document).ready(function () {
         $.ajax({
             url: "/claim-detail",
             method: "GET",
-            data: { claim_id: claimId, expid : expId },
+            data: { claim_id: claimId, expid: expId },
             success: function (response) {
                 $("#claimDetailContent").html(response.html);
             },
@@ -486,5 +491,34 @@ $(document).ready(function () {
                 );
             },
         });
+    });
+
+    $(document).on("click", ".return-claim", function (e) {
+        e.preventDefault();
+
+        var expId = $(this).data("expid");
+        var claimId = $(this).data("claim-id");
+
+        if (confirm("Are you sure you want to return this claim?")) {
+            $.ajax({
+                url: "/claims/return",
+                method: "POST",
+                data: {
+                    expid: expId,
+                    claim_id: claimId,
+                    _token: $('meta[name="csrf-token"]').attr("content"),
+                },
+                success: function (response) {
+                    alert(response.message || "Claim returned successfully.");
+                    $("#claimReportTable").DataTable().ajax.reload(null, false);
+                },
+                error: function (xhr) {
+                    alert(
+                        "An error occurred: " +
+                            (xhr.responseJSON?.message || "Please try again.")
+                    );
+                },
+            });
+        }
     });
 });

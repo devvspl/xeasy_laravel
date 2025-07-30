@@ -3062,7 +3062,7 @@
 }
 @media (min-width: 1024.1px) {
     [data-layout="horizontal"] .page-title-box {
-        margin: -19px 0 0 0;
+        margin: 0 0 0 0;
     }
 }
 [data-layout="vertical"][data-layout-style="detached"] .page-title-box {
@@ -4645,7 +4645,7 @@
 }
 [data-layout="horizontal"] .navbar-menu .navbar-nav .nav-link {
     color: var(--vz-topnav-item-color);
-    padding: 8px 18px;
+    padding: 10px 18px;
 }
 [data-layout="horizontal"] .navbar-menu .navbar-nav .nav-link i {
     line-height: 1;
