@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::resource('menu', MenuController::class)->names('menu');
-    Route::get('menu/list', [MenuController::class, 'menuList'])->name('menu.list');
+    Route::get('menu-list', [MenuController::class, 'menuList'])->name('menu.list');
     Route::get('menu/{menu}/logs', [MenuController::class, 'getLogs'])->name('menu.logs');
 
 
@@ -65,7 +65,10 @@ Route::middleware('auth')->group(function () {
     Route::post('filter-claims', [ReportController::class, 'filterClaims'])->name('filter_claims');
     Route::post('expense-claims/export', [ReportController::class, 'export'])->name('expense_claims.export');
 
+    Route::get('top-rating-employee', [ReportController::class, 'topRatingEmployee']);
 
+
+    Route::get('same_date', [ReportController::class, 'sameDayCkaimUpload']);
 
     Route::post('employees/by-department', [FilterController::class, 'getEmployeesByDepartment'])->name('employees.by_department');
     Route::post('verticals/by-function', [FilterController::class, 'getVerticalsByFunction'])->name('verticals.by_function');

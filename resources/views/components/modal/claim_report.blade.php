@@ -27,6 +27,7 @@
                                     @can('Filter Claim Type')
                                         <option value="claim_type_wise">Claim Type Wise (Multiple Sheets)</option>
                                     @endcan
+                                    <option value="same_day">Top Rating Employee</option>
                                 </select>
                             </div>
                             <div class="col-md-4">

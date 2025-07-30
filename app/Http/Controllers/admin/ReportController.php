@@ -15,6 +15,7 @@ use App\Exports\ClaimTypeWiseClaimReportExport;
 use App\Exports\DepartmentWiseClaimReportExport;
 use App\Exports\MonthWiseClaimReportExport;
 use App\Exports\DailyActivityReportExport;
+use App\Exports\SameDayUploadClaimExport;
 use App\Notifications\ExportReadyNotification;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Log;
@@ -33,6 +34,41 @@ class ReportController extends Controller
         $eligibility_policy = EligibilityPolicy::where('CompanyId', session('company_id'))->get(['PolicyId', 'PolicyName']);
         return view('admin.claim_report', compact('functions', 'verticals', 'departments', 'sub_departments', 'employees', 'claimTypes', 'eligibility_policy'));
     }
+    public function topRatingEmployee(Request $request)
+    {
+        $fromDate = $request->query('fromDate', date('Y-m-d'));
+        $toDate = $request->query('toDate', date('Y-m-d'));
+        $table = ExpenseClaim::tableName();
+
+        $data = DB::table("$table as ec")
+            ->leftJoin('hrims.hrm_employee_general as eg', 'ec.CrBy', '=', 'eg.EmployeeID')
+            ->leftJoin('hrims.hrm_employee as emp', 'ec.CrBy', '=', 'emp.EmployeeID')
+            ->leftJoin('hrims.core_verticals as cv', 'cv.id', '=', 'eg.EmpVertical')
+            ->leftJoin('hrims.core_departments as cd', 'cd.id', '=', 'eg.DepartmentId')
+            ->leftJoin('hrims.core_grades as cg', 'cg.id', '=', 'eg.GradeId')
+            ->select(
+                DB::raw("CONCAT_WS(' ', emp.Fname, emp.Sname, emp.Lname) AS EmployeeName"),
+                'emp.EmpCode',
+                'cg.grade_name',
+                'cv.vertical_name',
+                'cd.department_name',
+                DB::raw('COUNT(ec.ExpId) AS TotalClaimsUploaded')
+            )
+            ->whereBetween(DB::raw('DATE(ec.CrDate)'), [$fromDate, $toDate])
+            ->whereIn('ec.CrBy', function ($query) use ($table) {
+                $query->select('ec_inner.CrBy')
+                    ->from("$table as ec_inner")
+                    ->groupBy('ec_inner.CrBy')
+                    ->havingRaw('SUM(CASE WHEN DATE(ec_inner.BillDate) = DATE(ec_inner.CrDate) THEN 1 ELSE 0 END) = COUNT(*)');
+            })
+            ->groupBy('emp.EmployeeID', 'emp.Fname', 'emp.Sname', 'emp.Lname', 'emp.EmpCode', 'cg.grade_name', 'cv.vertical_name', 'cd.department_name')
+            ->orderByDesc('TotalClaimsUploaded')
+            ->orderBy('emp.EmpCode')
+            ->get();
+
+        return view('admin.top_rating_employee', compact('data', 'fromDate', 'toDate'));
+    }
+
     public function dailyActivity()
     {
         return view(view:
@@ -273,18 +309,22 @@ class ReportController extends Controller
             return response()->json(['error' => 'Please select at least one column to export'], 400);
         }
         try {
+            $query = $this->buildClaimQuery($filters, $table, false, $columns);
             $export = match ($reportType) {
-                'month_wise' => new MonthWiseClaimReportExport($filters, $columns, $protectSheets, $table), 'department_wise' => new DepartmentWiseClaimReportExport($filters, $columns, $protectSheets, $table), 'claim_type_wise' => new ClaimTypeWiseClaimReportExport($filters, $columns, $protectSheets, $table),
-                default => new ClaimReportExport($filters, $columns, 'Claims', $protectSheets, $table),
+                'month_wise' => new MonthWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
+                'department_wise' => new DepartmentWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
+                'claim_type_wise' => new ClaimTypeWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
+                default => new ClaimReportExport($query, $filters, $columns, 'Claims', $protectSheets, $table),
             };
-            $fileName = 'expense_claims_' . date('Ymd_His') . '.xlsx';
-            \Excel::queue($export, $fileName, 'public');
-            $user = $request->user();
-            $downloadUrl = \Storage::url($fileName);
-            return response()->json(['message' => 'Export is being processed. You will be notified when it is ready.', 'download_url' => $downloadUrl]);
+            return Excel::download($export, 'expense_claims_' . date('Ymd_His') . '.xlsx');
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Could not queue export: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Could not export claims: ' . $e->getMessage()], 500);
         }
+    }
+    public function sameDayCkaimUpload()
+    {
+        return Excel::download(new SameDayUploadClaimExport('y7_expenseclaims'), 'SameDayUpload.xlsx');
+
     }
     public function getDailyActivityData(Request $request)
     {

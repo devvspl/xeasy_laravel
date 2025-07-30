@@ -27,7 +27,7 @@ class DepartmentWiseClaimReportExport implements WithMultipleSheets
     {
         $sheets = [];
 
-        // Get department IDs and names with a clean subquery
+        
         $departments = DB::table('hrims.core_departments as d')
             ->join('hrims.hrm_employee_general as eg', 'eg.DepartmentId', '=', 'd.id')
             ->join("{$this->table} as e", 'e.CrBy', '=', 'eg.EmployeeID')
@@ -50,9 +50,8 @@ class DepartmentWiseClaimReportExport implements WithMultipleSheets
         }
 
         foreach ($departments as $departmentId => $departmentName) {
-
+            
             $deptQuery = (clone $this->query)
-                ->leftJoin('hrims.hrm_employee_general', 'hrims.hrm_employee_general.EmployeeID', '=', 'hrims.hrm_employee.EmployeeID')
                 ->where('hrims.hrm_employee_general.DepartmentId', $departmentId);
 
             $count = (clone $deptQuery)->count(DB::raw("DISTINCT {$this->table}.ExpId"));
@@ -71,7 +70,7 @@ class DepartmentWiseClaimReportExport implements WithMultipleSheets
             }
         }
 
-
+        
         if (empty($sheets)) {
             $sheets[] = new ClaimReportExport(
                 $this->query,
