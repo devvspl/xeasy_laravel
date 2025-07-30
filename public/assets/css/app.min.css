@@ -8653,13 +8653,13 @@ button {
 }
 @media (min-width: 600px) {
     .dropdown-menu-xl {
-        width: 420px;
+        width: 450px;
     }
     .dropdown-menu-lg {
-        width: 320px;
+        width: 350px;
     }
     .dropdown-menu-md {
-        width: 240px;
+        width: 270px;
     }
 }
 .dropdown-toggle-split {

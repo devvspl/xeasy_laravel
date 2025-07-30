@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\admin\{DashboardController, PermissionController, PermissionGroupController, RolesController, UsersController, MenuController, SettingController, ReportController, FinancialYearController, FilterController, ClaimViewController, APIManagerController};
+use App\Http\Controllers\admin\{DashboardController, PermissionController, PermissionGroupController, RolesController, UsersController, MenuController, SettingController, ReportController, FinancialYearController, FilterController, ClaimViewController, APIManagerController, EmployeeController};
 
 
 Route::get('/', fn() => redirect()->route('login'));
@@ -66,9 +66,10 @@ Route::middleware('auth')->group(function () {
     Route::post('expense-claims/export', [ReportController::class, 'export'])->name('expense_claims.export');
     Route::get('top-rating-employee', [ReportController::class, 'topRatingEmployee']);
     Route::post('/claims/return', [ReportController::class, 'returnClaim']);
-
-
     Route::get('same_date', [ReportController::class, 'sameDayCkaimUpload']);
+
+
+    Route::post('employees/search', [EmployeeController::class, 'search'])->name('employees.search');
 
     Route::post('employees/by-department', [FilterController::class, 'getEmployeesByDepartment'])->name('employees.by_department');
     Route::post('verticals/by-function', [FilterController::class, 'getVerticalsByFunction'])->name('verticals.by_function');

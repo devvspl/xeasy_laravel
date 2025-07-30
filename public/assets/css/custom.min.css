@@ -245,7 +245,15 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
 .accordion .accordion-body {
     color: var(--vz-accordion-color) !important;
 }
- #close-chat:hover {
-        background-color: #001868 !important; /* Bootstrap danger red */
-        color: white !important;
-    }
+#close-chat:hover {
+    background-color: #001868 !important; 
+    color: white !important;
+}
+#search-dropdown .dropdown-header {
+    position: sticky;
+    top: 0;
+    background-color: #fff; 
+    z-index: 10;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
