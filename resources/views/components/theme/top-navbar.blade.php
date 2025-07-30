@@ -34,7 +34,7 @@
                             <img src="{{ URL::to('/') }}/assets/images/logo-sm.png" alt="" height="22">
                         </span>
                         <span class="logo-lg">
-                            <img src="{{ URL::to('/') }}/custom/login-logo.png" alt="" height="60">
+                            <img src="{{ URL::to('/') }}/custom/xeasy_logo_dark.png" alt="" height="60">
                         </span>
                     </a>
                     <a href="#" class="logo logo-light">
@@ -58,8 +58,8 @@
                 <form class="app-search d-none d-md-block">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
                     <div class="position-relative">
-                        <input type="text" class="form-control" placeholder="Search employees..." autocomplete="off"
-                            id="empSearchOptions" value="">
+                        <input type="text" class="form-control" placeholder="Search employee.. (Ctrl+E)"
+                            autocomplete="off" id="empSearchOptions" value="">
                         <span class="mdi mdi-magnify search-widget-icon"></span>
                         <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
                             id="search-close-options"></span>
@@ -67,7 +67,7 @@
                     <div class="dropdown-menu dropdown-menu-lg" id="search-dropdown">
                         <div data-simplebar style="max-height: 320px;">
                             <div class="dropdown-header" style="display: flex; justify-content: space-between;">
-                                <h6 class="text-overflow text-muted mb-0 text-uppercase">Employees</h6>
+                                <h6 class="text-overflow text-muted mb-0">Employees</h6>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="statusFilter" checked>
                                     <label class="form-check-label" for="statusFilter">Active Only</label>

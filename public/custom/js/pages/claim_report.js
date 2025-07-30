@@ -19,24 +19,24 @@ $(document).ready(function () {
         },
     });
 
-    const selectElements = [
-        "#functionSelect",
-        "#verticalSelect",
-        "#departmentSelect",
-        "#subDepartmentSelect",
-        "#userSelect",
-        "#monthSelect",
-        "#claimTypeSelect",
-        "#claimStatusSelect",
-        "#policySelect",
-        "#wheelerTypeSelect",
-        "#vehicleTypeSelect",
-    ];
+    const selectConfigs = {
+        "#functionSelect": "Select Function",
+        "#verticalSelect": "Select Vertical",
+        "#departmentSelect": "Select Department",
+        "#subDepartmentSelect": "Select Sub-Department",
+        "#userSelect": "Select Employee",
+        "#monthSelect": "Select Month",
+        "#claimTypeSelect": "Select Claim Type",
+        "#claimStatusSelect": "Select Claim Status",
+        "#policySelect": "Select Policy",
+        "#wheelerTypeSelect": "Select Wheeler Type",
+        "#vehicleTypeSelect": "Select Vehicle Type",
+    };
 
-    selectElements.forEach((selector) => {
+    Object.entries(selectConfigs).forEach(([selector, placeholder]) => {
         $(selector).select2({
             width: "100%",
-            placeholder: "Select options",
+            placeholder: placeholder,
             allowClear: true,
         });
     });
@@ -326,7 +326,9 @@ $(document).ready(function () {
                 },
                 data: function (d) {
                     // Get current checkbox state on each request
-                    d.claim_filter_type = $("input[name='claim_filter_type']:checked").val();
+                    d.claim_filter_type = $(
+                        "input[name='claim_filter_type']:checked"
+                    ).val();
 
                     // other filters
                     d.function_ids = $("#functionSelect").val() || [];
@@ -419,7 +421,9 @@ $(document).ready(function () {
             policy_ids: $("#policySelect").val() || [],
             wheeler_type: $("#wheelerTypeSelect").val() || [],
             vehicle_types: $("#vehicleTypeSelect").val() || [],
-            claim_filter_type: $("input[name='claim_filter_type']:checked").val(),
+            claim_filter_type: $(
+                "input[name='claim_filter_type']:checked"
+            ).val(),
         };
 
         $.ajax({

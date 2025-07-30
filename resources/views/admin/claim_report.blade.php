@@ -18,124 +18,16 @@
                                 </div>
                                 <div class="card-body pb-3 pt-0">
                                     <div
-                                        class="row bg-light-subtle border-top-dashed border border-start-0 border-end-0 border-bottom-dashed py-1 mb-3">
-                                        @can('Filter Function')
-                                            <div class="col-md-3">
-                                                <label for="functionSelect" class="form-label mt-1">Function</label>
-                                                <select class="form-select" id="functionSelect" multiple>
-                                                    @foreach ($functions as $function)
-                                                        <option value="{{ $function->id }}">{{ $function->function_name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endcan
-                                        @can('Filter Vertical')
-                                            <div class="col-md-3">
-                                                <label for="verticalSelect" class="form-label mt-1">Vertical</label>
-                                                <select class="form-select" id="verticalSelect" multiple>
-                                                    @foreach ($verticals as $vertical)
-                                                        <option value="{{ $vertical->id }}">{{ $vertical->vertical_name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endcan
-                                        @can('Filter Department')
-                                            <div class="col-md-3">
-                                                <label for="departmentSelect" class="form-label mt-1">Department</label>
-                                                <select class="form-select" id="departmentSelect" multiple>
-                                                    @foreach ($departments as $department)
-                                                        <option value="{{ $department->id }}">{{ $department->department_name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endcan
-                                        @can('Filter Sub Department')
-                                            <div class="col-md-3">
-                                                <label for="subDepartmentSelect" class="form-label mt-1">Sub Department</label>
-                                                <select class="form-select" id="subDepartmentSelect" multiple>
-                                                    @foreach ($sub_departments as $sub_department)
-                                                        <option value="{{ $sub_department->id }}">{{ $sub_department->sub_department_name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endcan
-                                        @can('Filter Users')
-                                            <div class="col-md-3">
-                                                <label for="userSelect" class="form-label mt-1">Users</label>
-                                                <select class="form-select" id="userSelect" multiple>
-                                                    @foreach ($employees as $employee)
-                                                        <option value="{{ $employee->EmpCode }}" data-status="{{ $employee->EmpStatus }}"
-                                                            class="{{ $employee->EmpStatus === 'D' ? 'deactivated' : '' }}">
-                                                            {{ $employee->EmpCode }} - {{ $employee->Fname }}
-                                                            {{ $employee->Sname ?? '' }} {{ $employee->Lname }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endcan
-                                        @can('Filter Month')
-                                            <div class="col-md-3">
-                                                <label for="monthSelect" class="form-label mt-1">Month</label>
-                                                <select class="form-select" id="monthSelect" multiple>
-                                                    <option value="1">January</option>
-                                                    <option value="2">February</option>
-                                                    <option value="3">March</option>
-                                                    <option value="4">April</option>
-                                                    <option value="5">May</option>
-                                                    <option value="6">June</option>
-                                                    <option value="7">July</option>
-                                                    <option value="8">August</option>
-                                                    <option value="9">September</option>
-                                                    <option value="10">October</option>
-                                                    <option value="11">November</option>
-                                                    <option value="12">December</option>
-                                                </select>
-                                            </div>
-                                        @endcan
-                                        @can('Filter Claim Type')
-                                            @php
-                                                $groupedClaimTypes = $claimTypes->groupBy('cgName');
-                                            @endphp
-                                            <div class="col-md-3">
-                                                <label for="claimTypeSelect" class="form-label mt-1">Claim Type</label>
-                                                <select class="form-select" id="claimTypeSelect" multiple>
-                                                    @foreach ($groupedClaimTypes as $groupName => $claims)
-                                                        <optgroup label="{{ $groupName ?? 'Ungrouped' }}">
-                                                            @foreach ($claims as $claim)
-                                                                <option value="{{ $claim->ClaimId }}">{{ $claim->ClaimName }}</option>
-                                                            @endforeach
-                                                        </optgroup>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endcan
-
-                                        @can('Filter Claim Status')
-                                            <div class="col-md-3">
-                                                <label for="claimStatusSelect" class="form-label mt-1">Claim Status</label>
-                                                <select class="form-select" id="claimStatusSelect" multiple>
-                                                    <option value="1">Deactivate</option>
-                                                    <option value="2">Draft/Submitted</option>
-                                                    <option value="3">Filled</option>
-                                                    <option value="4">Approved</option>
-                                                    <option value="5">Financed</option>
-                                                    <option value="6">Payment</option>
-                                                </select>
-                                            </div>
-                                        @endcan
-                                        <div class="col-md-3">
-                                            <label for="fromDate" class="form-label mt-1">From</label>
+                                        class="row align-items-baseline bg-light-subtle border-top-dashed border border-start-0 border-end-0 border-bottom-dashed py-2 mb-3">
+                                        <div class="col-md-2">
                                             <input type="text" placeholder="Select From Date" class="form-control flatpickr"
-                                                id="fromDate" value="{{ date('Y-m-d') }}">
+                                                id="fromDate" value="">
                                         </div>
-                                        <div class="col-md-3">
-                                            <label for="toDate" class="form-label mt-1">To</label>
+                                        <div class="col-md-2">
                                             <input type="text" placeholder="Select To Date" class="form-control flatpickr"
-                                                id="toDate" value="{{ date('Y-m-d') }}">
+                                                id="toDate" value="">
                                         </div>
-                                        <div class="col-md-4 d-flex align-items-end">
+                                        <div class="col-md-6 d-flex align-items-baseline">
                                             <div class="form-check me-3">
                                                 <input class="form-check-input" type="radio" name="dateType" id="billDate"
                                                     value="billDate" checked>
@@ -143,7 +35,7 @@
                                             </div>
                                             <div class="form-check me-3">
                                                 <input class="form-check-input" type="radio" name="dateType" id="uploadDate"
-                                                    value="upload Date">
+                                                    value="uploadDate">
                                                 <label class="form-check-label" for="uploadDate">Upload Date</label>
                                             </div>
                                             <div class="form-check me-3">
@@ -151,10 +43,18 @@
                                                     value="filledDate">
                                                 <label class="form-check-label" for="filledDate">Filled Date</label>
                                             </div>
+                                            <div class="form-check me-3 d-flex align-items-center">
+                                                <a class="text-primary" type="button" data-bs-toggle="offcanvas"
+                                                    data-bs-target="#additionalFiltersCanvas"
+                                                    aria-controls="additionalFiltersCanvas">
+                                                    <i class="ri-equalizer-line fs-16 me-2"></i>
+                                                    <span class="align-middle">More Filters</span>
+                                                </a>
+                                            </div>
                                         </div>
-                                        <div class="col-md-2 d-flex align-items-end">
+                                        <div class="col-md-2 d-flex align-items-baseline">
                                             <button type="button"
-                                                class="btn mt-3 btn-primary btn-label waves-effect waves-light rounded-pill w-100"
+                                                class="btn btn-primary btn-label waves-effect waves-light rounded-pill w-100"
                                                 id="searchButton">
                                                 <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 me-2">
                                                     <span class="loader" style="display: none;"></span>
@@ -162,67 +62,168 @@
                                                 Get Report
                                             </button>
                                         </div>
-                                        <div class="col-12 mt-3">
-                                            <div class="d-flex justify-content-center">
-                                                <a href="#additionalFilters" class="text-primary" data-bs-toggle="collapse"
-                                                    aria-expanded="false" aria-controls="additionalFilters">
-                                                    <i class="ri-equalizer-line fs-20 me-2"></i>
-                                                    <span class="align-middle">More Filters</span>
-                                                </a>
-                                            </div>
-                                            <div class="collapse mt-3" id="additionalFilters">
-                                                <div class="row p-3">
-                                                    @can('Filter Policy')
-                                                        <div class="col-md-3">
-                                                            <label for="policySelect" class="form-label mt-1">Policy</label>
-                                                            <select class="form-select" id="policySelect" multiple>
-                                                                @foreach ($eligibility_policy as $policy)
-                                                                    <option value="{{ $policy->PolicyId }}">{{ $policy->PolicyName }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    @endcan
-                                                    @can('Filter Wheeler Type')
-                                                        <div class="col-md-3">
-                                                            <label for="wheelerTypeSelect" class="form-label mt-1">Wheeler Type</label>
-                                                            <select class="form-select" id="wheelerTypeSelect" multiple>
-                                                                <option value="2">2 Wheeler</option>
-                                                                <option value="4">4 Wheeler</option>
-                                                            </select>
-                                                        </div>
-                                                    @endcan
-                                                    @can('Filter Vehicle Type')
-                                                        <div class="col-md-3">
-                                                            <label for="vehicleTypeSelect" class="form-label mt-1">Vehicle Type</label>
-                                                            <select class="form-select" id="vehicleTypeSelect" multiple>
-                                                                <option value="new">New</option>
-                                                                <option value="old">Old</option>
-                                                            </select>
-                                                        </div>
-                                                    @endcan
-                                                </div>
-                                                <div class="row p-3">
-                                                    <div class="col-md-12 d-flex align-items-end">
-                                                        <div class="form-check me-3">
-                                                            <input class="form-check-input" type="radio" name="claim_filter_type"
-                                                                id="deactivateAfterFilling" value="deactivate_after_filling">
-                                                            <label class="form-check-label" for="deactivateAfterFilling">
-                                                                Deactivate After Filling
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check me-3">
-                                                            <input class="form-check-input" type="radio" name="claim_filter_type"
-                                                                id="expense_sunday_holiday" value="expense_sunday_holiday">
-                                                            <label class="form-check-label" for="expense_sunday_holiday">
-                                                                Expense (Sunday & Holiday)
-                                                            </label>
-                                                        </div>
+                                    </div>
+                                    <!-- Off-Canvas Panel for Additional Filters -->
+                                    <div class="offcanvas offcanvas-end" tabindex="-1" id="additionalFiltersCanvas"
+                                        aria-labelledby="additionalFiltersCanvasLabel">
+                                        <div class="offcanvas-header header-ligth">
+                                            <h5 class="offcanvas-title text-white" id="additionalFiltersCanvasLabel">Additional Filters</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="offcanvas-body">
+                                            <div class="row p-1">
+                                                @can('Filter Function')
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="functionSelect" multiple>
+                                                            @foreach ($functions as $function)
+                                                                <option value="{{ $function->id }}">{{ $function->function_name }}</option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
+                                                @endcan
+                                                @can('Filter Vertical')
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="verticalSelect" multiple>
+                                                            @foreach ($verticals as $vertical)
+                                                                <option value="{{ $vertical->id }}">{{ $vertical->vertical_name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                @endcan
+                                                @can('Filter Department')
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="departmentSelect" multiple>
+                                                            @foreach ($departments as $department)
+                                                                <option value="{{ $department->id }}">{{ $department->department_name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                @endcan
+                                                @can('Filter Sub Department')
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="subDepartmentSelect" multiple>
+                                                            @foreach ($sub_departments as $sub_department)
+                                                                <option value="{{ $sub_department->id }}">
+                                                                    {{ $sub_department->sub_department_name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                @endcan
+                                                @can('Filter Users')
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="userSelect" multiple>
+                                                            @foreach ($employees as $employee)
+                                                                <option value="{{ $employee->EmpCode }}"
+                                                                    data-status="{{ $employee->EmpStatus }}"
+                                                                    class="{{ $employee->EmpStatus === 'D' ? 'deactivated' : '' }}">
+                                                                    {{ $employee->EmpCode }} - {{ $employee->Fname }}
+                                                                    {{ $employee->Sname ?? '' }} {{ $employee->Lname }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                @endcan
+                                                @can('Filter Month')
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="monthSelect" multiple>
+                                                            <option value="1">January</option>
+                                                            <option value="2">February</option>
+                                                            <option value="3">March</option>
+                                                            <option value="4">April</option>
+                                                            <option value="5">May</option>
+                                                            <option value="6">June</option>
+                                                            <option value="7">July</option>
+                                                            <option value="8">August</option>
+                                                            <option value="9">September</option>
+                                                            <option value="10">October</option>
+                                                            <option value="11">November</option>
+                                                            <option value="12">December</option>
+                                                        </select>
+                                                    </div>
+                                                @endcan
+                                                @can('Filter Claim Type')
+                                                    @php
+                                                        $groupedClaimTypes = $claimTypes->groupBy('cgName');
+                                                       @endphp
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="claimTypeSelect" multiple>
+                                                            @foreach ($groupedClaimTypes as $groupName => $claims)
+                                                                <optgroup label="{{ $groupName ?? 'Ungrouped' }}">
+                                                                    @foreach ($claims as $claim)
+                                                                        <option value="{{ $claim->ClaimId }}">{{ $claim->ClaimName }}</option>
+                                                                    @endforeach
+                                                                </optgroup>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                @endcan
+                                                @can('Filter Claim Status')
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="claimStatusSelect" multiple>
+                                                            <option value="1">Deactivate</option>
+                                                            <option value="2">Draft/Submitted</option>
+                                                            <option value="3">Filled</option>
+                                                            <option value="4">Approved</option>
+                                                            <option value="5">Financed</option>
+                                                            <option value="6">Payment</option>
+                                                        </select>
+                                                    </div>
+                                                @endcan
+                                                @can('Filter Policy')
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="policySelect" multiple>
+                                                            @foreach ($eligibility_policy as $policy)
+                                                                <option value="{{ $policy->PolicyId }}">{{ $policy->PolicyName }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                @endcan
+                                                @can('Filter Wheeler Type')
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="wheelerTypeSelect" multiple>
+                                                            <option value="2">2 Wheeler</option>
+                                                            <option value="4">4 Wheeler</option>
+                                                        </select>
+                                                    </div>
+                                                @endcan
+                                                @can('Filter Vehicle Type')
+                                                    <div class="col-md-6 mb-3">
+                                                        <select class="form-select" id="vehicleTypeSelect" multiple>
+                                                            <option value="new">New</option>
+                                                            <option value="old">Old</option>
+                                                        </select>
+                                                    </div>
+                                                @endcan
+                                                <div class="col-md-12 mb-3">
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input" type="radio" name="claim_filter_type"
+                                                            id="deactivateAfterFilling" value="deactivate_after_filling">
+                                                        <label class="form-check-label" for="deactivateAfterFilling">
+                                                            Deactivate After Filling
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input" type="radio" name="claim_filter_type"
+                                                            id="expense_sunday_holiday" value="expense_sunday_holiday">
+                                                        <label class="form-check-label" for="expense_sunday_holiday">
+                                                            Expense (Sunday & Holiday)
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row p-1">
+                                                <div class="col-md-12">
+                                                    <button type="button" class="btn btn-primary w-100" data-bs-dismiss="offcanvas">
+                                                        Apply Filters
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- End Off-Canvas Panel -->
                                     <table style="margin-top: 15px" id="claimReportTable"
                                         class="table nowrap dt-responsive align-middle table-hover table-bordered"
                                         style="width:100%">

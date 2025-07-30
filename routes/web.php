@@ -69,7 +69,9 @@ Route::middleware('auth')->group(function () {
     Route::get('same_date', [ReportController::class, 'sameDayCkaimUpload']);
 
 
+
     Route::post('employees/search', [EmployeeController::class, 'search'])->name('employees.search');
+    Route::get('employee/{id}', [EmployeeController::class, 'employee'])->name('employees');
 
     Route::post('employees/by-department', [FilterController::class, 'getEmployeesByDepartment'])->name('employees.by_department');
     Route::post('verticals/by-function', [FilterController::class, 'getVerticalsByFunction'])->name('verticals.by_function');

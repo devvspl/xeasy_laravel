@@ -246,14 +246,39 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
     color: var(--vz-accordion-color) !important;
 }
 #close-chat:hover {
-    background-color: #001868 !important; 
+    background-color: #001868 !important;
     color: white !important;
 }
 #search-dropdown .dropdown-header {
     position: sticky;
     top: 0;
-    background-color: #fff; 
+    background-color: #fff;
     z-index: 10;
     padding: 0.5rem 1rem;
     border-bottom: 1px solid #e9ecef;
+}
+
+#additionalFiltersCanvas .offcanvas.offcanvas-end {
+    padding: 0 5px !important;
+}
+.offcanvas-header {
+    background-color: var(--vz-primary); /* Custom background color */
+    color: #ffffff; /* Custom text color */
+}
+
+.offcanvas-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%); /* Adjust close button color for contrast */
+}
+
+#empSearchOptions::-webkit-input-placeholder {
+    font-size: 12px;
+}
+#empSearchOptions::-moz-placeholder {
+    font-size: 12px;
+}
+#empSearchOptions:-ms-input-placeholder {
+    font-size: 12px;
+}
+#empSearchOptions::placeholder {
+    font-size: 12px;
 }

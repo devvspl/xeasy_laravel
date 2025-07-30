@@ -231,11 +231,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let debounceTimer;
     let currentPage = 1;
     let searchTerm = "";
-    let statusFilterValue = "A"; 
+    let statusFilterValue = "A";
     let loading = false;
     let hasMore = true;
 
-    
     const simpleBarInstance = simpleBar
         ? SimpleBar.instances.get(simpleBar)
         : null;
@@ -243,6 +242,14 @@ document.addEventListener("DOMContentLoaded", function () {
         ? simpleBarInstance.getScrollElement()
         : notificationList;
 
+    document.addEventListener("keydown", function (event) {
+        if (event.ctrlKey && event.key === "e") {
+            event.preventDefault();
+            searchInput.focus();
+            resetAndFetch(searchInput.value.trim());
+            searchDropdown.classList.add("show");
+        }
+    });
     searchInput.addEventListener("focus", function () {
         resetAndFetch("");
         searchDropdown.classList.add("show");
@@ -266,7 +273,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .getElementById("search-close-options")
         .addEventListener("click", function () {
             searchInput.value = "";
-            statusFilter.checked = true; 
+            statusFilter.checked = true;
             statusFilterValue = "A";
             searchDropdown.classList.remove("show");
             notificationList.innerHTML = "";
@@ -330,7 +337,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const { label: statusLabel, className: statusClass } =
                 getStatusLabel(employee.EmpStatus);
 
-            employeeItem.href = `employees/${employee.EmployeeID}`;
+            employeeItem.href = `employee/${employee.EmployeeID}`;
             employeeItem.className = "dropdown-item notify-item py-2";
             employeeItem.innerHTML = `
                 <div class="d-flex">
@@ -365,7 +372,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    
     let scrollTimeout;
     scrollElement.addEventListener("scroll", function () {
         clearTimeout(scrollTimeout);
@@ -378,7 +384,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 100);
     });
 
-    
     document.addEventListener("click", function (event) {
         const appSearch = document.querySelector(".app-search");
         const searchInput = document.querySelector("#empSearchOptions");
