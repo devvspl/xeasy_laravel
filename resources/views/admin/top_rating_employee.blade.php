@@ -13,25 +13,15 @@
                     <div class="row">
                         <div class="col-xl-12">
                             <div class="card card-height-100">
-                                <div class="card-header align-items-center d-flex">
+
+                                <div class="card-header align-items-center d-flex gap-2">
                                     <h4 class="card-title mb-0 flex-grow-1">Top Rating Employees (Same Day Uploads)</h4>
+                                    <input type="text" class="form-control" data-provider="flatpickr" data-date-format="Y-m-d"
+                                        data-range-date="true" id="dateRange" style="width: 200px;" placeholder="Select date range"
+                                        value="{{ old('fromDate', $fromDate ?? date('Y-m-d')) }} to {{ old('toDate', $toDate ?? date('Y-m-d')) }}">
                                 </div>
                                 <div class="card-body pb-3 pt-0">
                                     <form method="GET" class="row g-3 mb-3 mt-2" action="{{ url()->current() }}">
-                                        <div class="col-md-3">
-                                            <label for="fromDate" class="form-label">From</label>
-                                            <input type="date" class="form-control" id="fromDate" name="fromDate"
-                                                value="{{ old('fromDate', $fromDate ?? date('Y-m-d')) }}">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="toDate" class="form-label">To</label>
-                                            <input type="date" class="form-control" id="toDate" name="toDate"
-                                                value="{{ old('toDate', $toDate ?? date('Y-m-d')) }}">
-                                        </div>
-                                        <div class="col-md-3 align-self-end">
-                                            <button type="submit" class="btn btn-sm btn-primary">Filter</button>
-                                            <a href="{{ url()->current() }}" class="btn btn-sm btn-secondary ms-2">Reset</a>
-                                        </div>
                                     </form>
 
                                     <table id="claimReportTable"
@@ -87,29 +77,45 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function () {
-            flatpickr("#fromDate", {
+            flatpickr("#dateRange", {
                 dateFormat: "Y-m-d",
-                disable: [],
-                enableYearSelection: true,
-                onReady: function () {
-                    this.isDisabled = false;
-                },
+                mode: "range",
+                onChange: function (selectedDates) {
+                    if (selectedDates.length === 2) {
+                        var dates = selectedDates.map(date => date.toISOString().split('T')[0]);
+                        $('#dateRange').val(dates.join(' to '));
+                        // Trigger form submission to filter data
+                        var form = $('form');
+                        form.find('input[name="fromDate"]').remove();
+                        form.find('input[name="toDate"]').remove();
+                        form.append($('<input>').attr({
+                            type: 'hidden',
+                            name: 'fromDate',
+                            value: dates[0]
+                        }));
+                        form.append($('<input>').attr({
+                            type: 'hidden',
+                            name: 'toDate',
+                            value: dates[1]
+                        }));
+                        form.submit();
+                    }
+                }
             });
 
-            flatpickr("#toDate", {
-                dateFormat: "Y-m-d",
-                disable: [],
-                enableYearSelection: true,
-                onReady: function () {
-                    this.isDisabled = false;
-                },
-            });
+            let table;
             if ($.fn.DataTable.isDataTable("#claimReportTable")) {
+                table = $("#claimReportTable").DataTable();
                 table.destroy();
                 $("#claimReportTable").empty();
             }
 
-            table = $("#claimReportTable").DataTable();
-        })
+            table = $("#claimReportTable").DataTable({
+                responsive: true,
+                ordering: true,
+                searching: true,
+                paging: true
+            });
+        });
     </script>
 @endpush

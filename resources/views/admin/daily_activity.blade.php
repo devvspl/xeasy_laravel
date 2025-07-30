@@ -7,29 +7,20 @@
                     <div class="row">
                         <div class="col-xl-12">
                             <div class="card card-height-100">
-                                <div class="card-header align-items-center d-flex">
-                                    <h4 class="card-title mb-0 flex-grow-1">Daily Activity</h4>
-                                    <div class="flex-shrink-0 ms-2">
-                                        <button class="btn btn-soft-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#exportModal">
-                                            Get Report<i class="mdi mdi-chevron-down align-middle ms-1"></i>
+                                <div class="card-header align-items-center d-flex gap-2">
+                                    <h4 class="card-title mb-0 flex-grow-1"><i class="ri-list-unordered"></i> Activity Tracking Report</h4>
+                                    <input type="text" class="form-control" data-provider="flatpickr" data-date-format="Y-m-d"
+                                        data-range-date="true" id="dateRange" style="width: 200px;" placeholder="Select date range">
+                                    <div class="flex-shrink-0">
+                                        <button type="button"
+                                            class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#exportModal">
+                                            Export Report
+                                            <i class="ri-add-circle-fill label-icon align-middle rounded-pill fs-16 me-2"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="card-body pb-3 pt-0">
-                                    <div
-                                        class="row bg-light-subtle border-top-dashed border border-start-0 border-end-0 border-bottom-dashed py-1 mb-3">
-                                        <div class="col-md-3">
-                                            <label for="fromDate" class="form-label mt-1">From</label>
-                                            <input type="text" class="form-control flatpickr" id="fromDate"
-                                                value="{{ date('Y-m-d') }}">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="toDate" class="form-label mt-1">To</label>
-                                            <input type="text" class="form-control flatpickr" id="toDate"
-                                                value="{{ date('Y-m-d') }}">
-                                        </div>
-                                    </div>
+                                <div class="card-body pb-3 pt-2">
                                     <table style="margin-top: 15px" id="dailyActivityTable"
                                         class="table nowrap dt-responsive align-middle table-hover table-bordered"
                                         style="width:100%">
@@ -51,8 +42,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Export Modal -->
             <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -66,14 +55,21 @@
                             <p><strong>To:</strong> <span id="modalToDate"></span></p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary" id="confirmExport">Export</button>
+                            <div class="hstack gap-2 justify-content-end">
+                                <button type="button" class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
+                                    id="confirmExport">
+                                    <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 me-2">
+                                        <span class="loader" style="display: none;"></span>
+                                    </i>
+                                    Export to Excel
+                                </button>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
         @endsection
-
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/libs/@simonwep/pickr/themes/classic.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/libs/@simonwep/pickr/themes/monolith.min.css') }}" />
@@ -81,82 +77,63 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 @endpush
-
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Initialize Flatpickr for date pickers
-            flatpickr(".flatpickr", {
+            flatpickr("#dateRange", {
                 dateFormat: "Y-m-d",
+                mode: "range",
+                onChange: function (selectedDates) {
+                    if (selectedDates.length === 2) {
+                        $('#dailyActivityTable').DataTable().ajax.reload();
+                    }
+                }
             });
-
-            // Initialize DataTable
             var table = $('#dailyActivityTable').DataTable({
                 processing: true,
                 serverSide: false,
                 ajax: {
-                    url: '{{ route('daily-activity.data') }}',
+                    url: '{{ route('daily_activity.data') }}',
                     type: 'POST',
                     data: function (d) {
-                        d.fromDate = $('#fromDate').val();
-                        d.toDate = $('#toDate').val();
+                        var dates = $('#dateRange').val().split(' to ');
+                        d.fromDate = dates[0];
+                        d.toDate = dates[1] || dates[0];
                         d._token = '{{ csrf_token() }}';
                     },
                 },
-                columns: [{
-                    data: 'ActionDate'
-                },
-                {
-                    data: 'TotalUpload'
-                },
-                {
-                    data: 'Punching'
-                },
-                {
-                    data: 'Verified'
-                },
-                {
-                    data: 'Approved'
-                },
-                {
-                    data: 'Financed'
-                },
+                columns: [
+                    { data: 'ActionDate' },
+                    { data: 'TotalUpload' },
+                    { data: 'Punching' },
+                    { data: 'Verified' },
+                    { data: 'Approved' },
+                    { data: 'Financed' },
                 ],
-                order: [
-                    [0, 'asc']
-                ],
+                order: [[0, 'asc']],
             });
-
-            // Reload table when date range changes
-            $('#fromDate, #toDate').on('change', function () {
-                table.ajax.reload();
-            });
-
-            // Populate modal with selected dates when it opens
             $('#exportModal').on('show.bs.modal', function () {
-                var fromDate = $('#fromDate').val();
-                var toDate = $('#toDate').val();
+                var dates = $('#dateRange').val().split(' to ');
+                var fromDate = dates[0];
+                var toDate = dates[1] || dates[0];
                 $('#modalFromDate').text(fromDate);
                 $('#modalToDate').text(toDate);
             });
-
-            // Handle export button click
             $('#confirmExport').on('click', function () {
-                var fromDate = $('#fromDate').val();
-                var toDate = $('#toDate').val();
+                var dates = $('#dateRange').val().split(' to ');
+                var fromDate = dates[0];
+                var toDate = dates[1] || dates[0];
 
-                // Validate dates
                 if (!fromDate || !toDate) {
-                    alert('Please select both From and To dates.');
+                    alert('Please select a date range.');
                     return;
                 }
 
-                // Create a form to submit the export request
                 var form = $('<form>', {
                     'method': 'POST',
-                    'action': '{{ route('daily-activity.export') }}',
+                    'action': '{{ route('daily_activity.export') }}',
                     'target': '_blank'
                 }).append(
                     $('<input>', {
@@ -179,6 +156,6 @@
                 form.appendTo('body').submit().remove();
                 $('#exportModal').modal('hide');
             });
-        });
+        }); 
     </script>
 @endpush
