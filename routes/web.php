@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\admin\{DashboardController, PermissionController, PermissionGroupController, RolesController, UsersController, MenuController, SettingController, ReportController, FinancialYearController, FilterController, ClaimViewController, APIManagerController, EmployeeController};
+use App\Http\Controllers\admin\{DashboardController, PermissionController, PermissionGroupController, RolesController, UsersController, MenuController, SettingController, ReportController, FinancialYearController, FilterController, ClaimViewController, APIManagerController, EmployeeController, ExpenseDetailsController};
 
 
 Route::get('/', fn() => redirect()->route('login'));
@@ -90,4 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::get('api/tables', [APIManagerController::class, 'getTables'])->name('api.tables');
     Route::get('api/columns/{table}', [APIManagerController::class, 'getColumns'])->name('api.columns');
     Route::post('api/map-fields', [APIManagerController::class, 'mapFields'])->name('api.map_fields');
+
+
+    Route::get('/generate-expense-pdf', [ExpenseDetailsController::class, 'generatePdf'])->name('generate.expense.pdf');
 });
