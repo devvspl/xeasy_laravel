@@ -5,10 +5,6 @@
 @section('content')
     <div class="page-content">
         <div class="container-fluid">
-            <x-theme.breadcrumb :title="ucwords(str_replace('-', ' ', Request::path()))" :breadcrumbs="[
-                ['label' => 'Dashboards', 'url' => route('home')],
-                ['label' => ucwords(str_replace('-', ' ', Request::path()))],
-            ]" />
 
             <div class="row">
                 <div class="col-xxl-12">
@@ -52,8 +48,8 @@
                                             role="tab" aria-controls="analytics" aria-selected="false">
                                             <i class="ri-line-chart-line d-block fs-20 mb-1"></i> Analytics
                                         </a>
-                                        <a class="nav-link" id="backup-tab" data-bs-toggle="pill" href="#backup"
-                                            role="tab" aria-controls="backup" aria-selected="false">
+                                        <a class="nav-link" id="backup-tab" data-bs-toggle="pill" href="#backup" role="tab"
+                                            aria-controls="backup" aria-selected="false">
                                             <i class="ri-recycle-line d-block fs-20 mb-1"></i> Backup
                                         </a>
                                     </div>
@@ -76,8 +72,7 @@
                                                     </div>
                                                     <div class="mb-3 col-md-4">
                                                         <label for="timeZone" class="form-label">Time Zone</label>
-                                                        <select class="form-select" id="timeZone" name="time_zone"
-                                                            required>
+                                                        <select class="form-select" id="timeZone" name="time_zone" required>
                                                             <option value="Asia/Kolkata">India Standard Time (UTC +5:30)
                                                             </option>
                                                             <option value="Asia/Tokyo">Japan Standard Time (UTC +9)
@@ -89,8 +84,8 @@
                                                     </div>
                                                     <div class="mb-3 col-md-4">
                                                         <label for="language" class="form-label">Default Language</label>
-                                                        <select class="form-select" id="language"
-                                                            name="default_language" required>
+                                                        <select class="form-select" id="language" name="default_language"
+                                                            required>
                                                             <option value="en">English</option>
                                                             <option value="es">Spanish</option>
                                                             <option value="fr">French</option>
@@ -98,8 +93,8 @@
                                                     </div>
                                                     <div class="mb-3 col-md-4">
                                                         <label for="siteUrl" class="form-label">Site URL</label>
-                                                        <input type="url" class="form-control" id="siteUrl"
-                                                            name="site_url" placeholder="Enter site URL" required>
+                                                        <input type="url" class="form-control" id="siteUrl" name="site_url"
+                                                            placeholder="Enter site URL" required>
                                                     </div>
                                                     <div class="mb-3 col-md-4">
                                                         <label for="contactInfo" class="form-label">Contact
@@ -109,25 +104,25 @@
                                                     </div>
                                                     <div class="mb-3 col-md-4">
                                                         <label for="logo" class="form-label">Logo</label>
-                                                        <input type="file" class="form-control" id="logo"
-                                                            name="logo" accept="image/*">
+                                                        <input type="file" class="form-control" id="logo" name="logo"
+                                                            accept="image/*">
                                                         <div id="logoPreviewContainer" class="mt-2">
-                                                            <a href="#" id="viewLogoLink"
-                                                                class="d-none me-2">View/Zoom</a>
+                                                            <a href="#" id="viewLogoLink" class="d-none me-2">View/Zoom</a>
                                                             <a href="#" id="downloadLogoLink" class="d-none me-2"
                                                                 download>Download</a>
                                                             <button type="button" id="deleteLogoBtn"
                                                                 class="btn btn-danger btn-sm d-none">Delete</button>
                                                             <div id="imageViewer" class="mt-2 d-none">
-                                                                <img id="logoLivePreview" src=""
-                                                                    alt="Live Preview" style="max-width: 150px;">
+                                                                <img id="logoLivePreview" src="" alt="Live Preview"
+                                                                    style="max-width: 150px;">
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="mb-3 col-md-12">
                                                         <label for="siteDescription" class="form-label">Site
                                                             Description</label>
-                                                        <textarea class="form-control" id="siteDescription" name="site_description" placeholder="Enter site description"
+                                                        <textarea class="form-control" id="siteDescription"
+                                                            name="site_description" placeholder="Enter site description"
                                                             rows="4"></textarea>
                                                     </div>
                                                     <div class="mb-3 col-md-12">
@@ -145,8 +140,8 @@
                                                 @csrf
                                                 <div class="mb-3">
                                                     <label for="apiKey" class="form-label">API Key</label>
-                                                    <input type="password" class="form-control" id="apiKey"
-                                                        name="api_key" placeholder="Enter API key">
+                                                    <input type="password" class="form-control" id="apiKey" name="api_key"
+                                                        placeholder="Enter API key">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="sessionTimeout" class="form-label">Session Timeout
@@ -171,8 +166,8 @@
                                                 @csrf
                                                 <div class="mb-3">
                                                     <label for="smtpHost" class="form-label">SMTP Host</label>
-                                                    <input type="text" class="form-control" id="smtpHost"
-                                                        name="smtp_host" placeholder="smtp.example.com">
+                                                    <input type="text" class="form-control" id="smtpHost" name="smtp_host"
+                                                        placeholder="smtp.example.com">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="smtpUsername" class="form-label">SMTP Username</label>
@@ -195,8 +190,8 @@
                                                 @csrf
                                                 <div class="mb-3">
                                                     <label for="cacheTTL" class="form-label">Cache TTL (seconds)</label>
-                                                    <input type="number" class="form-control" id="cacheTTL"
-                                                        name="cache_ttl" value="3600" min="0" required>
+                                                    <input type="number" class="form-control" id="cacheTTL" name="cache_ttl"
+                                                        value="3600" min="0" required>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="rateLimit" class="form-label">Rate Limit
@@ -392,8 +387,8 @@
                                                         <div class="form-check form-switch form-switch-md mb-3 mt-4">
                                                             <input type="checkbox" class="form-check-input"
                                                                 id="sidebarUserProfile" name="sidebar_user_profile">
-                                                            <label class="form-check-label"
-                                                                for="sidebarUserProfile">Sidebar User Profile
+                                                            <label class="form-check-label" for="sidebarUserProfile">Sidebar
+                                                                User Profile
                                                                 Avatar</label>
                                                         </div>
                                                         <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Theme</h6>
@@ -412,7 +407,8 @@
                                                                         </label>
                                                                     </div>
                                                                     <h5 class="fs-13 text-center fw-medium mt-2">
-                                                                        {{ $theme['label'] }}</h5>
+                                                                        {{ $theme['label'] }}
+                                                                    </h5>
                                                                 </div>
                                                             @endforeach
                                                         </div>
@@ -566,8 +562,8 @@
                                                                 <div class="col-3">
                                                                     <div class="form-check card-radio">
                                                                         <input class="form-check-input" type="radio"
-                                                                            name="data-layout-width"
-                                                                            id="layout-width-fluid" value="fluid">
+                                                                            name="data-layout-width" id="layout-width-fluid"
+                                                                            value="fluid">
                                                                         <label
                                                                             class="form-check-label p-0 avatar-md w-100 material-shadow"
                                                                             for="layout-width-fluid">
@@ -601,8 +597,8 @@
                                                                 <div class="col-3">
                                                                     <div class="form-check card-radio">
                                                                         <input class="form-check-input" type="radio"
-                                                                            name="data-layout-width"
-                                                                            id="layout-width-boxed" value="boxed">
+                                                                            name="data-layout-width" id="layout-width-boxed"
+                                                                            value="boxed">
                                                                         <label
                                                                             class="form-check-label p-0 avatar-md w-100 px-2 material-shadow"
                                                                             for="layout-width-boxed">
@@ -806,8 +802,8 @@
                                                                 <div class="col-3">
                                                                     <div class="form-check sidebar-setting card-radio">
                                                                         <input class="form-check-input" type="radio"
-                                                                            name="data-sidebar-size"
-                                                                            id="sidebar-size-small" value="sm">
+                                                                            name="data-sidebar-size" id="sidebar-size-small"
+                                                                            value="sm">
                                                                         <label
                                                                             class="form-check-label p-0 avatar-md w-100 material-shadow"
                                                                             for="sidebar-size-small">
@@ -843,8 +839,7 @@
                                                                     <div class="form-check sidebar-setting card-radio">
                                                                         <input class="form-check-input" type="radio"
                                                                             name="data-sidebar-size"
-                                                                            id="sidebar-size-small-hover"
-                                                                            value="sm-hover">
+                                                                            id="sidebar-size-small-hover" value="sm-hover">
                                                                         <label
                                                                             class="form-check-label p-0 avatar-md w-100 material-shadow"
                                                                             for="sidebar-size-small-hover">
@@ -1074,8 +1069,7 @@
                                                                     @foreach ([['id' => 'sidebar-color-gradient', 'value' => 'gradient'], ['id' => 'sidebar-color-gradient-2', 'value' => 'gradient-2'], ['id' => 'sidebar-color-gradient-3', 'value' => 'gradient-3'], ['id' => 'sidebar-color-gradient-4', 'value' => 'gradient-4']] as $gradient)
                                                                         <div class="form-check sidebar-setting card-radio">
                                                                             <input class="form-check-input" type="radio"
-                                                                                name="data-sidebar"
-                                                                                id="{{ $gradient['id'] }}"
+                                                                                name="data-sidebar" id="{{ $gradient['id'] }}"
                                                                                 value="{{ $gradient['value'] }}">
                                                                             <label
                                                                                 class="form-check-label p-0 avatar-xs rounded-circle"
@@ -1111,8 +1105,7 @@
                                                                             name="data-sidebar-image"
                                                                             id="sidebarimg-{{ str_replace('-', '', $img) }}"
                                                                             value="{{ $img }}">
-                                                                        <label
-                                                                            class="form-check-label p-0 avatar-sm h-auto"
+                                                                        <label class="form-check-label p-0 avatar-sm h-auto"
                                                                             for="sidebarimg-{{ str_replace('-', '', $img) }}">
                                                                             <img src="{{ asset('assets/images/sidebar/' . $img . '.jpg') }}"
                                                                                 alt=""
@@ -1130,8 +1123,7 @@
                                                                 @foreach ([['id' => 'themeColor-01', 'value' => 'default'], ['id' => 'themeColor-02', 'value' => 'green'], ['id' => 'themeColor-03', 'value' => 'purple'], ['id' => 'themeColor-04', 'value' => 'blue']] as $color)
                                                                     <div class="form-check sidebar-setting card-radio">
                                                                         <input class="form-check-input" type="radio"
-                                                                            name="data-theme-colors"
-                                                                            id="{{ $color['id'] }}"
+                                                                            name="data-theme-colors" id="{{ $color['id'] }}"
                                                                             value="{{ $color['value'] }}">
                                                                         <label class="form-check-label avatar-xs p-0"
                                                                             for="{{ $color['id'] }}">
@@ -1149,8 +1141,8 @@
                                                                 <div class="col-3">
                                                                     <div class="form-check sidebar-setting card-radio">
                                                                         <input class="form-check-input" type="radio"
-                                                                            name="data-preloader"
-                                                                            id="preloader-view-custom" value="enable">
+                                                                            name="data-preloader" id="preloader-view-custom"
+                                                                            value="enable">
                                                                         <label
                                                                             class="form-check-label p-0 avatar-md w-100 material-shadow"
                                                                             for="preloader-view-custom">
@@ -1238,8 +1230,7 @@
                                                                                 name="data-body-image"
                                                                                 id="body-img-{{ str_replace('-', '', $img) }}"
                                                                                 value="{{ $img }}">
-                                                                            <label
-                                                                                class="form-check-label p-0 avatar-md w-100"
+                                                                            <label class="form-check-label p-0 avatar-md w-100"
                                                                                 data-body-image="{{ $img }}"
                                                                                 for="body-img-{{ str_replace('-', '', $img) }}">
                                                                                 @if ($img == 'none')
@@ -1258,8 +1249,7 @@
                                                                                             </span>
                                                                                         </span>
                                                                                         <span class="flex-grow-1">
-                                                                                            <span
-                                                                                                class="d-flex h-100 flex-column">
+                                                                                            <span class="d-flex h-100 flex-column">
                                                                                                 <span
                                                                                                     class="bg-light d-block p-1"></span>
                                                                                                 <span
@@ -1306,20 +1296,19 @@
                                             </table>
                                         </div>
                                         <!-- Backup Tab -->
-                                        <div class="tab-pane fade" id="backup" role="tabpanel"
-                                            aria-labelledby="backup-tab">
+                                        <div class="tab-pane fade" id="backup" role="tabpanel" aria-labelledby="backup-tab">
                                             <h6>Backup Settings</h6>
                                             <form method="POST" action="">
                                                 @csrf
                                                 <div class="mb-3">
                                                     <label for="dbHost" class="form-label">Database Host</label>
-                                                    <input type="text" class="form-control" id="dbHost"
-                                                        name="db_host" placeholder="localhost" required>
+                                                    <input type="text" class="form-control" id="dbHost" name="db_host"
+                                                        placeholder="localhost" required>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="backupSchedule" class="form-label">Backup Schedule</label>
-                                                    <select class="form-select" id="backupSchedule"
-                                                        name="backup_schedule" required>
+                                                    <select class="form-select" id="backupSchedule" name="backup_schedule"
+                                                        required>
                                                         <option value="daily">Daily</option>
                                                         <option value="weekly">Weekly</option>
                                                         <option value="monthly">Monthly</option>
@@ -1370,8 +1359,8 @@
                 </div>
                 <!-- Modal Header -->
                 <div class="modal-header">
-                    <h5 class="modal-title" id="configModalLabel">Database Configuration <span
-                            id="modalCompanyName"></span></h5>
+                    <h5 class="modal-title" id="configModalLabel">Database Configuration <span id="modalCompanyName"></span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Modal Body -->
@@ -1379,23 +1368,19 @@
                     <!-- Tabs Navigation -->
                     <ul class="nav nav-tabs mb-3" id="dbTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="hrims-tab" data-bs-toggle="tab"
-                                data-bs-target="#hrims" type="button" role="tab" aria-controls="hrims"
-                                aria-selected="true">HRIMS</button>
+                            <button class="nav-link active" id="hrims-tab" data-bs-toggle="tab" data-bs-target="#hrims"
+                                type="button" role="tab" aria-controls="hrims" aria-selected="true">HRIMS</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="expense-tab" data-bs-toggle="tab" data-bs-target="#expense"
-                                type="button" role="tab" aria-controls="expense"
-                                aria-selected="false">Expense</button>
+                                type="button" role="tab" aria-controls="expense" aria-selected="false">Expense</button>
                         </li>
                     </ul>
                     <!-- Tab Content -->
                     <div class="tab-content" id="dbTabContent">
                         <!-- HRIMS Tab -->
-                        <div class="tab-pane fade show active" id="hrims" role="tabpanel"
-                            aria-labelledby="hrims-tab">
-                            <form method="POST" class="mt-3" id="hrims-form"
-                                action="s') }}">
+                        <div class="tab-pane fade show active" id="hrims" role="tabpanel" aria-labelledby="hrims-tab">
+                            <form method="POST" class="mt-3" id="hrims-form" action="s') }}">
                                 @csrf
                                 <input type="hidden" name="company_id" id="hrims_company_id">
                                 <input type="hidden" name="db_name" value="hrims">
@@ -1417,13 +1402,13 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="hrims_db_database" class="form-label">Database</label>
-                                        <input type="text" name="db_database" id="hrims_db_database"
-                                            class="form-control" value="hrims" required>
+                                        <input type="text" name="db_database" id="hrims_db_database" class="form-control"
+                                            value="hrims" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="hrims_db_username" class="form-label">Database Username</label>
-                                        <input type="text" name="db_username" id="hrims_db_username"
-                                            class="form-control" value="root" required>
+                                        <input type="text" name="db_username" id="hrims_db_username" class="form-control"
+                                            value="root" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="hrims_db_password" class="form-label">Database Password</label>
@@ -1432,8 +1417,8 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" name="is_active" type="checkbox"
-                                                role="switch" id="hrims_is_active" checked>
+                                            <input class="form-check-input" name="is_active" type="checkbox" role="switch"
+                                                id="hrims_is_active" checked>
                                             <label class="form-check-label" for="hrims_is_active"
                                                 id="hrims_is_active_label">Active</label>
                                         </div>
@@ -1455,8 +1440,7 @@
                         </div>
                         <!-- Expense Tab -->
                         <div class="tab-pane fade" id="expense" role="tabpanel" aria-labelledby="expense-tab">
-                            <form method="POST" class="mt-3" id="expense-form"
-                                action="nse') }}">
+                            <form method="POST" class="mt-3" id="expense-form" action="nse') }}">
                                 @csrf
                                 <input type="hidden" name="company_id" id="expense_company_id">
                                 <input type="hidden" name="db_name" value="expense">
@@ -1469,23 +1453,23 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="expense_db_host" class="form-label">Database Host</label>
-                                        <input type="text" name="db_host" id="expense_db_host"
-                                            class="form-control" value="127.0.0.1" required>
+                                        <input type="text" name="db_host" id="expense_db_host" class="form-control"
+                                            value="127.0.0.1" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="expense_db_port" class="form-label">Database Port</label>
-                                        <input type="number" name="db_port" id="expense_db_port"
-                                            class="form-control" value="3306" required>
+                                        <input type="number" name="db_port" id="expense_db_port" class="form-control"
+                                            value="3306" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="expense_db_database" class="form-label">Database</label>
-                                        <input type="text" name="db_database" id="expense_db_database"
-                                            class="form-control" value="expense" required>
+                                        <input type="text" name="db_database" id="expense_db_database" class="form-control"
+                                            value="expense" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="expense_db_username" class="form-label">Database Username</label>
-                                        <input type="text" name="db_username" id="expense_db_username"
-                                            class="form-control" value="root" required>
+                                        <input type="text" name="db_username" id="expense_db_username" class="form-control"
+                                            value="root" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="expense_db_password" class="form-label">Database Password</label>
@@ -1494,8 +1478,8 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" name="is_active" type="checkbox"
-                                                role="switch" id="expense_is_active" checked>
+                                            <input class="form-check-input" name="is_active" type="checkbox" role="switch"
+                                                id="expense_is_active" checked>
                                             <label class="form-check-label" for="expense_is_active"
                                                 id="expense_is_active_label">Active</label>
                                         </div>

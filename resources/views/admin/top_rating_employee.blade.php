@@ -1,70 +1,66 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="page-content">
-    <div class="container-fluid">
+    <div class="page-content">
+        <div class="container-fluid">
 
-        @section('titleMaybe', 'Top Rating Employees with Same Day Uploads')
-                    <x-theme.breadcrumb title="Top Rating Employees" :breadcrumbs="[
-                    ['label' => 'Reports', 'url' => '#'],
-                    ['label' => 'Top Rating Employees']
-                ]" />
 
-                    <div class="row">
-                        <div class="col-xl-12">
-                            <div class="card card-height-100">
 
-                                <div class="card-header align-items-center d-flex gap-2">
-                                    <h4 class="card-title mb-0 flex-grow-1">Top Rating Employees (Same Day Uploads)</h4>
-                                    <input type="text" class="form-control" data-provider="flatpickr" data-date-format="Y-m-d"
-                                        data-range-date="true" id="dateRange" style="width: 200px;" placeholder="Select date range"
-                                        value="{{ old('fromDate', $fromDate ?? date('Y-m-d')) }} to {{ old('toDate', $toDate ?? date('Y-m-d')) }}">
-                                </div>
-                                <div class="card-body pb-3 pt-0">
-                                    <form method="GET" class="row g-3 mb-3 mt-2" action="{{ url()->current() }}">
-                                    </form>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card card-height-100">
 
-                                    <table id="claimReportTable"
-                                        class="table nowrap dt-responsive align-middle table-hover table-bordered"
-                                        style="width:100%">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Sn</th>
-                                                <th>Emp Code</th>
-                                                <th>Employee Name</th>
-                                                <th>Grade</th>
-                                                <th>Vertical</th>
-                                                <th>Department</th>
-                                                <th>Total Claims Uploaded</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($data as $index => $item)
-                                                <tr>
-                                                    <td>{{ $index + 1 }}</td>
-                                                    <td>{{ $item->EmpCode }}</td>
-                                                    <td>{{ $item->EmployeeName }}</td>
-                                                    <td>{{ $item->grade_name }}</td>
-                                                    <td>{{ $item->vertical_name }}</td>
-                                                    <td>{{ $item->department_name }}</td>
-                                                    <td>{{ $item->TotalClaimsUploaded }}</td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="7" class="text-center">No records found for selected date range.</td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                        <div class="card-header align-items-center d-flex gap-2">
+                            <h4 class="card-title mb-0 flex-grow-1">Top Rating Employees (Same Day Uploads)</h4>
+                            <input type="text" class="form-control" data-provider="flatpickr" data-date-format="Y-m-d"
+                                data-range-date="true" id="dateRange" style="width: 200px;" placeholder="Select date range"
+                                value="{{ old('fromDate', $fromDate ?? date('Y-m-d')) }} to {{ old('toDate', $toDate ?? date('Y-m-d')) }}">
+                        </div>
+                        <div class="card-body pb-3 pt-0">
+                            <form method="GET" class="row g-3 mb-3 mt-2" action="{{ url()->current() }}">
+                            </form>
 
-                                </div>
-                            </div>
+                            <table id="claimReportTable"
+                                class="table nowrap dt-responsive align-middle table-hover table-bordered"
+                                style="width:100%">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Sn</th>
+                                        <th>Emp Code</th>
+                                        <th>Employee Name</th>
+                                        <th>Grade</th>
+                                        <th>Vertical</th>
+                                        <th>Department</th>
+                                        <th>Total Claims Uploaded</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($data as $index => $item)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>{{ $item->EmpCode }}</td>
+                                            <td>{{ $item->EmployeeName }}</td>
+                                            <td>{{ $item->grade_name }}</td>
+                                            <td>{{ $item->vertical_name }}</td>
+                                            <td>{{ $item->department_name }}</td>
+                                            <td>{{ $item->TotalClaimsUploaded }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center">No records found for selected date range.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+
                         </div>
                     </div>
-
                 </div>
             </div>
-        @endsection
+
+        </div>
+    </div>
+@endsection
 
 @push('styles')
     <link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/classic.min.css" />
