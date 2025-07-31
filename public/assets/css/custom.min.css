@@ -284,7 +284,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
     font-size: 12px;
 }
 .table > :not(caption) > * > * {
-    padding: 7px 5px !important;
+    padding: 5px 5px !important;
 }
 
 table.table-bordered.dataTable th,
