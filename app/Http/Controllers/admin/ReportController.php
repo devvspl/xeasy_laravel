@@ -216,7 +216,7 @@ class ReportController extends Controller
             }
         }
         if (!empty($filters['claim_statuses'])) {
-            $query->whereIn("{$table}.ClaimAtStep", $filters['claim_statuses']);
+            $query->whereIn("{$table}.ClaimStatus", $filters['claim_statuses']);
         }
         if (!empty($filters['claim_filter_type']) && $filters['claim_filter_type'] == 'deactivate_after_filling') {
             $query->where("{$table}.ClaimAtStep", 1)->where("{$table}.ClaimStatus", 'Deactivate')->where("{$table}.FilledDate", '!=', '0000-00-00')->where("{$table}.FilledBy", '>', 0)->where("{$table}.FilledTAmt", '>', 0)->where("{$table}.ClaimId", '!=', 0);

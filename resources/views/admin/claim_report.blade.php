@@ -162,12 +162,13 @@
                                         @can('Filter Claim Status')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="claimStatusSelect" multiple>
-                                                    <option value="1">Deactivate</option>
-                                                    <option value="2">Draft/Submitted</option>
-                                                    <option value="3">Filled</option>
-                                                    <option value="4">Approved</option>
-                                                    <option value="5">Financed</option>
-                                                    <option value="6">Payment</option>
+                                                    <option value="Deactivate">Deactivate</option>
+                                                    <option value="Draft">Draft</option>
+                                                    <option value="Submitted">Submitted</option>
+                                                    <option value="Filled">Filled</option>
+                                                    <option value="Verified">Verified</option>
+                                                    <option value="Approved">Approved</option>
+                                                    <option value="Financed">Financed</option>
                                                 </select>
                                             </div>
                                         @endcan
