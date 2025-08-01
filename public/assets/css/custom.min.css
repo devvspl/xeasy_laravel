@@ -296,3 +296,9 @@ table.table-bordered.dataTable td {
 .select2-container .select2-search--inline .select2-search__field {
     font-family: "Noto Serif", serif !important;
 }
+
+.input-group-text {
+
+        padding: 5px 10px !important;
+}
+

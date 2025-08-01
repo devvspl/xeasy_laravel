@@ -76,12 +76,26 @@ class HomeController extends Controller
                         END
                     , 2) as VariationPercentage
                 "))->orderBy('dep.department_name')->get();
-        $yearlyComparison = DB::table(DB::raw("(SELECT ClaimYearId, FinancedTAmt FROM {$previousYearTable} UNION ALL SELECT ClaimYearId, FinancedTAmt FROM {$tableName}) as e"))->selectRaw("
-                SUM(CASE WHEN ClaimYearId = {$yearId} THEN FinancedTAmt ELSE 0 END) as CY_Expense,
-                SUM(CASE WHEN ClaimYearId = {$previousYearId} THEN FinancedTAmt ELSE 0 END) as PY_Expense,
-                SUM(CASE WHEN ClaimYearId = {$yearId} THEN FinancedTAmt ELSE 0 END) - SUM(CASE WHEN ClaimYearId = {$previousYearId} THEN FinancedTAmt ELSE 0 END) as Variance,
-                (SUM(CASE WHEN ClaimYearId = {$yearId} THEN FinancedTAmt ELSE 0 END) - SUM(CASE WHEN ClaimYearId = {$previousYearId} THEN FinancedTAmt ELSE 0 END)) / NULLIF(SUM(CASE WHEN ClaimYearId = {$previousYearId} THEN FinancedTAmt ELSE 0 END), 0) * 100 as Variance_Percentage
-            ")->whereIn('ClaimYearId', [$previousYearId, $yearId])->first();
+        $subQuery = DB::table($previousYearTable)
+            ->select('ClaimYearId', 'FinancedTAmt', 'ClaimStatus')
+            ->whereNotIn('ClaimStatus', ['Draft', 'Submitted'])
+            ->unionAll(
+                DB::table($tableName)
+                    ->select('ClaimYearId', 'FinancedTAmt', 'ClaimStatus')
+                    ->whereNotIn('ClaimStatus', ['Draft', 'Submitted'])
+            );
+
+        $yearlyComparison = DB::query()
+            ->fromSub($subQuery, 'e')
+            ->selectRaw("
+        SUM(CASE WHEN ClaimYearId = ? THEN FinancedTAmt ELSE 0 END) as CY_Expense,
+        SUM(CASE WHEN ClaimYearId = ? THEN FinancedTAmt ELSE 0 END) as PY_Expense,
+        SUM(CASE WHEN ClaimYearId = ? THEN FinancedTAmt ELSE 0 END) - SUM(CASE WHEN ClaimYearId = ? THEN FinancedTAmt ELSE 0 END) as Variance,
+        (SUM(CASE WHEN ClaimYearId = ? THEN FinancedTAmt ELSE 0 END) - SUM(CASE WHEN ClaimYearId = ? THEN FinancedTAmt ELSE 0 END)) / NULLIF(SUM(CASE WHEN ClaimYearId = ? THEN FinancedTAmt ELSE 0 END), 0) * 100 as Variance_Percentage
+    ", [$yearId, $previousYearId, $yearId, $previousYearId, $yearId, $previousYearId, $previousYearId])
+            ->whereIn('ClaimYearId', [$previousYearId, $yearId])
+            ->first();
+
         $statusMap = ['draft' => 'Draft', 'deactivate' => 'Deactivate', 'submitted' => 'Submitted', 'filled' => 'Filled', 'verified' => 'Verified', 'approved' => 'Approved', 'financed' => 'Financed', 'total' => 'Total Expense'];
         $cardData = [];
         foreach ($claimStatusCounts as $status) {

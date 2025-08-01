@@ -1,4 +1,134 @@
 $(document).ready(function () {
+    const financialQuarters = [
+        { label: "Q1 (Apr - Jun)", startMonth: 3, endMonth: 5 },
+        { label: "Q2 (Jul - Sep)", startMonth: 6, endMonth: 8 },
+        { label: "Q3 (Oct - Dec)", startMonth: 9, endMonth: 11 },
+        { label: "Q4 (Jan - Mar)", startMonth: 0, endMonth: 2 },
+    ];
+
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const dateInput = document.getElementById("dateRange");
+    let currentAllowedRange = null; // track valid selection range
+
+    // Initialize Flatpickr
+    const datePicker = flatpickr(dateInput, {
+        mode: "range",
+        dateFormat: "d M, Y",
+        maxDate: today,
+        onClose: function (selectedDates) {
+            if (selectedDates.length === 2 && currentAllowedRange) {
+                const [start, end] = selectedDates;
+                if (
+                    start < currentAllowedRange[0] ||
+                    end > currentAllowedRange[1]
+                ) {
+                    alert(
+                        "Selected dates must be within the allowed quarter or month range."
+                    );
+                    datePicker.clear();
+                }
+            }
+        },
+    });
+
+    const container = document.getElementById("quarter-buttons");
+    const datePickerDiv = document.getElementById("date-picker-wrapper");
+
+    function getDateRange(startMonth, endMonth, year) {
+        const crossYear = startMonth > endMonth;
+        const startYear = year;
+        const endYear = crossYear ? year + 1 : year;
+
+        const start = new Date(startYear, startMonth, 1);
+        const end = new Date(endYear, endMonth + 1, 0);
+
+        return [start, end];
+    }
+
+    function createButton(label, className, dateRange, isDefault = false) {
+        const div = document.createElement("div");
+        div.className = "col-auto";
+        div.innerHTML = `<button type="button" class="btn ${className} material-shadow-none btn-sm">${label}</button>`;
+        const button = div.querySelector("button");
+
+        button.addEventListener("click", () => {
+            document
+                .querySelectorAll("#quarter-buttons button")
+                .forEach((btn) => {
+                    btn.classList.remove("btn-primary", "text-white");
+                    btn.classList.add("btn-soft-secondary");
+                });
+
+            button.classList.remove("btn-soft-secondary");
+            button.classList.add("btn-primary", "text-white");
+
+            currentAllowedRange = dateRange.length ? dateRange : null;
+
+            if (currentAllowedRange) {
+                const maxEnd = new Date();
+                const rangeEnd =
+                    currentAllowedRange[1] > maxEnd
+                        ? maxEnd
+                        : currentAllowedRange[1];
+                datePicker.set("minDate", currentAllowedRange[0]);
+                datePicker.set("maxDate", rangeEnd);
+                datePicker.setDate([currentAllowedRange[0], rangeEnd], true);
+            } else {
+                datePicker.set("minDate", null);
+                datePicker.set("maxDate", today);
+                datePicker.clear();
+            }
+        });
+
+        container.insertBefore(div, datePickerDiv);
+
+        if (isDefault) button.click();
+    }
+
+    // Set financial year range for "All"
+    // From 1 April currentYear to 31 March nextYear
+    const fyStart = new Date(currentYear, 3, 1); // April 1 current year
+    const fyEnd = new Date(currentYear + 1, 2, 31); // March 31 next year
+
+    createButton("All", "btn-soft-secondary", [fyStart, fyEnd]);
+
+    // Current Month button active by default
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    createButton(
+        "Current Month",
+        "btn-soft-secondary",
+        [firstDay, lastDay],
+        true
+    );
+
+    // Calculate current quarter index
+    let currentQuarterIndex = -1;
+    financialQuarters.forEach((q, index) => {
+        if (q.startMonth > q.endMonth) {
+            if (currentMonth >= q.startMonth || currentMonth <= q.endMonth) {
+                currentQuarterIndex = index;
+            }
+        } else {
+            if (currentMonth >= q.startMonth && currentMonth <= q.endMonth) {
+                currentQuarterIndex = index;
+            }
+        }
+    });
+
+    // Add current and past quarters
+    financialQuarters.forEach((q, index) => {
+        if (index <= currentQuarterIndex) {
+            const range = getDateRange(q.startMonth, q.endMonth, currentYear);
+            const adjustedRange = [
+                range[0],
+                range[1] > today ? today : range[1],
+            ];
+            createButton(q.label, "btn-soft-secondary", adjustedRange);
+        }
+    });
     // Function to format numbers in Indian format (e.g., 1,49,66,921) without .00 for zero
     function formatNumber(value) {
         const numValue = Number(value || 0);
@@ -59,6 +189,18 @@ $(document).ready(function () {
             const yearId = data.yearId;
             const previousYearId = yearId - 1;
             const claimTypeTotals = data.claimTypeTotals || [];
+            const yearlyComparison = data.yearlyComparison;
+            console.log(yearlyComparison);
+
+            $("#cyExpense").text(
+                Number(yearlyComparison.CY_Expense).toLocaleString()
+            );
+            $("#pyExpense").text(
+                Number(yearlyComparison.PY_Expense).toLocaleString()
+            );
+            $("#variancePercent").text(
+                Number(yearlyComparison.Variance_Percentage).toFixed(2) + "%"
+            );
 
             // Populate cards
             const defaultCardData = {
@@ -292,7 +434,9 @@ $(document).ready(function () {
                         .map(
                             (claim) => `
             <tr>
-                <td style="text-align:left">${claim.ClaimName || claim.ClaimCode}</td>
+                <td style="text-align:left">${
+                    claim.ClaimName || claim.ClaimCode
+                }</td>
                 <td>${formatNumber(claim.FilledTotal)}</td>
                 <td>${formatNumber(claim.VerifiedTotal)}</td>
                 <td>${formatNumber(claim.ApprovedTotal)}</td>
@@ -331,10 +475,10 @@ $(document).ready(function () {
     `);
             } else {
                 $claimTypeTableBody.html(`
-        <tr>
-            <td colspan="5" class="text-center">No data available</td>
-        </tr>
-    `);
+                <tr>
+                    <td colspan="5" class="text-center">No data available</td>
+                </tr>
+            `);
             }
 
             // Expense Monthly Chart

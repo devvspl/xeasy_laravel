@@ -2999,7 +2999,7 @@
 }
 @media (min-width: 1024.1px) {
     [data-layout="horizontal"] .page-content {
-        margin-top: 60px;
+        margin-top: 55px;
     }
 }
 @media (max-width: 1024.1px) {
