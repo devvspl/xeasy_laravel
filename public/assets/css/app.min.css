@@ -13721,7 +13721,7 @@ table.dataTable > thead .sorting_desc_disabled:before {
     content: "\f0360";
     position: absolute;
     right: 0.5rem;
-    top: 12px;
+    top: 5px;
     font-size: 0.8rem;
     font-family: "Material Design Icons";
 }
@@ -13733,7 +13733,7 @@ table.dataTable > thead .sorting_desc_disabled:after {
     content: "\f035d";
     position: absolute;
     right: 0.5rem;
-    top: 18px;
+    top: 5px;
     font-size: 0.8rem;
     font-family: "Material Design Icons";
 }

@@ -30,7 +30,6 @@
                     </div>
                 </div>
             </div>
-            <div class="row" id="card-container"></div>
             <div class="row">
                 <div class="col-xl-6">
                     <div class="card">

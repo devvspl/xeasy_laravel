@@ -211,6 +211,23 @@ function getRawMonthlyTotals($tableName, $startDate, $endDate)
         ->get();
 }
 
+function getRawTotals(string $tableName, string $startDate, string $endDate)
+{
+    return DB::table($tableName)
+        ->selectRaw('
+            SUM(CASE WHEN FilledBy > 0 AND FilledDate != "0000-00-00" THEN FilledTAmt ELSE 0 END) AS FilledTotal,
+            SUM(CASE WHEN VerifyBy > 0 AND VerifyDate != "0000-00-00" THEN VerifyTAmt ELSE 0 END) AS VerifiedTotal,
+            SUM(CASE WHEN ApprBy > 0 AND ApprDate != "0000-00-00" THEN ApprTAmt ELSE 0 END) AS ApprovedTotal,
+            SUM(CASE WHEN FinancedBy > 0 AND FinancedDate != "0000-00-00" THEN FinancedTAmt ELSE 0 END) AS FinancedTotal
+        ')
+        ->whereBetween('BillDate', [$startDate, $endDate])
+        ->where('BillDate', '!=', '0000-00-00')
+        ->whereNotNull('BillDate')
+        ->where('ClaimMonth', '!=', 0)
+        ->whereNotIn('ClaimStatus', ['Draft', 'Submitted', 'Deactivate'])
+        ->first();
+}
+
 function getDepartmentTotals($tableName, $previousYearTable, $yearId, $previousYearId, $startDate, $endDate, $previousYearStartDate, $previousYearEndDate)
 {
     return DB::table(DB::raw("
