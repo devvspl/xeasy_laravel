@@ -23,10 +23,11 @@ class HomeController extends Controller
     {
         try {
             $startDate = $request->input('bill_date_from');
+            $startDate = Carbon::parse($startDate)->addDay()->toDateString();
             $endDate = $request->input('bill_date_to');
             $yearId = (int) session('year_id');
-            
-            // Validate year ID
+
+
             if ($yearId <= 0) {
                 return response()->json([
                     'error' => 'Invalid year ID in session.',
@@ -45,7 +46,7 @@ class HomeController extends Controller
                 ], 400);
             }
 
-            // Calculate previous year date range
+
             $previousYearStartDate = Carbon::parse($startDate)->subYear()->toDateString();
             $previousYearEndDate = Carbon::parse($endDate)->subYear()->toDateString();
 
@@ -53,12 +54,12 @@ class HomeController extends Controller
             $tableName = "y{$yearId}_expenseclaims";
             $previousYearTable = "y{$previousYearId}_expenseclaims";
 
-            // Check if previous year table exists
+
             if (!DB::getSchemaBuilder()->hasTable($previousYearTable)) {
                 $previousYearTable = $tableName;
             }
 
-            // Fetch data using consistent BillDate
+
             $claimStatusCounts = getClaimStatusCounts($tableName, $startDate, $endDate);
             $claimTypeTotals = getClaimTypeTotals($tableName, $startDate, $endDate);
             $monthlyStatusTotals = getMonthlyStatusTotals($tableName, $startDate, $endDate);

@@ -1,25 +1,48 @@
 $(document).ready(function () {
     const financialQuarters = [
-        { label: "Q1 (Apr - Jun)", startMonth: 3, endMonth: 5 }, // April 1 - June 30
-        { label: "Q2 (Jul - Sep)", startMonth: 6, endMonth: 8 }, // July 1 - September 30
-        { label: "Q3 (Oct - Dec)", startMonth: 9, endMonth: 11 }, // October 1 - December 31
-        { label: "Q4 (Jan - Mar)", startMonth: 0, endMonth: 2 }, // January 1 - March 31
+        {
+            label: "Q1 (Apr - Jun)",
+            startMonth: 3, // April (0-based index)
+            startDay: 1,
+            endMonth: 5, // June
+            endDay: 30,
+        },
+        {
+            label: "Q2 (Jul - Sep)",
+            startMonth: 6, // July
+            startDay: 1,
+            endMonth: 8, // September
+            endDay: 30,
+        },
+        {
+            label: "Q3 (Oct - Dec)",
+            startMonth: 9, // October
+            startDay: 1,
+            endMonth: 11, // December
+            endDay: 31,
+        },
+        {
+            label: "Q4 (Jan - Mar)",
+            startMonth: 0, // January
+            startDay: 1,
+            endMonth: 2, // March
+            endDay: 31,
+        },
     ];
 
-    const today = new Date(); // Fixed for testing; use new Date() in production
-    const currentMonth = today.getMonth(); // 7 for August
-    const currentYear = today.getFullYear(); // 2025
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
     const dateInput = document.getElementById("dateRange");
-    let currentAllowedRange = null; // track valid selection range
-    let claimTypeChart; // Global chart variable for Claim Type Chart
-    let expenseMonthlyChart; // Global chart variable for Expense Monthly Chart
-    let departmentChart; // Global chart variable for Department-wise Comparison Chart
+    let currentAllowedRange = null;
+    let claimTypeChart;
+    let expenseMonthlyChart;
+    let departmentChart;
 
-    // Initialize Flatpickr
     const datePicker = flatpickr(dateInput, {
         mode: "range",
-        dateFormat: "d M, Y", // User-friendly display format
-        maxDate: today,
+        dateFormat: "d M, Y",
+        maxDate: new Date(today.setHours(23, 59, 59, 999)),
         onClose: function (selectedDates) {
             if (selectedDates.length === 2 && currentAllowedRange) {
                 const [start, end] = selectedDates;
@@ -32,9 +55,9 @@ $(document).ready(function () {
                     );
                     datePicker.clear();
                 } else {
-                    // Pass dates in YYYY-MM-DD format to fetchDashboardData
                     const billDateFrom = formatDateForAPI(start);
                     const billDateTo = formatDateForAPI(end);
+                    console.log("From: " + billDateFrom + " To: " + billDateTo);
                     fetchDashboardData(billDateFrom, billDateTo);
                 }
             }
@@ -44,24 +67,42 @@ $(document).ready(function () {
     const container = document.getElementById("quarter-buttons");
     const datePickerDiv = document.getElementById("date-picker-wrapper");
 
-    function getDateRange(startMonth, endMonth, year) {
+    // Month options in fiscal order (April to March)
+    const monthOptions = [
+        { label: "April", month: 3 },
+        { label: "May", month: 4 },
+        { label: "June", month: 5 },
+        { label: "July", month: 6 },
+        { label: "August", month: 7 },
+        { label: "September", month: 8 },
+        { label: "October", month: 9 },
+        { label: "November", month: 10 },
+        { label: "December", month: 11 },
+        { label: "January", month: 0 },
+        { label: "February", month: 1 },
+        { label: "March", month: 2 },
+    ];
+
+    function getDateRange(startMonth, startDay, endMonth, endDay, year) {
         const crossYear = startMonth > endMonth;
         const startYear = year;
         const endYear = crossYear ? year + 1 : year;
 
-        const start = new Date(startYear, startMonth, 1);
-        const end = new Date(endYear, endMonth + 1, 0); // Last day of endMonth
+        const start = new Date(startYear, startMonth, startDay);
+        const end = new Date(endYear, endMonth, endDay);
+
+        if (end.getDate() !== endDay) {
+            end.setDate(0); // Set to last day of the month if endDay is invalid
+        }
 
         return [start, end];
     }
 
     function formatDateForAPI(date) {
-        // Format date as YYYY-MM-DD
-        return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD
+        return date.toISOString().split("T")[0];
     }
 
     function formatDateRangeForDisplay([start, end]) {
-        // Keep display format as DD MMM, YYYY
         return [
             start.toLocaleDateString("en-GB", {
                 day: "2-digit",
@@ -76,11 +117,21 @@ $(document).ready(function () {
         ].join(" - ");
     }
 
-    function createButton(label, className, dateRange, isDefault = false) {
+    function createButton(
+        label,
+        className,
+        dateRange,
+        isDefault = false,
+        isHidden = false
+    ) {
         const div = document.createElement("div");
         div.className = "col-auto";
         div.innerHTML = `<button type="button" class="btn ${className} material-shadow-none btn-sm">${label}</button>`;
         const button = div.querySelector("button");
+
+        if (isHidden) {
+            div.style.display = "none"; // or use: div.classList.add("d-none");
+        }
 
         button.addEventListener("click", () => {
             document
@@ -96,32 +147,46 @@ $(document).ready(function () {
             currentAllowedRange = dateRange.length ? dateRange : null;
 
             if (currentAllowedRange) {
-                const maxEnd = new Date(today);
+                const maxEnd = new Date(today.setHours(23, 59, 59, 999));
                 const rangeEnd =
                     currentAllowedRange[1] > maxEnd
                         ? maxEnd
                         : currentAllowedRange[1];
+
                 datePicker.set("minDate", currentAllowedRange[0]);
-                datePicker.set("maxDate", rangeEnd);
+                datePicker.set("maxDate", maxEnd);
                 datePicker.setDate([currentAllowedRange[0], rangeEnd], true);
 
-                // Pass dates in YYYY-MM-DD format
                 const billDateFrom = formatDateForAPI(currentAllowedRange[0]);
-                const billDateTo = formatDateForAPI(rangeEnd);
+                const adjustedEndDate = new Date(rangeEnd);
+                adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
+                const billDateTo = formatDateForAPI(adjustedEndDate);
+                console.log("From: " + billDateFrom + " To: " + billDateTo);
                 fetchDashboardData(billDateFrom, billDateTo);
             } else {
                 datePicker.set("minDate", null);
-                datePicker.set("maxDate", today);
+                datePicker.set(
+                    "maxDate",
+                    new Date(today.setHours(23, 59, 59, 999))
+                );
                 datePicker.clear();
 
-                // Financial year range for "All" (April 1 to March 31)
-                const fyStart = new Date(currentYear, 3, 1); // April 1
-                const fyEnd = new Date(currentYear + 1, 2, 31); // March 31 next year
+                const fyStart = new Date(currentYear, 3, 1);
+                const fyEnd = new Date(currentYear + 1, 2, 31);
                 const billDateFrom = formatDateForAPI(fyStart);
+                const adjustedFyEnd = new Date(fyEnd);
+                adjustedFyEnd.setDate(adjustedFyEnd.getDate() + 1);
                 const billDateTo = formatDateForAPI(
-                    fyEnd > today ? today : fyEnd
+                    fyEnd > today
+                        ? new Date(today.setHours(23, 59, 59, 999))
+                        : adjustedFyEnd
                 );
                 fetchDashboardData(billDateFrom, billDateTo);
+            }
+
+            const monthDropdown = document.getElementById("month-dropdown");
+            if (monthDropdown) {
+                monthDropdown.style.display = "none";
             }
         });
 
@@ -130,22 +195,125 @@ $(document).ready(function () {
         if (isDefault) button.click();
     }
 
-    // Set financial year range for "All" (April 1 to March 31)
-    const fyStart = new Date(currentYear, 3, 1); // April 1 current year
-    const fyEnd = new Date(currentYear + 1, 2, 31); // March 31 next year
-    createButton("All", "btn-soft-secondary", [fyStart, fyEnd]);
+    // Create Month Dropdown
+    function createMonthToggleWithDropdown() {
+        const div = document.createElement("div");
+        div.className = "col-auto d-flex align-items-center gap-2";
 
-    // Current Month button active by default
-    const firstDay = new Date(currentYear, currentMonth, 1); // First day of current month
-    const lastDay = new Date(currentYear, currentMonth + 1, 0); // Last day of current month
+        div.innerHTML = `
+        <button id="month-toggle-button" type="button" class="btn btn-primary text-white material-shadow-none btn-sm">Month</button>
+        <select id="month-dropdown" class="form-select form-select-sm" style="width: 140px;">
+            ${monthOptions
+                .map(
+                    (month) =>
+                        `<option value="${month.month}" ${
+                            month.month === currentMonth ? "selected" : ""
+                        }>${month.label}</option>`
+                )
+                .join("")}
+        </select>
+    `;
+
+        const button = div.querySelector("#month-toggle-button");
+        const dropdown = div.querySelector("#month-dropdown");
+
+        // Set initial default range on page load based on current month
+        const selectedMonth = parseInt(dropdown.value);
+        const year = selectedMonth >= 3 ? currentYear : currentYear + 1;
+        const startDate = new Date(year, selectedMonth, 1);
+        const endDate = new Date(year, selectedMonth + 1, 0);
+        const maxEnd = new Date(today.setHours(23, 59, 59, 999));
+        const rangeEnd = endDate > maxEnd ? maxEnd : endDate;
+
+        currentAllowedRange = [startDate, rangeEnd];
+        datePicker.set("minDate", startDate);
+        datePicker.set("maxDate", maxEnd);
+        datePicker.setDate([startDate, rangeEnd], true);
+
+        const billDateFrom = formatDateForAPI(startDate);
+        const adjustedEndDate = new Date(rangeEnd);
+        adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
+        const billDateTo = formatDateForAPI(adjustedEndDate);
+        console.log("From: " + billDateFrom + " To: " + billDateTo);
+        fetchDashboardData(billDateFrom, billDateTo);
+
+        button.addEventListener("click", () => {
+            // Remove highlight from all quarter buttons
+            document
+                .querySelectorAll("#quarter-buttons button")
+                .forEach((btn) => {
+                    btn.classList.remove("btn-primary", "text-white");
+                    btn.classList.add("btn-soft-secondary");
+                });
+
+            // Highlight Month button
+            button.classList.remove("btn-soft-secondary");
+            button.classList.add("btn-primary", "text-white");
+
+            // Show dropdown
+            // Show dropdown
+            dropdown.style.display = "block";
+
+            // Also load data for selected month
+            const selectedMonth = parseInt(dropdown.value);
+            const year = selectedMonth >= 3 ? currentYear : currentYear + 1;
+            const startDate = new Date(year, selectedMonth, 1);
+            const endDate = new Date(year, selectedMonth + 1, 0);
+            const maxEnd = new Date(today.setHours(23, 59, 59, 999));
+            const rangeEnd = endDate > maxEnd ? maxEnd : endDate;
+
+            currentAllowedRange = [startDate, rangeEnd];
+            datePicker.set("minDate", startDate);
+            datePicker.set("maxDate", maxEnd);
+            datePicker.setDate([startDate, rangeEnd], true);
+
+            const billDateFrom = formatDateForAPI(startDate);
+            const adjustedEndDate = new Date(rangeEnd);
+            adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
+            const billDateTo = formatDateForAPI(adjustedEndDate);
+            console.log("From: " + billDateFrom + " To: " + billDateTo);
+            fetchDashboardData(billDateFrom, billDateTo);
+        });
+
+        dropdown.addEventListener("change", (e) => {
+            const selectedMonth = parseInt(e.target.value);
+            const year = selectedMonth >= 3 ? currentYear : currentYear + 1;
+            const startDate = new Date(year, selectedMonth, 1);
+            const endDate = new Date(year, selectedMonth + 1, 0);
+            const maxEnd = new Date(today.setHours(23, 59, 59, 999));
+            const rangeEnd = endDate > maxEnd ? maxEnd : endDate;
+
+            currentAllowedRange = [startDate, rangeEnd];
+            datePicker.set("minDate", startDate);
+            datePicker.set("maxDate", maxEnd);
+            datePicker.setDate([startDate, rangeEnd], true);
+
+            const billDateFrom = formatDateForAPI(startDate);
+            const adjustedEndDate = new Date(rangeEnd);
+            adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
+            const billDateTo = formatDateForAPI(adjustedEndDate);
+            console.log("From: " + billDateFrom + " To: " + billDateTo);
+            fetchDashboardData(billDateFrom, billDateTo);
+        });
+
+        container.insertBefore(div, datePickerDiv);
+    }
+
+    // Create buttons
+    const fyStart = new Date(currentYear, 3, 1);
+    const fyEnd = new Date(currentYear + 1, 2, 31);
+    createButton("FY Year", "btn-soft-secondary", [fyStart, fyEnd]);
+
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
     createButton(
         "Current Month",
         "btn-soft-secondary",
         [firstDay, lastDay],
+        true,
         true
     );
 
-    // Calculate current quarter index based on Indian financial year
     let currentQuarterIndex = -1;
     financialQuarters.forEach((q, index) => {
         if (q.startMonth <= q.endMonth) {
@@ -159,19 +327,42 @@ $(document).ready(function () {
         }
     });
 
-    // Add current and past quarters
     financialQuarters.forEach((q, index) => {
+        const year = q.startMonth > q.endMonth ? currentYear - 1 : currentYear;
+        const range = getDateRange(
+            q.startMonth,
+            q.startDay,
+            q.endMonth,
+            q.endDay,
+            year
+        );
+        const adjustedRange = [
+            range[0],
+            range[1] > today
+                ? new Date(today.setHours(23, 59, 59, 999))
+                : range[1],
+        ];
+
         if (index <= currentQuarterIndex) {
-            const range = getDateRange(q.startMonth, q.endMonth, currentYear);
-            const adjustedRange = [
-                range[0],
-                range[1] > today ? today : range[1],
-            ];
             createButton(q.label, "btn-soft-secondary", adjustedRange);
         }
     });
 
-    // Function to format numbers in Indian format
+    const monthDropdown = document.getElementById("month-dropdown");
+    if (monthDropdown) {
+        monthDropdown.style.display = "none";
+
+        const monthToggle = document.getElementById("month-toggle-button");
+        if (monthToggle) {
+            monthToggle.classList.add("btn-soft-secondary");
+            monthToggle.classList.remove("btn-primary", "text-white");
+        }
+    }
+
+    // Add Month Dropdown
+
+    createMonthToggleWithDropdown();
+
     function formatNumber(value) {
         const numValue = Number(value || 0);
         return numValue === 0
@@ -181,7 +372,6 @@ $(document).ready(function () {
               });
     }
 
-    // Function to get chart colors
     function getChartColorsArray(e) {
         if ($("#" + e).length) {
             var theme =
@@ -209,8 +399,6 @@ $(document).ready(function () {
             return ["#5156be", "#ffbf53", "#2ab57d", "#fd625e"];
         }
     }
-
-    // Function to fetch and update dashboard data
     function fetchDashboardData(billDateFrom, billDateTo) {
         $.ajax({
             url: "home-data",
@@ -249,7 +437,6 @@ $(document).ready(function () {
                         "%"
                 );
 
-                // Populate cards
                 const defaultCardData = {
                     "Total Expense": 0,
                     Deactivate: 0,
@@ -352,7 +539,6 @@ $(document).ready(function () {
                         .join("")
                 );
 
-                // Populate modal table
                 const $modalTableBody = $("#modal-table-body");
                 const $modalTableFooter = $("#modal-table-footer");
                 $modalTableBody.html(
@@ -410,7 +596,6 @@ $(document).ready(function () {
                     </tr>
                 `);
 
-                // Populate department table
                 const $departmentTableBody = $("#department-table-body");
                 const $departmentTableFooter = $("#department-table-footer");
 
@@ -419,25 +604,27 @@ $(document).ready(function () {
                         departmentTotals
                             .map(
                                 (dept) => `
-                            <tr>
-                                <td style="text-align:left">${
-                                    dept.department_name
-                                } (${dept.department_code})</td>
-                                <td>${formatNumber(
-                                    dept["TotalFinancedTAmt_Y" + yearId]
-                                )}</td>
-                                <td>${formatNumber(
-                                    dept["TotalFinancedTAmt_Y" + previousYearId]
-                                )}</td>
-                                <td>${
-                                    dept.VariationPercentage !== null
-                                        ? formatNumber(
-                                              dept.VariationPercentage
-                                          ) + "%"
-                                        : "-"
-                                }</td>
-                            </tr>
-                        `
+                <tr${
+                    dept.department_name === null
+                        ? ' style="background-color: #f8d7da;text-transform: capitalize;"'
+                        : ""
+                }>
+                    <td style="text-align:left">${
+                        dept.department_name || "Unknown"
+                    } (${dept.department_code})</td>
+                     <td>${formatNumber(
+                         dept["TotalFinancedTAmt_Y" + previousYearId]
+                     )}</td>
+                    <td>${formatNumber(
+                        dept["TotalFinancedTAmt_Y" + yearId]
+                    )}</td>
+                    <td>${
+                        dept.VariationPercentage !== null
+                            ? formatNumber(dept.VariationPercentage) + "%"
+                            : "-"
+                    }</td>
+                </tr>
+            `
                             )
                             .join("")
                     );
@@ -467,8 +654,8 @@ $(document).ready(function () {
                     $departmentTableFooter.html(`
                         <tr>
                             <td style="text-align:left"><strong>Total</strong></td>
-                            <td><strong>${formatNumber(totalY7)}</strong></td>
                             <td><strong>${formatNumber(totalY6)}</strong></td>
+                            <td><strong>${formatNumber(totalY7)}</strong></td>
                             <td><strong>${
                                 variation !== "-"
                                     ? formatNumber(variation) + "%"
@@ -484,7 +671,6 @@ $(document).ready(function () {
                     `);
                 }
 
-                // Populate claim type table
                 const $claimTypeTableBody = $("#claim-type-table-body");
                 const $claimTypeTableFooter = $("#claim-type-table-footer");
 
@@ -541,7 +727,6 @@ $(document).ready(function () {
                 `);
                 }
 
-                // Destroy existing charts before rendering new ones
                 if (
                     expenseMonthlyChart &&
                     typeof expenseMonthlyChart.destroy === "function"
@@ -561,7 +746,6 @@ $(document).ready(function () {
                     claimTypeChart.destroy();
                 }
 
-                // Expense Monthly Chart
                 var expenseChartColors = getChartColorsArray(
                     "expense-monthly-chart"
                 );
@@ -710,7 +894,6 @@ $(document).ready(function () {
                 );
                 expenseMonthlyChart.render();
 
-                // Department-wise Comparison Chart
                 var chartMultiColors = getChartColorsArray("multi_chart");
                 var multiOptions = {
                     series: [
@@ -906,7 +1089,6 @@ $(document).ready(function () {
                 );
                 departmentChart.render();
 
-                // Claim Type Chart
                 var claimTypeColors = getChartColorsArray("claim-type-chart");
                 var claimTypeOptions = {
                     series: [

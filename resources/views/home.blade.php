@@ -5,15 +5,16 @@
                 <div class="col-12">
                     <div class="d-flex align-items-lg-center flex-lg-row flex-column">
                         <div class="flex-grow-1">
-                            <h4 class="fs-16 mb-1">Yearly Expense Comparison</h4>
-                            <p class="text-muted mb-0"><strong>CY Expense:</strong> <span id="cyExpense"
-                                    class="text-primary">0</span> <strong>PY Expense:</strong> <span id="pyExpense"
-                                    class="text-warning">0</span> <strong>Variation :</strong> <span id="variancePercent"
-                                    class="text-success">0%</span></p>
+                            <h4 class="fs-16 mb-1">Expense Comparison</h4>
+                            <p class="text-muted mb-0">
+                                <strong>PY Expense:</strong> <span id="pyExpense" class="text-primary">0</span>
+                                <strong>CY Expense:</strong> <span id="cyExpense" class="text-primary">0</span>
+                                <strong>Variation :</strong> <span id="variancePercent" class="text-success">0%</span>
+                            </p>
                         </div>
                         <div class="mt-3 mt-lg-0">
                             <div class="row g-1 mb-0 align-items-center" id="quarter-buttons">
-                                <div class="col-sm-auto" id="date-picker-wrapper">
+                                <div class="col-sm-auto" id="date-picker-wrapper" style="display:none">
                                     <div class="input-group">
                                         <input type="text" id="dateRange"
                                             class="form-control border-0 minimal-border dash-filter-picker shadow"
@@ -34,7 +35,7 @@
                 <div class="col-xl-6">
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Expense Overview Month Wise</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">Month Wise Expense Overview</h4>
                             <div class="flex-shrink-0">
                                 <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#expenseModal"
                                     class="link-primary">Source Data<i class="ri-arrow-right-line"></i></a>
@@ -135,8 +136,8 @@
                         <thead class="table-light">
                             <tr>
                                 <th style="text-align: left;">Department</th>
-                                <th>Current Year Total (₹)</th>
                                 <th>Previous Year Total (₹)</th>
+                                <th>Current Year Total (₹)</th>
                                 <th>Variation (%)</th>
                             </tr>
                         </thead>
