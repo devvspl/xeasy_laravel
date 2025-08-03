@@ -6,7 +6,7 @@
                 <div class="col-xl-12">
                     <div class="card card-height-100">
                         <div class="card-header align-items-center d-flex gap-2">
-                            <h4 class="card-title mb-0 flex-grow-1"><i class="ri-list-unordered"></i> Activity Tracking
+                            <h4 class="card-title mb-0 flex-grow-1">Activity Tracking
                                 Report</h4>
                             <input type="text" class="form-control" data-provider="flatpickr" data-date-format="Y-m-d"
                                 data-range-date="true" id="dateRange" style="width: 200px;" placeholder="Select date range">

@@ -41,6 +41,7 @@ class HomeController extends Controller
                             "TotalFinancedTAmt_Y" . ($yearId - 1) => 0
                         ]
                     ]),
+                    'top10TravelersSplitByWType' => [],
                     'yearlyComparison' => null,
                     'totalAllMonths' => ['filled' => 0, 'verified' => 0, 'approved' => 0, 'financed' => 0]
                 ], 400);
@@ -64,6 +65,7 @@ class HomeController extends Controller
             $claimTypeTotals = getClaimTypeTotals($tableName, $startDate, $endDate);
             $monthlyStatusTotals = getMonthlyStatusTotals($tableName, $startDate, $endDate);
             $monthlyTotals = getRawMonthlyTotals($tableName, $startDate, $endDate);
+            $top10TravelersSplitByWType = getTop10TravelersSplitByWType($tableName, $startDate, $endDate);
             $departmentTotals = getDepartmentTotals($tableName, $previousYearTable, $yearId, $previousYearId, $startDate, $endDate, $previousYearStartDate, $previousYearEndDate);
             $yearlyComparison = getYearlyComparison($tableName, $previousYearTable, $yearId, $previousYearId, $startDate, $endDate, $previousYearStartDate, $previousYearEndDate);
 
@@ -123,6 +125,7 @@ class HomeController extends Controller
                 'monthlyTotals' => $monthlyStatusTotals,
                 'totalAllMonths' => $totalAllMonths,
                 'departmentTotals' => $departmentTotals,
+                'top10TravelersSplitByWType' => $top10TravelersSplitByWType,
                 'yearlyComparison' => $yearlyComparison,
                 'yearId' => $yearId
             ]);
@@ -211,7 +214,7 @@ function getRawMonthlyTotals($tableName, $startDate, $endDate)
         ->get();
 }
 
-function getRawTotals(string $tableName, string $startDate, string $endDate)
+function getRawTotals(string $tableName, $startDate, $endDate)
 {
     return DB::table($tableName)
         ->selectRaw('
@@ -306,4 +309,25 @@ function getYearlyComparison($tableName, $previousYearTable, $yearId, $previousY
         ->where('FinancedBy', '!=', '0')
         ->first();
 }
+
+function getTop10TravelersSplitByWType($table, $startDate, $endDate)
+{
+    // return DB::table("$table as e")
+    //     ->selectRaw("
+    //         CONCAT(emp.EmpCode, ' - ', emp.Fname, ' ', COALESCE(emp.Sname, ''), ' ', emp.Lname) AS employee_name,
+    //         e.WType,
+    //         SUM(e.TotKm) AS TotalKm
+    //     ")
+    //     ->leftJoin('hrims.hrm_employee as emp', 'e.CrBy', '=', 'emp.EmployeeID')
+    //     ->where('e.ClaimId', 7)
+    //     ->whereBetween('e.BillDate', [$startDate, $endDate])
+    //     ->whereNotIn('e.ClaimStatus', ['Draft', 'Submitted', 'Deactivate'])
+    //     ->where('e.BillDate', '!=', '0000-00-00')
+    //     ->whereNotNull('e.BillDate')
+    //     ->groupBy('e.CrBy', 'e.WType')
+    //     ->orderByDesc('TotalKm')
+    //     ->get();
+    return [];
+}
+
 ?>

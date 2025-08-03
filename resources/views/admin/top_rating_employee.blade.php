@@ -17,7 +17,7 @@
                                 value="{{ old('fromDate', $fromDate ?? date('Y-m-d')) }} to {{ old('toDate', $toDate ?? date('Y-m-d')) }}">
                         </div>
                         <div class="card-body pb-3 pt-0">
-                            <form method="GET" class="row g-3 mb-3 mt-2" action="{{ url()->current() }}">
+                            <form method="GET" class="row g-1 mb-1 mt-1" action="{{ url()->current() }}">
                             </form>
 
                             <table id="claimReportTable"

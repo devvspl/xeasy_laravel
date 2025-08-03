@@ -466,7 +466,7 @@ $(document).ready(function () {
     });
     function selectRoleList(fieldId, ids = []) {
         $.ajax({
-            url: "get-roles",
+            url: "get-roles-list",
             type: "GET",
             dataType: "json",
             headers: {

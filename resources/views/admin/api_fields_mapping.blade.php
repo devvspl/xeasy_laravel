@@ -6,7 +6,7 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1"><i class="ri-list-unordered"></i> Field Mapping
+                            <h4 class="card-title mb-0 flex-grow-1">Field Mapping
                                 {{ $claim_id }}
                             </h4>
                             <div class="flex-shrink-0">

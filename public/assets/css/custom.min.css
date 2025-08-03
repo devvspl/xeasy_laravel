@@ -301,6 +301,6 @@ table.table-bordered.dataTable td {
     padding: 5px 10px !important;
 }
 
-.btn:hover {
+#quarter-buttons .btn:hover {
     background-color: var(--vz-primary) !important;
 }

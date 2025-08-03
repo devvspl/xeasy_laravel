@@ -48,7 +48,7 @@
                 </div>
                 <button type="button"
                     class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger material-shadow-none"
-                    id="topnav-hamburger-icon">
+                    id="topnav-hamburger-icon" style="margin-top: 12px">
                     <span class="hamburger-icon">
                         <span></span>
                         <span></span>

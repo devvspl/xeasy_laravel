@@ -6,7 +6,7 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header align-items-center d-flex gap-2">
-                            <h4 class="card-title mb-0 flex-grow-1"><i class="ri-list-unordered"></i> Permissions List</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">Permissions List</h4>
                             <div class="dropdown card-header-dropdown">
                                 <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">

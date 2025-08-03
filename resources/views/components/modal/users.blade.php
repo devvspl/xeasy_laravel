@@ -31,12 +31,12 @@
                                     autocomplete="current-password">
                                 <button type="button"
                                     class="btn btn-link position-absolute top-0 end-0 me-4 text-decoration-none text-muted material-shadow-none"
-                                    id="generatePassword" style="z-index: 2;">
+                                    id="generatePassword" style="z-index: 2;margin-top:-4px">
                                     <i class="ri-refresh-line align-middle"></i>
                                 </button>
                                 <button type="button"
                                     class="btn btn-link position-absolute top-0 end-0 text-decoration-none text-muted password-addon material-shadow-none"
-                                    id="passwordAddon" style="z-index: 2;">
+                                    id="passwordAddon" style="z-index: 2;margin-top:-4px">
                                     <i class="ri-eye-fill align-middle"></i>
                                 </button>
                             </div>

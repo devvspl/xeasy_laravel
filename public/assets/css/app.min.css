@@ -2729,7 +2729,7 @@
     -ms-flex-align: center;
     align-items: center;
     margin: 0 auto;
-    height: 70px;
+    height: 45px;
     padding: 0 var(--vz-grid-gutter-width) 0
         calc(var(--vz-grid-gutter-width) * 0.5);
 }
@@ -2782,13 +2782,14 @@
 }
 .app-search .form-control {
     border: none;
-    height: 38px;
+    height: 30px;
     padding-left: 40px;
     padding-right: 30px;
     background-color: var(--vz-topbar-search-bg);
     color: var(--vz-topbar-search-color);
     -webkit-box-shadow: none;
     box-shadow: none;
+    margin-top: 4px;
 }
 .app-search span.search-widget-icon {
     position: absolute;
@@ -2796,7 +2797,7 @@
     font-size: 18px;
     line-height: 38px;
     left: 13px;
-    top: 0;
+    top: -4px;
     color: var(--vz-header-item-sub-color);
 }
 .app-search .search-widget-icon-close {
@@ -2839,7 +2840,7 @@
     }
 }
 .header-item {
-    height: 70px;
+    height: 45px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -2857,7 +2858,7 @@
 }
 .topbar-badge {
     right: -9px;
-    top: 4px !important;
+    top: 7px !important;
 }
 @media (min-width: 768px) {
     .topbar-user {
@@ -2999,7 +3000,7 @@
 }
 @media (min-width: 1024.1px) {
     [data-layout="horizontal"] .page-content {
-        margin-top: 55px;
+        margin-top: 25px;
     }
 }
 @media (max-width: 1024.1px) {
@@ -3153,7 +3154,7 @@
     }
 }
 .page-content {
-    padding: calc(70px + var(--vz-grid-gutter-width))
+    padding: calc(30px + var(--vz-grid-gutter-width))
         calc(var(--vz-grid-gutter-width) * 0.5) 60px
         calc(var(--vz-grid-gutter-width) * 0.5);
 }
@@ -4617,7 +4618,7 @@
     padding: 0 calc(var(--vz-grid-gutter-width) * 0.5);
     -webkit-box-shadow: 0 2px 4px rgba(15, 34, 58, 0.12);
     box-shadow: 0 2px 4px rgba(15, 34, 58, 0.12);
-    margin-top: 70px;
+    margin-top: 45px;
     position: fixed;
     left: 0;
     right: 0;
@@ -6189,7 +6190,7 @@ code {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--vz-secondary-bg);
+    background-color: var(--vz-tertiary-color);
     z-index: 9999;
 }
 [data-preloader="disable"] #preloader {
@@ -8786,10 +8787,10 @@ button {
     transform: scale(1);
 }
 .nav-tabs-custom.card-header-tabs {
-    margin-top: -1rem;
+    /* margin-top: -1rem; */
 }
 .nav-tabs-custom.card-header-tabs .nav-link {
-    padding: 1rem 1rem;
+    /* padding: 1rem 1rem; */
 }
 .vertical-nav .nav .nav-link {
     padding: 24px 16px;

@@ -190,6 +190,14 @@ function endSimpleLoader(event) {
     if (loader) loader.style.display = "none";
 }
 
+function startPageLoader() {
+    $("#preloader").attr("style", "");
+}
+
+function endPageLoader() {
+    $("#preloader").attr("style", "opacity: 0; visibility: hidden;");
+}
+
 $(document).ready(function () {
     $("#company").select2({
         placeholder: "-- Select Company --",
@@ -201,7 +209,7 @@ $(document).ready(function () {
     });
     $("#clearCacheBtn").on("click", function () {
         $.ajax({
-            url: "clear-all-cache",
+            url: "clear-caches",
             type: "GET",
             success: function (response) {
                 showAlert(
@@ -223,7 +231,6 @@ $(document).ready(function () {
 });
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("empSearchOptions");
-    console.log(searchInput);
     const searchDropdown = document.getElementById("search-dropdown");
     const notificationList = document.querySelector(".notification-list");
     const statusFilter = document.getElementById("statusFilter");
@@ -234,13 +241,24 @@ document.addEventListener("DOMContentLoaded", function () {
     let statusFilterValue = "A";
     let loading = false;
     let hasMore = true;
+    let activeItemIndex = -1;
 
-    const simpleBarInstance = simpleBar
-        ? SimpleBar.instances.get(simpleBar)
-        : null;
+    // Validate required DOM elements
+    if (!searchInput || !searchDropdown || !notificationList) {
+        console.error("Required DOM elements are missing.");
+        return;
+    }
+
+    const simpleBarInstance =
+        (simpleBar && SimpleBar?.instances?.get(simpleBar)) || null;
     const scrollElement = simpleBarInstance
         ? simpleBarInstance.getScrollElement()
         : notificationList;
+
+    if (!scrollElement) {
+        console.error("Scroll element could not be determined.");
+        return;
+    }
 
     document.addEventListener("keydown", function (event) {
         if (event.ctrlKey && event.key === "e") {
@@ -250,9 +268,38 @@ document.addEventListener("DOMContentLoaded", function () {
             searchDropdown.classList.add("show");
         }
     });
+
+    searchInput.addEventListener("keydown", function (event) {
+        const items = notificationList.querySelectorAll(".dropdown-item");
+        if (items.length === 0) return;
+
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            if (activeItemIndex < items.length - 1) {
+                activeItemIndex++;
+                updateActiveItem(items);
+                scrollToActiveItem(items[activeItemIndex]);
+            }
+        } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            if (activeItemIndex > 0) {
+                activeItemIndex--;
+                updateActiveItem(items);
+                scrollToActiveItem(items[activeItemIndex]);
+            }
+        } else if (event.key === "Enter" && activeItemIndex >= 0) {
+            event.preventDefault();
+            const selectedItem = items[activeItemIndex];
+            if (selectedItem) {
+                window.location.href = selectedItem.href;
+            }
+        }
+    });
+
     searchInput.addEventListener("focus", function () {
         resetAndFetch("");
         searchDropdown.classList.add("show");
+        activeItemIndex = -1;
     });
 
     searchInput.addEventListener("input", function () {
@@ -260,23 +307,28 @@ document.addEventListener("DOMContentLoaded", function () {
         debounceTimer = setTimeout(() => {
             resetAndFetch(this.value.trim());
             searchDropdown.classList.add("show");
+            activeItemIndex = -1;
         }, 300);
     });
 
-    statusFilter.addEventListener("change", function () {
+    statusFilter?.addEventListener("change", function () {
         statusFilterValue = this.checked ? "A" : "";
         resetAndFetch(searchInput.value.trim());
         searchDropdown.classList.add("show");
+        activeItemIndex = -1;
     });
 
     document
         .getElementById("search-close-options")
-        .addEventListener("click", function () {
+        ?.addEventListener("click", function () {
             searchInput.value = "";
-            statusFilter.checked = true;
-            statusFilterValue = "A";
+            if (statusFilter) {
+                statusFilter.checked = true;
+                statusFilterValue = "A";
+            }
             searchDropdown.classList.remove("show");
             notificationList.innerHTML = "";
+            activeItemIndex = -1;
         });
 
     function resetAndFetch(term) {
@@ -284,6 +336,7 @@ document.addEventListener("DOMContentLoaded", function () {
         currentPage = 1;
         hasMore = true;
         notificationList.innerHTML = "";
+        activeItemIndex = -1;
         fetchEmployees();
     }
 
@@ -295,9 +348,9 @@ document.addEventListener("DOMContentLoaded", function () {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content,
+                "X-CSRF-TOKEN":
+                    document.querySelector('meta[name="csrf-token"]')
+                        ?.content || "",
             },
             body: JSON.stringify({
                 search: searchTerm,
@@ -372,6 +425,28 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function updateActiveItem(items) {
+        items.forEach((item, index) => {
+            item.classList.toggle("active", index === activeItemIndex);
+        });
+    }
+
+    function scrollToActiveItem(activeItem) {
+        if (!activeItem || !simpleBarInstance) return; // Guard against undefined activeItem
+        const scrollContainer = scrollElement;
+        const itemTop = activeItem.offsetTop;
+        const itemBottom = itemTop + activeItem.offsetHeight;
+        const containerTop = scrollContainer.scrollTop;
+        const containerBottom = containerTop + scrollContainer.clientHeight;
+
+        if (itemTop < containerTop) {
+            scrollContainer.scrollTop = itemTop;
+        } else if (itemBottom > containerBottom) {
+            scrollContainer.scrollTop =
+                itemBottom - scrollContainer.clientHeight;
+        }
+    }
+
     let scrollTimeout;
     scrollElement.addEventListener("scroll", function () {
         clearTimeout(scrollTimeout);
@@ -386,12 +461,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.addEventListener("click", function (event) {
         const appSearch = document.querySelector(".app-search");
-        const searchInput = document.querySelector("#empSearchOptions");
-        $("#empSearchOptions").val();
         if (appSearch && !appSearch.contains(event.target)) {
             searchDropdown.classList.remove("show");
             notificationList.innerHTML = "";
-            if (searchInput) searchInput.value = "";
+            searchInput.value = "";
+            activeItemIndex = -1;
         }
     });
 });

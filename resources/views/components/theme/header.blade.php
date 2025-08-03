@@ -5,7 +5,7 @@
     'data-sidebar' => 'light',
     'data-sidebar-size' => 'lg',
     'data-sidebar-image' => 'none',
-    'data-preloader' => 'disable',
+    'data-preloader' => 'enable',
     'data-theme' => 'default',
     'data-theme-colors' => 'default',
     'data-bs-theme' => 'light',

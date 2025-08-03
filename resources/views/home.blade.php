@@ -30,7 +30,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-1 pb-1">
                 <div class="col-xl-6">
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
@@ -81,7 +81,9 @@
                             </div>
                         </div>
                         <div class="card-body p-0 pb-2">
-                            <div id="claim-type-chart" data-colors='["--vz-success", "--vz-danger"]'
+                            <div id="claim-type-chart" 
+                                style="height: 380px;" 
+                                data-colors='["--vz-success", "--vz-danger"]'
                                 data-colors-minimal='["--vz-primary", "--vz-info"]'
                                 data-colors-interactive='["--vz-info", "--vz-primary"]'
                                 data-colors-galaxy='["--vz-primary", "--vz-secondary"]'
@@ -119,6 +121,17 @@
                         <tbody id="modal-table-body"></tbody>
                         <tfoot class="table-light" id="modal-table-footer"></tfoot>
                     </table>
+                </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
+                            id="exportExpenseMonthExcelBtn">
+                            <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 me-2">
+                                <span class="loader" style="display: none;"></span>
+                            </i>
+                            Export to Excel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

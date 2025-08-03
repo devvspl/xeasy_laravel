@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::post('permissions/assign', [PermissionController::class, 'assignPermissions'])->name('permissions.assign');
     Route::get('permissions-list', [PermissionController::class, 'getAllPermissions'])->name('permissions.list');
     Route::resource('roles', RolesController::class)->names('roles');
-    Route::get('roles/list', [RolesController::class, 'getRoles'])->name('roles.list');
+    Route::get('get-roles-list', [RolesController::class, 'getRoles']);
     Route::resource('users', UsersController::class)->names('users');
     Route::get('users/{id}/permissions', [PermissionController::class, 'getPermissions'])->name('users.permissions');
     Route::post('users/{id}/permissions/assign', [PermissionController::class, 'assignPermission'])->name('users.permissions.assign');
@@ -46,7 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('company', [SettingController::class, 'company'])->name('company');
     Route::get('company-config/{id}', [SettingController::class, 'getCompanyConfig'])->name('company_config.get');
     Route::post('save-config', [SettingController::class, 'saveCompanyConfig'])->name('company_config.save');
-    Route::post('theme', [SettingController::class, 'saveThemeSettings'])->name('theme.save');
+    Route::post('settings/theme', [SettingController::class, 'saveThemeSettings'])->name('theme.save');
     Route::get('general', [SettingController::class, 'getGeneralSettings'])->name('general.get');
     Route::post('general', [SettingController::class, 'saveGeneralSettings'])->name('general.save');
     Route::get('claim-report', [ReportController::class, 'claimReport'])->name('claim-report');
