@@ -341,6 +341,9 @@ table.table-bordered.dataTable td {
     background-color: #dee2e6;
     color: #495057;
 }
+#dataPunchSection .status-btn.hold.active {
+    font-weight: bold;
+}
 
 /* DRAFT */
 #dataPunchSection .status-btn.draft {
@@ -353,6 +356,9 @@ table.table-bordered.dataTable td {
 #dataPunchSection .status-btn.draft.active {
     background-color: #d6d8db;
     color: #343a40;
+}
+#dataPunchSection .status-btn.draft.active {
+    font-weight: bold;
 }
 
 /* FILLED */
@@ -367,6 +373,9 @@ table.table-bordered.dataTable td {
     background-color: #badbcc;
     color: #0c4128;
 }
+#dataPunchSection .status-btn.filled.active {
+    font-weight: bold;
+}
 
 /* UPLOADED */
 #dataPunchSection .status-btn.uploaded {
@@ -380,6 +389,9 @@ table.table-bordered.dataTable td {
     background-color: #d6ccf0;
     color: #4a278c;
 }
+#dataPunchSection .status-btn.uploaded.active {
+    font-weight: bold;
+}
 
 /* DENIED */
 #dataPunchSection .status-btn.denied {
@@ -392,6 +404,9 @@ table.table-bordered.dataTable td {
 #dataPunchSection .status-btn.denied.active {
     background-color: #f1b0b7;
     color: #6c1a23;
+}
+#dataPunchSection .status-btn.denied.active {
+    font-weight: bold;
 }
 
 #dataPunchSection .dropdowns {
