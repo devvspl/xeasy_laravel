@@ -469,3 +469,59 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+// Static data for companies and financial years
+const companyData = {
+    companyA: ["2023-24", "2024-25"],
+    companyB: ["2022-23", "2023-24", "2024-25"],
+    companyC: ["2021-22", "2022-23"],
+};
+
+// Initialize Bootstrap tooltips
+const tooltipTriggerList = document.querySelectorAll(
+    '[data-bs-toggle="tooltip"]'
+);
+const tooltipList = [...tooltipTriggerList].map(
+    (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+);
+
+// Get DOM elements
+const companySelect = document.getElementById("companySelect");
+const fySelect = document.getElementById("fySelect");
+const submitButton = document.getElementById("submitSelection");
+
+// Populate financial year dropdown based on company selection
+companySelect.addEventListener("change", function () {
+    const selectedCompany = this.value;
+    fySelect.innerHTML =
+        '<option value="" disabled selected>Select a financial year</option>';
+    fySelect.disabled = true;
+
+    if (selectedCompany && companyData[selectedCompany]) {
+        companyData[selectedCompany].forEach((fy) => {
+            const option = document.createElement("option");
+            option.value = fy;
+            option.textContent = fy;
+            fySelect.appendChild(option);
+        });
+        fySelect.disabled = false;
+    }
+});
+
+// Handle form submission
+submitButton.addEventListener("click", function () {
+    const selectedCompany = companySelect.value;
+    const selectedFY = fySelect.value;
+
+    if (selectedCompany && selectedFY) {
+        console.log(
+            `Selected Company: ${selectedCompany}, Financial Year: ${selectedFY}`
+        );
+        // Add your logic here, e.g., redirect or update the page
+        // Example: window.location.href = `/route?company=${selectedCompany}&fy=${selectedFY}`;
+        bootstrap.Modal.getInstance(
+            document.getElementById("companyModal")
+        ).hide();
+    } else {
+        alert("Please select both a company and a financial year.");
+    }
+});

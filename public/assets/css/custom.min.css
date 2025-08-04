@@ -304,3 +304,106 @@ table.table-bordered.dataTable td {
 #quarter-buttons .btn:hover {
     background-color: var(--vz-primary) !important;
 }
+
+#dataPunchSection .status-buttons {
+    display: flex;
+    gap: 5px;
+    margin-left: 15px;
+}
+
+#dataPunchSection .status-btn {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+#dataPunchSection .status-btn span {
+    margin-left: 5px;
+}
+
+#dataPunchSection .status-btn {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* HOLD */
+#dataPunchSection .status-btn.hold {
+    font-size: 12px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+#dataPunchSection .status-btn.hold:hover,
+#dataPunchSection .status-btn.hold.active {
+    background-color: #dee2e6;
+    color: #495057;
+}
+
+/* DRAFT */
+#dataPunchSection .status-btn.draft {
+    font-size: 12px;
+    background-color: #e2e3e5;
+    color: #495057;
+}
+
+#dataPunchSection .status-btn.draft:hover,
+#dataPunchSection .status-btn.draft.active {
+    background-color: #d6d8db;
+    color: #343a40;
+}
+
+/* FILLED */
+#dataPunchSection .status-btn.filled {
+    font-size: 12px;
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+#dataPunchSection .status-btn.filled:hover,
+#dataPunchSection .status-btn.filled.active {
+    background-color: #badbcc;
+    color: #0c4128;
+}
+
+/* UPLOADED */
+#dataPunchSection .status-btn.uploaded {
+    font-size: 12px;
+    background-color: #e7e3f4;
+    color: #5a32a3;
+}
+
+#dataPunchSection .status-btn.uploaded:hover,
+#dataPunchSection .status-btn.uploaded.active {
+    background-color: #d6ccf0;
+    color: #4a278c;
+}
+
+/* DENIED */
+#dataPunchSection .status-btn.denied {
+    font-size: 12px;
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+#dataPunchSection .status-btn.denied:hover,
+#dataPunchSection .status-btn.denied.active {
+    background-color: #f1b0b7;
+    color: #6c1a23;
+}
+
+#dataPunchSection .dropdowns {
+    display: flex;
+    gap: 5px;
+    margin-left: 15px;
+}
+
+#dataPunchSection .dropdowns select {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background-color: #fff;
+}

@@ -19,7 +19,8 @@ use App\Http\Controllers\admin\{
     ClaimViewController,
     APIManagerController,
     EmployeeController,
-    ExpenseDetailsController
+    ExpenseDetailsController,
+    MediatorController
 };
 Route::get('/', fn() => redirect()->route('login'));
 Auth::routes();
@@ -74,4 +75,7 @@ Route::middleware('auth')->group(function () {
     Route::get('api/columns/{table}', [APIManagerController::class, 'getColumns'])->name('api.columns');
     Route::post('api/map-fields', [APIManagerController::class, 'mapFields'])->name('api.map_fields');
     Route::get('/generate-expense-pdf', [ExpenseDetailsController::class, 'generatePdf'])->name('generate.expense.pdf');
+    Route::get('data-punch', [MediatorController::class, 'dataPunch']);
+    Route::get('data-punch', [MediatorController::class, 'dataPunch'])->name('data-punch');
+
 });

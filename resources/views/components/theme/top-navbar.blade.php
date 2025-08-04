@@ -101,7 +101,8 @@
                         <i class='bx bx-revision fs-22'></i>
                     </button>
                 </div>
-                <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
+                <div class="dropdown topbar-head-dropdown ms-1 header-item" style="display: none"
+                    id="notificationDropdown">
                     <button type="button"
                         class="btn btn-icon btn-topbar material-shadow-none btn-ghost-secondary rounded-circle"
                         id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside"
@@ -395,6 +396,12 @@
                         </div>
                     </div>
                 </div>
+                <button type="button"
+                    class="btn btn-icon btn-topbar material-shadow-none btn-ghost-secondary rounded-circle"
+                    data-bs-toggle="modal" data-bs-target="#companyModal">
+                    <i class='ri-community-line fs-22'></i>
+                </button>
+                
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     <button type="button" class="btn material-shadow-none" style="padding: 0 5px"
                         id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"

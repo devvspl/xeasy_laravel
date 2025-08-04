@@ -38,6 +38,38 @@
       <span class="text-white mt-2">Loading...</span>
    </div>
 </div>
+<div class="modal fade" id="companyModal" tabindex="-1" aria-labelledby="companyModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="companyModalLabel">Select Company and Financial Year</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body">
+            <form id="companyForm">
+               <div class="mb-3">
+                  <label for="companySelect" class="form-label">Company</label>
+                  <select class="form-select" id="companySelect" required>
+                     <option value="" disabled selected>Select a company</option>
+                     <option value="companyA">Company A</option>
+                     <option value="companyB">Company B</option>
+                     <option value="companyC">Company C</option>
+                  </select>
+               </div>
+               <div class="mb-3">
+                  <label for="fySelect" class="form-label">Financial Year</label>
+                  <select class="form-select" id="fySelect" disabled required>
+                     <option value="" disabled selected>Select a financial year</option>
+                  </select>
+               </div>
+            </form>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="submitSelection">Swatch</button>
+         </div>
+      </div>
+   </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="{{ URL::to('/') }}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="{{ URL::to('/') }}/assets/libs/simplebar/simplebar.min.js"></script>

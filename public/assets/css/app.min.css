@@ -13851,7 +13851,7 @@ div.dtr-modal div.dtr-modal-close:hover {
     box-shadow: none;
 }
 .select2.select2-container {
-    width: 100% !important;
+    width: 100%;
 }
 .select2-container .select2-selection--single {
     border: var(--vz-border-width) solid var(--vz-input-border-custom);
