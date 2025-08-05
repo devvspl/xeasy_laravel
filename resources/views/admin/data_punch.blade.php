@@ -6,7 +6,7 @@
                 <div class="col-xl-12">
                     <div class="card card-height-100">
                         <div class="card-header align-items-center d-flex" id="dataPunchSection">
-                            <h4 class="card-title mb-0 flex-grow-1">Punched Data (BR_D001)</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">Punched Data <span class="text-danger">(BR_D001)</span></h4>
                             <div class="status-buttons">
                                 <a href="{{ route('data-punch', ['status' => 'hold']) }}"
                                     class="status-btn hold {{ $status == 'hold' ? 'active' : '' }}">
