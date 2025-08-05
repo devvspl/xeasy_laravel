@@ -84,7 +84,9 @@
                                             <td><textarea rows="1" name="" readonly class="form-control form-control-sm"
                                                     id="">{{ $exp->DateEntryRemark }}</textarea></td>
                                             <td>
-                                                <button type="button" class="btn btn-primary btn-sm"><i
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#claimDetailModal"
+                                                    data-claim-id="{{ $exp->ClaimId }}"
+                                                    data-expid="{{ $exp->ExpId }}" class="btn btn-primary btn-sm viewClaimDetail"><i
                                                         class="ri-edit-2-fill"></i></button>
                                                 <button type="button" class="btn btn-info btn-sm"><i
                                                         class="ri-link"></i></button>
@@ -106,9 +108,12 @@
 @endsection
 @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.7/viewer.min.css" />
+
 @endpush
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.7/viewer.min.js"></script>
     <script>
         $('.select2').select2();
         $("#claimReportTable").DataTable({

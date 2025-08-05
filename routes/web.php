@@ -77,5 +77,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/generate-expense-pdf', [ExpenseDetailsController::class, 'generatePdf'])->name('generate.expense.pdf');
     Route::get('data-punch', [MediatorController::class, 'dataPunch']);
     Route::get('data-punch', [MediatorController::class, 'dataPunch'])->name('data-punch');
+    Route::get('get-claim-types', [ClaimViewController::class, 'getActiveClaimTypes']);
 
 });

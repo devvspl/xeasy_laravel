@@ -1,35 +1,7 @@
+<x-modal.view_claim_detail />
 <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
    <i class="ri-arrow-up-line"></i>
 </button>
-{{-- <button id="toggle-chat" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-4"
-   style="z-index: 9999; width: 40px; height: 40px;">
-   <i class="ri-chat-1-fill"></i>
-</button>
-<div id="chat-box" class="card shadow-lg position-fixed bottom-0 end-0 m-4"
-   style="width: 350px; max-height: 500px; display: none; z-index: 9999;">
-   <div style="background-color: #001868"
-      class="card-header text-white d-flex justify-content-between align-items-center p-2">
-      <strong>Support Chat</strong>
-      <i id="close-chat" class="ri-close-line btn btn-sm" style="cursor: pointer;color:white"></i>
-
-   </div>
-   <div class="card-body d-flex flex-column p-2" style="height: 400px;">
-      <div class="mb-2">
-         <select id="user-select" class="form-select form-select-sm">
-            <option value="">-- Select User --</option>
-         </select>
-      </div>
-      <div id="chat-header" class="fw-bold small mb-2">Chat Window</div>
-      <div id="messages" class="border rounded p-2 bg-light flex-grow-1 mb-2 overflow-auto" style="font-size: 0.9rem;">
-      </div>
-      <form id="message-form" class="input-group">
-         <input type="hidden" id="receiver-id" name="receiver_id">
-         <input type="text" id="message-input" name="message" class="form-control form-control-sm"
-            placeholder="Type a message..." required>
-         <button class="btn btn-sm btn-primary" type="submit">Send</button>
-      </form>
-   </div>
-</div> --}}
 <div id="preloader">
    <div id="status">
       <div class="spinner-border text-white avatar-sm" role="status">

@@ -325,12 +325,10 @@ $(document).ready(function () {
                     ),
                 },
                 data: function (d) {
-                    // Get current checkbox state on each request
                     d.claim_filter_type = $(
                         "input[name='claim_filter_type']:checked"
                     ).val();
 
-                    // other filters
                     d.function_ids = $("#functionSelect").val() || [];
                     d.vertical_ids = $("#verticalSelect").val() || [];
                     d.department_ids = $("#departmentSelect").val() || [];
@@ -360,7 +358,7 @@ $(document).ready(function () {
                 { data: "ClaimAtStep" },
                 { data: "action", orderable: false, searchable: false },
             ],
-            destroy: true, // allow reinitializing if needed
+            destroy: true,
         });
     }
 
@@ -475,24 +473,6 @@ $(document).ready(function () {
             },
             complete: function () {
                 endLoader({ currentTarget: button });
-            },
-        });
-    });
-
-    $(document).on("click", "#viewClaimDetail", function () {
-        var claimId = $(this).data("claim-id");
-        var expId = $(this).data("expid");
-        $.ajax({
-            url: "/claim-detail",
-            method: "GET",
-            data: { claim_id: claimId, expid: expId },
-            success: function (response) {
-                $("#claimDetailContent").html(response.html);
-            },
-            error: function () {
-                $("#claimDetailContent").html(
-                    '<div class="text-danger">Failed to load data.</div>'
-                );
             },
         });
     });

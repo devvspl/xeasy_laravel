@@ -250,7 +250,6 @@
         </div>
     </div>
     <x-modal.claim_report />
-    <x-modal.view_claim_detail />
 @endsection
 @push('styles')
     <link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/classic.min.css" />

@@ -40,7 +40,7 @@ class MediatorController extends Controller
         }
         $punchData = [];
         if (!empty($status)) {
-            $punchData = $commonQuery->select('ExpId', 'CrBy', 'CrDate', 'DateEntryRemark')->get()->map(function ($exp) {
+            $punchData = $commonQuery->select('ExpId', 'ClaimId', 'CrBy', 'CrDate', 'DateEntryRemark')->get()->map(function ($exp) {
                 $exp->CrDateFormatted = \Carbon\Carbon::parse($exp->CrDate)->format('d-m-Y');
                 return $exp;
             });

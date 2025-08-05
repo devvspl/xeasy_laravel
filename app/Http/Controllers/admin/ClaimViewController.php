@@ -3,6 +3,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ExpenseClaim;
+use Illuminate\Support\Facades\DB;
 class ClaimViewController extends Controller
 {
     public function getClaimDetailView(Request $request)
@@ -22,4 +23,35 @@ class ClaimViewController extends Controller
         }
         return response()->json(['html' => $html]);
     }
+    public function getActiveClaimTypes()
+    {
+        $claimTypes = DB::table('claimtype as ct')
+            ->leftJoin('claimgroup as cg', 'cg.cgId', '=', 'ct.cgId')
+            ->where('ct.ClaimStatus', 'A')
+            ->whereIn('ct.cgId', [1, 7])
+            ->orderBy('cg.cgName')
+            ->orderBy('ct.ClaimName')
+            ->get(['ct.ClaimId', 'ct.ClaimName', 'cg.cgName']);
+
+        $grouped = [];
+
+        foreach ($claimTypes as $claim) {
+            $grouped[$claim->cgName][] = [
+                'id' => $claim->ClaimId,
+                'text' => $claim->ClaimName,
+            ];
+        }
+
+        $result = [];
+
+        foreach ($grouped as $group => $claims) {
+            $result[] = [
+                'text' => $group,
+                'children' => $claims,
+            ];
+        }
+
+        return response()->json($result);
+    }
+
 }
