@@ -22,6 +22,12 @@ use App\Http\Controllers\admin\{
     ExpenseDetailsController,
     MediatorController
 };
+use App\Http\Controllers\DatabaseSwitchController;
+
+Route::get('companies-list', [DatabaseSwitchController::class, 'getCompanies']);
+Route::get('financial-years.list', [DatabaseSwitchController::class, 'getFinancialYears']);
+Route::post('switch-database', [DatabaseSwitchController::class, 'switchDatabase']);
+
 Route::get('/', fn() => redirect()->route('login'));
 Auth::routes();
 Route::middleware('auth')->group(function () {

@@ -1,5 +1,3 @@
-// const { Dropdown } = require("bootstrap");
-
 function showAlert(
     type = "primary",
     icon = "ri-user-smile-line",
@@ -335,7 +333,123 @@ $(document).ready(function () {
             },
         });
     });
+    $("#companyModal").on("shown.bs.modal", function () {
+        $.ajax({
+            url: "companies-list",
+            method: "GET",
+            success: function (response) {
+                const companySelect = $("#companySelect");
+                companySelect.empty();
+                companySelect.append(
+                    '<option value="" disabled selected>Select a company</option>'
+                );
+                response.forEach((company) => {
+                    companySelect.append(
+                        `<option value="${company.id}">${company.name}</option>`
+                    );
+                });
+            },
+            error: function (xhr) {
+                showAlert(
+                    "danger",
+                    "ri-error-warning-line",
+                    xhr.responseJSON?.message
+                );
+            },
+        });
+    });
+    $("#companySelect").on("change", function () {
+        const company = $(this).val();
+        const fySelect = $("#fySelect");
+        fySelect.prop("disabled", true);
+        fySelect.empty();
+        fySelect.append(
+            '<option value="" disabled selected>Select a financial year</option>'
+        );
+        if (company) {
+            $.ajax({
+                url: "financial-years.list",
+                method: "GET",
+                data: { company: company },
+                success: function (response) {
+                    if (Array.isArray(response) && response.length > 0) {
+                        response.forEach((year) => {
+                            fySelect.append(
+                                `<option value="${year.id}">${year.name}</option>`
+                            );
+                        });
+                    } else {
+                        fySelect.append(
+                            '<option value="" disabled>No financial years available</option>'
+                        );
+                    }
+                    fySelect.prop("disabled", false);
+                },
+                error: function (xhr) {
+                    showAlert(
+                        "danger",
+                        "ri-error-warning-line",
+                        xhr.responseJSON?.message
+                    );
+                },
+            });
+        }
+    });
+    $("#submitSelection").on("click", function () {
+        const button = this;
+        const companyId = $("#companySelect").val();
+        const yearId = $("#fySelect").val();
+        if (!companyId || !yearId) {
+            showAlert(
+                "danger",
+                "ri-error-warning-line",
+                "Please select both a company and a financial year."
+            );
+            return;
+        }
+        $.ajax({
+            url: "switch-database",
+            method: "POST",
+            beforeSend: function () {
+                startLoader({ currentTarget: button });
+            },
+            data: {
+                company_id: companyId,
+                year_id: yearId,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (response) {
+                if (response.success) {
+                    showAlert(
+                        "success",
+                        "ri-checkbox-circle-line",
+                        response.message || "Database switched successfully!"
+                    );
+                    setTimeout(() => {
+                        window.location.href = window.location.href;
+                    }, 5000);
+                } else {
+                    showAlert(
+                        "danger",
+                        "ri-error-warning-line",
+                        response.message
+                    );
+                }
+            },
+            error: function (xhr) {
+                showAlert(
+                    "danger",
+                    "ri-error-warning-line",
+                    xhr.responseJSON?.message
+                );
+            },
+            complete: function () {
+                endLoader({ currentTarget: button });
+            },
+        });
+    });
 });
+
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("empSearchOptions");
     const searchDropdown = document.getElementById("search-dropdown");

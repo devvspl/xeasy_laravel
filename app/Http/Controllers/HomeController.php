@@ -16,6 +16,7 @@ class HomeController extends Controller
 
     public function index(Request $request)
     {
+
         return view('home');
     }
 
@@ -26,8 +27,6 @@ class HomeController extends Controller
             $startDate = Carbon::parse($startDate)->addDay()->toDateString();
             $endDate = $request->input('bill_date_to');
             $yearId = (int) session('year_id');
-
-
             if ($yearId <= 0) {
                 return response()->json([
                     'error' => 'Invalid year ID in session.',
@@ -46,16 +45,11 @@ class HomeController extends Controller
                     'totalAllMonths' => ['filled' => 0, 'verified' => 0, 'approved' => 0, 'financed' => 0]
                 ], 400);
             }
-
-
             $previousYearStartDate = Carbon::parse($startDate)->subYear()->toDateString();
             $previousYearEndDate = Carbon::parse($endDate)->subYear()->toDateString();
-
             $previousYearId = $yearId - 1;
             $tableName = "y{$yearId}_expenseclaims";
             $previousYearTable = "y{$previousYearId}_expenseclaims";
-
-
             if (!DB::getSchemaBuilder()->hasTable($previousYearTable)) {
                 $previousYearTable = $tableName;
             }
@@ -139,7 +133,6 @@ class HomeController extends Controller
             return response()->json(['error' => 'Server error occurred'], 500);
         }
     }
-
 
     function getClaimStatusCounts($tableName, $startDate, $endDate)
     {

@@ -11,6 +11,17 @@ class FinancialYear extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'Year', 'y1', 'y2', 'FromDate', 'Todate', 'Status', 'CrBy'
+        'Year',
+        'y1',
+        'y2',
+        'FromDate',
+        'Todate',
+        'Status',
+        'CrBy'
     ];
+
+    public static function getYearById($yearId)
+    {
+        return self::where('YearId', $yearId)->value('Year');
+    }
 }
