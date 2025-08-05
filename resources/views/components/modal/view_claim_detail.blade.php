@@ -16,11 +16,10 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-4">
-                        <div id="imageGallery" class="mb-3">
-                            <!-- Thumbnails will be inserted here -->
-                        </div>
-                        <div id="largeImagePreview" style="display: none;">
-                            <img src="" alt="Large Preview" class="img-fluid" style="width: 100%; height: 300px; object-fit: contain; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;">
+                        <div id="viewerContainer" style="width: 100%; max-height: 600px; overflow: hidden;">
+                            <ul id="viewerImages" class="list-unstyled">
+                                <!-- Dynamically populated image/PDF thumbnails -->
+                            </ul>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -46,7 +45,8 @@
                                     <div class="row mb-3">
                                         <div class="col-6">
                                             <label class="form-label">Provider Name</label>
-                                            <input type="text" class="form-control" value="The Professional Couriers" readonly="">
+                                            <input type="text" class="form-control" value="The Professional Couriers"
+                                                readonly="">
                                         </div>
                                         <div class="col-6">
                                             <label class="form-label">Weight Charged</label>
@@ -70,7 +70,8 @@
                                         </div>
                                         <div class="col-6">
                                             <label class="form-label">Receiver Address</label>
-                                            <input type="text" class="form-control" value="Pettavaithalai, Trichy" readonly="">
+                                            <input type="text" class="form-control" value="Pettavaithalai, Trichy"
+                                                readonly="">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -96,7 +97,8 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <button type="button" class="btn btn-success float-end">Submit</button>
-                                            <button type="button" class="btn btn-info me-2 float-end">Save as Draft</button>
+                                            <button type="button" class="btn btn-info me-2 float-end">Save as
+                                                Draft</button>
                                         </div>
                                     </div>
                                 </div>
