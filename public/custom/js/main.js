@@ -425,9 +425,6 @@ $(document).ready(function () {
                         "ri-checkbox-circle-line",
                         response.message || "Database switched successfully!"
                     );
-                    setTimeout(() => {
-                        window.location.href = window.location.href;
-                    }, 5000);
                 } else {
                     showAlert(
                         "danger",

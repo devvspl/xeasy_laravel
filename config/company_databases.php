@@ -1,5 +1,4 @@
 <?php
-
 return [
     'companies' => [
         1 => [

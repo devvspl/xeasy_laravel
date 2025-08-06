@@ -8,6 +8,8 @@ class FinancialYear extends Model
 {
     protected $table = 'financialyear';
     protected $primaryKey = 'YearId';
+    protected $connection = 'expense';
+
     public $timestamps = false;
 
     protected $fillable = [

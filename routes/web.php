@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\DatabaseSwitchController;
 use App\Http\Controllers\admin\{
     DashboardController,
     PermissionController,
@@ -22,15 +23,15 @@ use App\Http\Controllers\admin\{
     ExpenseDetailsController,
     MediatorController
 };
-use App\Http\Controllers\DatabaseSwitchController;
 
-Route::get('companies-list', [DatabaseSwitchController::class, 'getCompanies']);
-Route::get('financial-years.list', [DatabaseSwitchController::class, 'getFinancialYears']);
-Route::post('switch-database', [DatabaseSwitchController::class, 'switchDatabase']);
+
+
+
 
 Route::get('/', fn() => redirect()->route('login'));
 Auth::routes();
 Route::middleware('auth')->group(function () {
+    Route::get('companies-list', [DatabaseSwitchController::class, 'getCompanies']);
     Route::get('clear-caches', [Controller::class, 'clearAllCaches'])->name('system.clear_caches');
     Route::get('home', [HomeController::class, 'index'])->name('home');
     Route::get('home-data', [HomeController::class, 'getDashboardData'])->name('dashboard.data');
@@ -86,3 +87,29 @@ Route::middleware('auth')->group(function () {
     Route::get('get-claim-types', [ClaimViewController::class, 'getActiveClaimTypes']);
 
 });
+// Route::middleware(['custom', 'auth'])->group(function () {
+//     Route::get('/set-company/{id}', function ($id) {
+//         Session::put('company_id', $id);
+//         return "Company ID set to " . Session::get('company_id');
+//     });
+//     Route::get('/connection', function () {
+//         $hrims = config('database.connections.hrims');
+//         $expense = config('database.connections.expense');
+
+//         return response()->json([
+//             'hrims' => [
+//                 'database' => $hrims['database'],
+//                 'host' => $hrims['host'],
+//                 'username' => $hrims['username'],
+//             ],
+//             'expense' => [
+//                 'database' => $expense['database'],
+//                 'host' => $expense['host'],
+//                 'username' => $expense['username'],
+//             ],
+//         ]);
+//     });
+//     Route::get('financial-years.list', [DatabaseSwitchController::class, 'getFinancialYears']);
+//     Route::post('switch-database', [DatabaseSwitchController::class, 'switchDatabase']);
+// });
+
