@@ -458,3 +458,17 @@ table.table-bordered.dataTable td {
 #imageGallery div a img:hover {
     transform: scale(1.05);
 }
+.employee-row{
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.employee-row:hover {
+    background-color: #f0f0f0;
+}
+
+/* Highlight active employee row */
+.employee-row.active-row {
+    background-color: #e0f7fa; /* light blue */
+    font-weight: bold;
+}

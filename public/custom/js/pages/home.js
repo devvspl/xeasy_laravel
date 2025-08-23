@@ -413,6 +413,7 @@ $(document).ready(function () {
                 const claimTypeTotals = data.claimTypeTotals || [];
                 const yearlyComparison = data.yearlyComparison;
                 const topTravelersByWType = data.topTravelersByWType;
+                const topEmployees = data.topEmployees || [];
 
                 tableUpdateYearlyComparison(yearlyComparison);
                 tableUpdateCards(cardData);
@@ -423,6 +424,7 @@ $(document).ready(function () {
                     previousYearId
                 );
                 tableUpdateClaimTypeTotals(claimTypeTotals);
+                tableTopEmployee(topEmployees);
                 chartRenderMonthlyExpense(monthlyTotals);
                 chartRenderDepartmentComparison(
                     departmentTotals,
@@ -669,6 +671,47 @@ $(document).ready(function () {
         } else {
             $departmentTableBody.html(
                 `<tr><td colspan="4" class="text-center">No data available</td></tr>`
+            );
+        }
+    }
+
+    function tableTopEmployee(topEmployees) {
+        const $employeeTableBody = $("#employee-table-body");
+
+        if (topEmployees.length) {
+            $employeeTableBody.html(
+                topEmployees
+                    .map(
+                        (emp, index) => `
+                        <tr class="employee-row" data-empid="${emp.CrBy}">
+                            <td>${index + 1}</td>
+                            <td style="text-align:left">
+                                ${emp.employee_name} - ${emp.EmpCode}
+                            </td>
+                            <td style="text-align:left">${
+                                emp.department_name || "Unknown"
+                            }</td>
+                            <td class="text-center">${formatNumber(
+                                emp.filled_total_amount
+                            )}</td>
+                            <td class="text-center">${formatNumber(
+                                emp.payment_total_amount
+                            )}</td>
+                        </tr>
+                        <tr class="employee-detail-row" id="detail-${emp.CrBy}" style="display:none;">
+                            <td colspan="5" style="background-color: #f3f6f9;">
+                                <canvas id="chart-${emp.CrBy}" style="width:100%; height:200px;"></canvas>
+                                <div class="employee-detail-content"></div>
+                            </td>
+                        </tr>
+
+                    `
+                    )
+                    .join("")
+            );
+        } else {
+            $employeeTableBody.html(
+                `<tr><td colspan="5" class="text-center">No data available</td></tr>`
             );
         }
     }
@@ -1077,4 +1120,238 @@ $(document).ready(function () {
             },
         });
     }
+    // $(document).on("click", ".employee-row", function () {
+    //     const $row = $(this);
+    //     const empId = $row.data("empid");
+    //     const $detailRow = $("#detail-" + empId);
+    //     const $content = $detailRow.find(".employee-detail-content");
+
+    //     // Close any open detail row first
+    //     $(".employee-detail-row").not($detailRow).hide();
+    //     $(".employee-row").not($row).removeClass("active-row");
+
+    //     // Toggle current row
+    //     if ($detailRow.is(":visible")) {
+    //         $detailRow.hide();
+    //         $row.removeClass("active-row");
+    //         return;
+    //     }
+
+    //     $row.addClass("active-row");
+    //     $content.html("<p>Loading...</p>");
+    //     $detailRow.show();
+
+    //     const selectedDates = datePicker.selectedDates;
+    //     if (!selectedDates || selectedDates.length < 2) {
+    //         alert("Please select a valid date range first.");
+    //         return;
+    //     }
+
+    //     const billDateFrom = formatDateForAPI(selectedDates[0]);
+    //     const billDateTo = formatDateForAPI(selectedDates[1]);
+
+    //     $.ajax({
+    //         url: "/get-employee-trend",
+    //         method: "POST",
+    //         data: {
+    //             bill_date_from: billDateFrom,
+    //             bill_date_to: billDateTo,
+    //             employee_id: empId,
+    //         },
+    //         headers: {
+    //             "X-Requested-With": "XMLHttpRequest",
+    //             "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+    //         },
+    //         success: function (res) {
+    //             const data = Array.isArray(res) ? res : res.data;
+
+    //             if (data && data.length) {
+    //                 const months = [
+    //                     "Jan",
+    //                     "Feb",
+    //                     "Mar",
+    //                     "Apr",
+    //                     "May",
+    //                     "Jun",
+    //                     "Jul",
+    //                     "Aug",
+    //                     "Sep",
+    //                     "Oct",
+    //                     "Nov",
+    //                     "Dec",
+    //                 ];
+    //                 const activeMonths = months.filter((month) =>
+    //                     data.some((row) => parseFloat(row[month]) > 0)
+    //                 );
+
+    //                 let html = `<table class="table table-bordered">
+    //                 <thead>
+    //                     <tr style="font-weight:bold; background:#f1f1f1;">
+    //                         <th style="text-align:left;">Claim Type</th>`;
+    //                 activeMonths.forEach(
+    //                     (month) => (html += `<th>${month}</th>`)
+    //                 );
+    //                 html += `<th>Total</th></tr></thead><tbody>`;
+
+    //                 const monthlySums = {};
+    //                 activeMonths.forEach((month) => (monthlySums[month] = 0));
+    //                 let grandTotal = 0;
+
+    //                 data.forEach((row) => {
+    //                     html += `<tr><td style="text-align:left;">${row.ClaimName}</td>`;
+    //                     activeMonths.forEach((month) => {
+    //                         const val = parseFloat(row[month]) || 0;
+    //                         html += `<td>${formatNumber(val)}</td>`;
+    //                         monthlySums[month] += val;
+    //                     });
+    //                     const rowTotal = parseFloat(row.total_year) || 0;
+    //                     html += `<td><b>${formatNumber(
+    //                         rowTotal
+    //                     )}</b></td></tr>`;
+    //                     grandTotal += rowTotal;
+    //                 });
+
+    //                 html += `<tr style="font-weight:bold; background:#f1f1f1;">
+    //                 <td style="text-align:left;">Grand Total</td>`;
+    //                 activeMonths.forEach((month) => {
+    //                     html += `<td>${formatNumber(monthlySums[month])}</td>`;
+    //                 });
+    //                 html += `<td>${formatNumber(grandTotal)}</td></tr>`;
+
+    //                 html += "</tbody></table>";
+    //                 $content.html(html);
+    //             } else {
+    //                 $content.html("<p>No claim data found.</p>");
+    //             }
+    //         },
+    //         error: function () {
+    //             $content.html("<p class='text-danger'>Error loading data</p>");
+    //         },
+    //     });
+    // });
+$(document).on("click", ".employee-row", function () {
+    const $row = $(this);
+    const empId = $row.data("empid");
+    const $detailRow = $("#detail-" + empId);
+    const $content = $detailRow.find(".employee-detail-content");
+
+    // Close other rows
+    $(".employee-detail-row").not($detailRow).hide();
+    $(".employee-row").not($row).removeClass("active-row");
+
+    // Toggle current
+    if ($detailRow.is(":visible")) {
+        $detailRow.hide();
+        $row.removeClass("active-row");
+        return;
+    }
+
+    $row.addClass("active-row");
+    $content.html("<p>Loading...</p>");
+    $detailRow.show();
+
+    const selectedDates = datePicker.selectedDates;
+    if (!selectedDates || selectedDates.length < 2) {
+        alert("Please select a valid date range first.");
+        return;
+    }
+
+    const billDateFrom = formatDateForAPI(selectedDates[0]);
+    const billDateTo = formatDateForAPI(selectedDates[1]);
+
+    $.ajax({
+        url: "/get-employee-trend",
+        method: "POST",
+        data: {
+            bill_date_from: billDateFrom,
+            bill_date_to: billDateTo,
+            employee_id: empId,
+        },
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+        },
+        success: function (res) {
+            const data = Array.isArray(res) ? res : res.data;
+
+            if (data && data.length) {
+                const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                const activeMonths = months.filter((month) =>
+                    data.some((row) => parseFloat(row[month]) > 0)
+                );
+
+                // Table HTML
+                let html = `<table class="table table-bordered">
+                    <thead>
+                        <tr style="font-weight:bold; background:#f1f1f1;">
+                            <th style="text-align:left;">Claim Type</th>`;
+                activeMonths.forEach((month) => html += `<th>${month}</th>`);
+                html += `<th>Total</th></tr></thead><tbody>`;
+
+                const monthlySums = {};
+                activeMonths.forEach((month) => (monthlySums[month] = 0));
+                let grandTotal = 0;
+
+                data.forEach((row) => {
+                    html += `<tr><td style="text-align:left;">${row.ClaimName}</td>`;
+                    activeMonths.forEach((month) => {
+                        const val = parseFloat(row[month]) || 0;
+                        html += `<td>${formatNumber(val)}</td>`;
+                        monthlySums[month] += val;
+                    });
+                    const rowTotal = parseFloat(row.total_year) || 0;
+                    html += `<td><b>${formatNumber(rowTotal)}</b></td></tr>`;
+                    grandTotal += rowTotal;
+                });
+
+                html += `<tr style="font-weight:bold; background:#f1f1f1;">
+                    <td style="text-align:left;">Grand Total</td>`;
+                activeMonths.forEach((month) => {
+                    html += `<td>${formatNumber(monthlySums[month])}</td>`;
+                });
+                html += `<td>${formatNumber(grandTotal)}</td></tr>`;
+                html += "</tbody></table>";
+
+                $content.html(html);
+
+                // Render Chart
+                const ctx = document.getElementById(`chart-${empId}`).getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: activeMonths,
+                        datasets: data.map(row => ({
+                            label: row.ClaimName,
+                            data: activeMonths.map(m => parseFloat(row[m]) || 0),
+                            backgroundColor: randomColor(), // helper function below
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            title: { display: true, text: 'Monthly Claim Trend' }
+                        },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+
+            } else {
+                $content.html("<p>No claim data found.</p>");
+            }
+        },
+        error: function () {
+            $content.html("<p class='text-danger'>Error loading data</p>");
+        },
+    });
+});
+
+// Helper: random color for chart
+function randomColor() {
+    const r = Math.floor(Math.random()*200);
+    const g = Math.floor(Math.random()*200);
+    const b = Math.floor(Math.random()*200);
+    return `rgba(${r},${g},${b},0.7)`;
+}
+
 });

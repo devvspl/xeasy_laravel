@@ -55,14 +55,14 @@ class User extends Authenticatable
     public function permissions()
     {
         return $this->morphToMany(
-            \App\Models\Permission::class, 
+            \App\Models\Permission::class,
             'model',
             'model_has_permissions',
             'model_id',
             'permission_id'
         );
     }
-    
+
     public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
     {
         return \Spatie\Activitylog\LogOptions::defaults();

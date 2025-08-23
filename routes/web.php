@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('clear-caches', [Controller::class, 'clearAllCaches'])->name('system.clear_caches');
     Route::get('home', [HomeController::class, 'index'])->name('home');
     Route::get('home-data', [HomeController::class, 'getDashboardData'])->name('dashboard.data');
+    Route::post('get-employee-trend', [HomeController::class, 'getEmployeeTrend'])->name('employee.trend');
     Route::resource('permission-groups', PermissionGroupController::class)->names('permission_groups');
     Route::resource('permissions', PermissionController::class)->names('permissions');
     Route::post('permissions/assign', [PermissionController::class, 'assignPermissions'])->name('permissions.assign');

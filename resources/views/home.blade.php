@@ -98,6 +98,30 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-xl-12">
+                            <div class="card">
+                                <div class="card-header align-items-center d-flex">
+                                    <h4 class="card-title mb-0 flex-grow-1">Top 10 Expense Filled Employees</h4>
+                                    
+                                </div>
+                                <div class="card-body p-0 pb-2">
+                                    <table class="table table-bordered table-centered align-middle table-nowrap mb-0">
+                                        <thead class="text-muted table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th style="text-align: left">Employee</th>
+                                                <th style="text-align: left">Department</th>
+                                                <th style="text-align: center">Filled Amt</th>
+                                                <th style="text-align: center">Payment Amt</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="employee-table-body">
+                                            <!-- JS will inject rows here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     @endcan
                 </div>
             @endcan
@@ -196,5 +220,8 @@
 @endsection @push('scripts')
     <script src="assets/libs/apexcharts/apexcharts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+    <!-- Chart.js v4 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script src="{{ asset('custom/js/pages/home.js') }}"></script>
 @endpush
