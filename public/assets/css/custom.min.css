@@ -263,12 +263,12 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
     padding: 0 5px !important;
 }
 .offcanvas-header {
-    background-color: var(--vz-primary); 
-    color: #ffffff; 
+    background-color: var(--vz-primary);
+    color: #ffffff;
 }
 
 .offcanvas-header .btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%); 
+    filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 #empSearchOptions::-webkit-input-placeholder {
@@ -329,7 +329,6 @@ table.table-bordered.dataTable td {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-
 #dataPunchSection .status-btn.hold {
     font-size: 12px;
     background-color: #f8f9fa;
@@ -344,7 +343,6 @@ table.table-bordered.dataTable td {
 #dataPunchSection .status-btn.hold.active {
     font-weight: bold;
 }
-
 
 #dataPunchSection .status-btn.draft {
     font-size: 12px;
@@ -361,7 +359,6 @@ table.table-bordered.dataTable td {
     font-weight: bold;
 }
 
-
 #dataPunchSection .status-btn.filled {
     font-size: 12px;
     background-color: #d1e7dd;
@@ -377,7 +374,6 @@ table.table-bordered.dataTable td {
     font-weight: bold;
 }
 
-
 #dataPunchSection .status-btn.uploaded {
     font-size: 12px;
     background-color: #e7e3f4;
@@ -392,7 +388,6 @@ table.table-bordered.dataTable td {
 #dataPunchSection .status-btn.uploaded.active {
     font-weight: bold;
 }
-
 
 #dataPunchSection .status-btn.denied {
     font-size: 12px;
@@ -426,12 +421,12 @@ table.table-bordered.dataTable td {
 #imageGallery {
     display: flex;
     gap: 5px;
-    overflow-x: auto; 
+    overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
-    width: 100%; 
+    width: 100%;
     max-width: 100%;
-    height: 110px; 
+    height: 110px;
     padding: 5px;
     border: 1px solid #ddd;
     background: #f8f9fa;
@@ -440,7 +435,7 @@ table.table-bordered.dataTable td {
 }
 
 #imageGallery div {
-    flex: 0 0 auto; 
+    flex: 0 0 auto;
 }
 
 #imageGallery div img,
@@ -458,7 +453,7 @@ table.table-bordered.dataTable td {
 #imageGallery div a img:hover {
     transform: scale(1.05);
 }
-.employee-row{
+.employee-row {
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
@@ -472,3 +467,4 @@ table.table-bordered.dataTable td {
     background-color: #e0f7fa; /* light blue */
     font-weight: bold;
 }
+

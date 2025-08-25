@@ -1,12 +1,12 @@
 @extends('layouts.app') @section('content')
     <div class="page-content">
         <div class="container-fluid">
-            @can('View Dashboard')
+            
                 <div class="row mb-1 pb-1">
                     <div class="col-12">
                         <div class="d-flex align-items-lg-center flex-lg-row flex-column">
                             <div class="flex-grow-1">
-                                <h4 class="fs-16 mb-1">Expense Comparison</h4>
+                                <h4 class="fs-16 mb-1"><span>Expense Comparison</span></h4>
                                 <p class="text-muted mb-0">
                                     <strong>PY Expense:</strong> <span id="pyExpense" class="text-primary">0</span>
                                     <strong>CY Expense:</strong> <span id="cyExpense" class="text-primary">0</span>
@@ -14,7 +14,7 @@
                                 </p>
                             </div>
                             <div class="mt-3 mt-lg-0">
-                                @can('Date Range')
+                                
                                     <div class="row g-1 mb-0 align-items-center" id="quarter-buttons">
                                         <div class="col-sm-auto" id="date-picker-wrapper" style="display:none">
                                             <div class="input-group">
@@ -28,13 +28,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endcan
+                                
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="row mb-1 pb-1">
-                    @can('Month Wise Expense')
+                    
                         <div class="col-xl-6">
                             <div class="card">
                                 <div class="card-header align-items-center d-flex">
@@ -59,8 +59,8 @@
                                 </div>
                             </div>
                         </div>
-                    @endcan
-                    @can('Department Wise Expense')
+                    
+                    
                         <div class="col-xl-6">
                             <div class="card">
                                 <div class="card-header align-items-center d-flex">
@@ -77,8 +77,8 @@
                                 </div>
                             </div>
                         </div>
-                    @endcan
-                    @can('Claim Type Financials')
+                    
+                    
                         <div class="col-xl-12">
                             <div class="card">
                                 <div class="card-header align-items-center d-flex">
@@ -102,7 +102,7 @@
                             <div class="card">
                                 <div class="card-header align-items-center d-flex">
                                     <h4 class="card-title mb-0 flex-grow-1">Top 10 Expense Filled Employees</h4>
-                                    
+
                                 </div>
                                 <div class="card-body p-0 pb-2">
                                     <table class="table table-bordered table-centered align-middle table-nowrap mb-0">
@@ -122,9 +122,9 @@
                                 </div>
                             </div>
                         </div>
-                    @endcan
+                    
                 </div>
-            @endcan
+            
         </div>
     </div>
     <div class="modal fade" id="expenseModal" tabindex="-1" aria-labelledby="expenseModalLabel" aria-hidden="true">
@@ -189,6 +189,17 @@
                         <tfoot class="table-light" id="department-table-footer"></tfoot>
                     </table>
                 </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
+                            id="exportExpenseDepartmentExcelBtn">
+                            <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 me-2">
+                                <span class="loader" style="display: none;"></span>
+                            </i>
+                            Export to Excel
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -214,14 +225,23 @@
                         <tfoot id="claim-type-table-footer"></tfoot>
                     </table>
                 </div>
+                <div class="modal-footer">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
+                            id="exportExpenseClaimTypeExcelBtn">
+                            <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 me-2">
+                                <span class="loader" style="display: none;"></span>
+                            </i>
+                            Export to Excel
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 @endsection @push('scripts')
     <script src="assets/libs/apexcharts/apexcharts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
-    <!-- Chart.js v4 -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <script src="{{ asset('custom/js/pages/home.js') }}"></script>
 @endpush

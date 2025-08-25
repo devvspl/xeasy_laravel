@@ -375,4 +375,5 @@ class ReportController extends Controller
             return $this->jsonError('No record updated.');
         }
     }
+
 }

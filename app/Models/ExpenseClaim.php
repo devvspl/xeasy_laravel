@@ -83,12 +83,15 @@ class ExpenseClaim extends Model
         $this->table = $this->tableName();
     }
 
-    public static function tableName(): string
+    public static function tableName(?int $yearId = null): string
     {
-        $yearId = session('year_id');
+        $yearId = $yearId ?? session('year_id');
+
         if (!$yearId) {
             throw new \Exception('Session year_id is not set.');
         }
+
         return 'y' . $yearId . '_expenseclaims';
     }
+
 }
