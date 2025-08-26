@@ -102,7 +102,7 @@
         </div>
         <div class="col-lg-6">
           <div class="card mb-3 shadow-sm">
-            <div class="card-body">
+            <div class="card-body" style="height: 365px;">
               <h5 class="mb-3">Current Year Expense Distribution</h5>
               <div style="max-width:400px; margin:auto;">
                 <canvas id="pieChart"></canvas>
@@ -148,13 +148,13 @@
             <div class="flex-fill">
               <h6 class="text-center">Top Expense Submitters</h6>
               <div class="table-responsive">
-                <table class="table table-sm table-bordered table-striped" id="tblTopEmployees">
+                <table class="table table-sm table-bordered table-striped table-hover" id="tblTopEmployees">
                   <thead class="table-light">
                     <tr>
                       <th>#</th>
                       <th class="text-start">Employee</th>
                       <th>Department</th>
-                      <th class="text-end">Amount</th>
+                      <th class="text-end">Count</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -164,13 +164,13 @@
             <div class="flex-fill">
               <h6 class="text-center">Same-Day Submissions</h6>
               <div class="table-responsive">
-                <table class="table table-sm table-bordered table-striped" id="tblTopEmployeesSameDay">
+                <table class="table table-sm table-bordered table-striped table-hover" id="tblTopEmployeesSameDay">
                   <thead class="table-light">
                     <tr>
                       <th>#</th>
                       <th class="text-start">Employee</th>
                       <th>Department</th>
-                      <th class="text-end">Amount</th>
+                      <th class="text-end">Count</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -180,19 +180,29 @@
             <div class="flex-fill">
               <h6 class="text-center">Delayed Submissions</h6>
               <div class="table-responsive">
-                <table class="table table-sm table-bordered table-striped" id="tblTopEmployeesRevert">
+                <table class="table table-sm table-bordered table-striped table-hover" id="tblTopEmployeesRevert">
                   <thead class="table-light">
                     <tr>
                       <th>#</th>
                       <th class="text-start">Employee</th>
                       <th>Department</th>
-                      <th class="text-end">Amount</th>
+                      <th class="text-end">Count</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
                 </table>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="align-items-center d-flex mb-2">
+            <h5 class="flex-grow-1">Department-wise Claim Type Totals</h5>
+          </div>
+          <div id="claimTypeWiseContainer">
+
           </div>
         </div>
       </div>
@@ -212,7 +222,7 @@
       const departmentCheckboxes = document.querySelectorAll('.department-checkbox');
       const selectedDepartmentsSpan = document.getElementById('selectedDepartments');
 
-      // Update displayed text based on selected checkboxes
+
       function updateSelectedText() {
         const checked = Array.from(departmentCheckboxes)
           .filter(cb => cb.checked)
@@ -226,7 +236,7 @@
           checked.length > 2 ? `${checked.length} selected` : checked.join(', ');
       }
 
-      // Select All functionality
+
       selectAllCheckbox.addEventListener('change', function () {
         departmentCheckboxes.forEach(cb => {
           cb.checked = selectAllCheckbox.checked;
@@ -234,13 +244,13 @@
         updateSelectedText();
       });
 
-      // Individual checkbox functionality
+
       departmentCheckboxes.forEach(cb => {
         cb.addEventListener('change', function () {
-          // Uncheck "All Departments" if any individual department is checked/unchecked
+
           selectAllCheckbox.checked = false;
 
-          // If all departments are checked, check "All Departments"
+
           const allChecked = Array.from(departmentCheckboxes).every(cb => cb.checked);
           if (allChecked && departmentCheckboxes.length > 0) {
             selectAllCheckbox.checked = true;
@@ -299,16 +309,19 @@
             renderEmployeeTable(response.data.topEmployeesSameDay, "tblTopEmployeesSameDay");
             renderEmployeeTable(response.data.topEmployeesRevert, "tblTopEmployeesRevert");
             renderDepartmentMonthlyChart(response.data.departmentMonthlyTotals);
+            console.log(response.data.departmentTotalsClaimTypeWise);
+            renderClaimTypeWiseTable(response.data.departmentTotalsClaimTypeWise, "#claimTypeWiseContainer");
+
+          },
+          error: function (xhr) {
+            alert('Error fetching data: ' + (xhr.responseJSON?.message || 'Unknown error'));
+            endPageLoader();
           },
           complete: function () {
             endPageLoader();
           },
-          error: function (xhr) {
-            alert('Error fetching data: ' + (xhr.responseJSON?.message || 'Unknown error'));
-          },
         });
       };
-
       const updateDashboard = (expenseData, filterType, sortBy) => {
 
         const filterData = (data, filterType) => {
@@ -421,39 +434,39 @@
 
           if (variation > 100) {
             status = `<span class="text-success" data-bs-toggle="tooltip" 
-                                                                title="Expense increased drastically compared to last year.">
-                                                                <i class="ri-rocket-2-line me-1"></i> Highly Increased
-                                                              </span>`;
+                                                                                                          title="Expense increased drastically compared to last year.">
+                                                                                                          <i class="ri-rocket-2-line me-1"></i> Highly Increased
+                                                                                                        </span>`;
             rowClass = "table-success";
           } else if (variation > 20) {
             status = `<span class="text-success" data-bs-toggle="tooltip" 
-                                                                title="Expenses are higher than last year, monitor the trend.">
-                                                                <i class="ri-line-chart-line me-1"></i> Increased
-                                                              </span>`;
+                                                                                                          title="Expenses are higher than last year, monitor the trend.">
+                                                                                                          <i class="ri-line-chart-line me-1"></i> Increased
+                                                                                                        </span>`;
             rowClass = "table-light";
           } else if (variation < -50) {
             status = `<span class="text-danger" data-bs-toggle="tooltip" 
-                                                                title="Expense dropped heavily compared to last year. Needs urgent attention.">
-                                                                <i class="ri-error-warning-fill me-1"></i> Critical
-                                                              </span>`;
+                                                                                                          title="Expense dropped heavily compared to last year. Needs urgent attention.">
+                                                                                                          <i class="ri-error-warning-fill me-1"></i> Critical
+                                                                                                        </span>`;
             rowClass = "table-danger";
           } else if (variation < -20) {
             status = `<span class="text-primary" data-bs-toggle="tooltip" 
-                                                                title="Expenses are lower than last year. Consider validating the reason.">
-                                                                <i class="ri-bar-chart-2-line me-1"></i> Decreased
-                                                              </span>`;
+                                                                                                          title="Expenses are lower than last year. Consider validating the reason.">
+                                                                                                          <i class="ri-bar-chart-2-line me-1"></i> Decreased
+                                                                                                        </span>`;
             rowClass = "table-info";
           } else if (variation < 0) {
             status = `<span class="text-warning" data-bs-toggle="tooltip" 
-                                                                title="Small decrease compared to last year. Not a major concern.">
-                                                                <i class="ri-arrow-down-line me-1"></i> Slightly Decreased
-                                                              </span>`;
+                                                                                                          title="Small decrease compared to last year. Not a major concern.">
+                                                                                                          <i class="ri-arrow-down-line me-1"></i> Slightly Decreased
+                                                                                                        </span>`;
             rowClass = "table-warning";
           } else {
             status = `<span class="text-muted" data-bs-toggle="tooltip" 
-                                                                title="No significant change compared to last year.">
-                                                                <i class="ri-subtract-line me-1"></i> Stable
-                                                              </span>`;
+                                                                                                          title="No significant change compared to last year.">
+                                                                                                          <i class="ri-subtract-line me-1"></i> Stable
+                                                                                                        </span>`;
             rowClass = "";
           }
 
@@ -472,15 +485,15 @@
             const { status, rowClass } = getStatusAndClass(d.variation);
 
             rows += `<tr class="">
-                                                            <td class="text-center">${idx + 1}</td>
-                                                            <td class="text-start">${d.department ?? "N/A"}</td>
-                                                            <td class="text-end">${formatCurrency(d.previousYear)}</td>
-                                                            <td class="text-end">${formatCurrency(d.currentYear)}</td>
-                                                            <td class="text-center ${d.variation > 0 ? 'text-success' : (d.variation < 0 ? 'text-danger' : 'text-muted')}">
-                                                              ${d.variation > 0 ? "+" : ""}${d.variation}%
-                                                            </td>
-                                                            <td class="text-center">${status}</td>
-                                                          </tr>`;
+                                                                                                      <td class="text-center">${idx + 1}</td>
+                                                                                                      <td class="text-start">${d.department ?? "N/A"}</td>
+                                                                                                      <td class="text-end">${formatCurrency(d.previousYear)}</td>
+                                                                                                      <td class="text-end">${formatCurrency(d.currentYear)}</td>
+                                                                                                      <td class="text-center ${d.variation > 0 ? 'text-success' : (d.variation < 0 ? 'text-danger' : 'text-muted')}">
+                                                                                                        ${d.variation > 0 ? "+" : ""}${d.variation}%
+                                                                                                      </td>
+                                                                                                      <td class="text-center">${status}</td>
+                                                                                                    </tr>`;
           });
 
           const overallVariationPercent = overallPrevTotal === 0
@@ -490,15 +503,15 @@
           const { status: overallStatus, rowClass: overallRowClass } = getStatusAndClass(overallVariationPercent);
 
           rows += `<tr class="fw-bold">
-                                                          <td class="text-center">#</td>
-                                                          <td class="text-start">Overall Total</td>
-                                                          <td class="text-end">${formatCurrency(overallPrevTotal)}</td>
-                                                          <td class="text-end">${formatCurrency(overallCurrTotal)}</td>
-                                                          <td class="text-center ${overallVariationPercent > 0 ? 'text-success' : (overallVariationPercent < 0 ? 'text-danger' : 'text-muted')}">
-                                                            ${overallVariationPercent > 0 ? "+" : ""}${overallVariationPercent}%
-                                                          </td>
-                                                          <td class="text-center">${overallStatus}</td>
-                                                        </tr>`;
+                                                                                                    <td class="text-center">#</td>
+                                                                                                    <td class="text-start">Overall Total</td>
+                                                                                                    <td class="text-end">${formatCurrency(overallPrevTotal)}</td>
+                                                                                                    <td class="text-end">${formatCurrency(overallCurrTotal)}</td>
+                                                                                                    <td class="text-center ${overallVariationPercent > 0 ? 'text-success' : (overallVariationPercent < 0 ? 'text-danger' : 'text-muted')}">
+                                                                                                      ${overallVariationPercent > 0 ? "+" : ""}${overallVariationPercent}%
+                                                                                                    </td>
+                                                                                                    <td class="text-center">${overallStatus}</td>
+                                                                                                  </tr>`;
 
           $("#deptTable tbody").html(rows);
         };
@@ -619,9 +632,141 @@
       function renderEmployeeTable(data, tableId) {
         let rows = "";
         data.forEach((emp, idx) => {
-          rows += `<tr><td>${idx + 1}</td><td class="text-start">${emp.employee_name} - ${emp.EmpCode}</td><td>${emp.department_name ?? "N/A"}</td><td class="text-end">${formatCurrency(emp.payment_total_amount)}</td></tr>`;
+          rows += `<tr><td>${idx + 1}</td><td class="text-start">${emp.employee_name} - ${emp.EmpCode}</td><td>${emp.department_code ?? "N/A"}</td><td class="text-end">${emp.claim_count}</td></tr>`;
         });
         $(`#${tableId} tbody`).html(rows);
+      }
+      function renderClaimTypeWiseTable(departmentData, containerId = "") {
+        const container = containerId
+          ? document.querySelector(containerId.startsWith("#") || containerId.startsWith(".") ? containerId : `#${containerId}`)
+          : document.querySelector(".card-body");
+
+        if (!container) {
+          console.warn(`Container "${containerId || '.card-body'}" not found.`);
+          return;
+        }
+
+        if (!Array.isArray(departmentData) || departmentData.length === 0) {
+          container.innerHTML = '<p class="text-muted">No data available.</p>';
+          return;
+        }
+
+        function escapeHtml(str) {
+          if (str == null) return "";
+          const div = document.createElement("div");
+          div.textContent = str;
+          return div.innerHTML;
+        }
+
+        function formatNumber(value) {
+          if (value == null || isNaN(value)) return "-";
+          return Number(value) % 1 === 0 ? Number(value).toLocaleString("en-US") : Number(value).toLocaleString("en-US");
+        }
+
+        // Collect unique claim types
+        const claimMap = new Map();
+        departmentData.forEach(dept => {
+          dept.claims.forEach(claim => {
+            if (!claimMap.has(claim.ClaimCode)) {
+              claimMap.set(claim.ClaimCode, {
+                ClaimName: claim.ClaimName,
+                values: {}
+              });
+            }
+            claimMap.get(claim.ClaimCode).values[dept.department_name] = {
+              Y7: claim.TotalFinancedTAmt_Y7,
+              Y6: claim.TotalFinancedTAmt_Y6,
+              VariationPercentage: claim.VariationPercentage
+            };
+          });
+        });
+
+        const claims = Array.from(claimMap.values());
+        const departments = departmentData.map(d => d.department_name);
+
+        // Color palette
+        const colors = [
+          '#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1', '#d084d0',
+          '#87ceeb', '#dda0dd', '#a0522d', '#ffb347', '#3cb371', '#20b2aa',
+          '#9370db', '#4682b4', '#ff69b4', '#cd5c5c', '#40e0d0', '#9acd32', '#ff6347'
+        ];
+
+        // Track totals per department
+        const totals = {};
+        departments.forEach(d => totals[d] = { Y7: 0, Y6: 0 });
+
+        // Build table
+        let html = `<div class="table-responsive">
+          <table class="table table-sm table-bordered align-middle">
+            <thead>
+              <tr>
+                <th rowspan="2" style="width:200px;">Claim Name</th>
+                ${departments.map((d, i) => `<th colspan="3" class="text-center" style="background-color:${colors[i % colors.length]}40;">${escapeHtml(d)}</th>`).join("")}
+                <th colspan="3" class="text-center">Total</th>
+              </tr>
+              <tr>
+                ${departments.map((_, i) => `
+                  <th style="background-color:${colors[i % colors.length]}40;">Curr</th>
+                  <th style="background-color:${colors[i % colors.length]}40;">Prev</th>
+                  <th style="background-color:${colors[i % colors.length]}40;">Var</th>
+                `).join("")}
+                <th>Curr</th><th>Prev</th><th>Var</th>
+              </tr>
+            </thead>
+            <tbody>`;
+
+        // Claim rows with row-wise totals
+        claims.forEach(claim => {
+          let rowTotalY7 = 0, rowTotalY6 = 0;
+          html += `<tr>
+            <td><b>${escapeHtml(claim.ClaimName)}</b></td>
+            ${departments.map((d, i) => {
+            const val = claim.values[d] || {};
+            if (val.Y7) { totals[d].Y7 += val.Y7; rowTotalY7 += val.Y7; }
+            if (val.Y6) { totals[d].Y6 += val.Y6; rowTotalY6 += val.Y6; }
+
+            return `
+                <td class="text-end" style="background-color:${colors[i % colors.length]}15;">${formatNumber(val.Y7)}</td>
+                <td class="text-end" style="background-color:${colors[i % colors.length]}15;">${formatNumber(val.Y6)}</td>
+                <td class="text-end ${val.VariationPercentage > 0 ? "text-success" : val.VariationPercentage < 0 ? "text-danger" : ""}" style="background-color:${colors[i % colors.length]}15;">
+                  ${val.VariationPercentage != null ? Number(val.VariationPercentage).toFixed(2) + "%" : "-"}
+                </td>
+              `;
+          }).join("")}
+
+            <td class="text-end"><b>${formatNumber(rowTotalY7)}</b></td>
+            <td class="text-end"><b>${formatNumber(rowTotalY6)}</b></td>
+            <td class="text-end"><b>${rowTotalY6 !== 0 ? ((rowTotalY7 - rowTotalY6) / rowTotalY6 * 100).toFixed(2) + "%" : rowTotalY7 !== 0 ? "100%" : "-"}</b></td>
+          </tr>`;
+        });
+
+        // Grand total row
+        html += `<tr class="fw-bold">
+          <td class="text-center">Grand Total</td>
+          ${departments.map((d, i) => {
+          const Y7 = totals[d].Y7;
+          const Y6 = totals[d].Y6;
+          const variation = (Y6 && Y6 !== 0) ? ((Y7 - Y6) / Y6 * 100) : (Y7 ? 100 : 0);
+          return `
+              <td class="text-end" style="background-color:${colors[i % colors.length]}40;">${formatNumber(Y7)}</td>
+              <td class="text-end" style="background-color:${colors[i % colors.length]}40;">${formatNumber(Y6)}</td>
+              <td class="text-end ${variation > 0 ? "text-success" : variation < 0 ? "text-danger" : ""}" style="background-color:${colors[i % colors.length]}40;">
+                ${!isNaN(variation) ? variation.toFixed(2) + "%" : "-"}
+              </td>
+            `;
+        }).join("")}
+          <td class="text-end"><b>${formatNumber(claims.reduce((sum, c) => sum + departments.reduce((s, d) => s + (c.values[d]?.Y7 || 0), 0), 0))}</b></td>
+          <td class="text-end"><b>${formatNumber(claims.reduce((sum, c) => sum + departments.reduce((s, d) => s + (c.values[d]?.Y6 || 0), 0), 0))}</b></td>
+          <td class="text-end"><b>${(() => {
+            const totalY7 = claims.reduce((sum, c) => sum + departments.reduce((s, d) => s + (c.values[d]?.Y7 || 0), 0), 0);
+            const totalY6 = claims.reduce((sum, c) => sum + departments.reduce((s, d) => s + (c.values[d]?.Y6 || 0), 0), 0);
+            return totalY6 !== 0 ? ((totalY7 - totalY6) / totalY6 * 100).toFixed(2) + "%" : totalY7 !== 0 ? "100%" : "-";
+          })()
+          }</b></td>
+        </tr>`;
+
+        html += `</tbody></table></div>`;
+        container.innerHTML = html;
       }
     });
   </script>

@@ -107,7 +107,7 @@ class HomeController extends Controller
             FROM {$tableName}
             WHERE BillDate BETWEEN '{$startDate}' AND '{$endDate}'
         ) as e"))->leftJoin('hrims.hrm_employee_general as gen', 'gen.EmployeeID', '=', 'e.CrBy')->leftJoin('hrims.core_departments as dep', 'gen.DepartmentId', '=', 'dep.id')->whereNotIn('e.ClaimStatus', ['Draft', 'Submitted', 'Deactivate'])->where('e.BillDate', '!=', '0000-00-00')->whereNotNull('e.BillDate')->where('e.FinancedBy', '!=', '0');
-        // Conditionally add department filter
+
         if ($departmentId) {
             $query->whereIn('dep.id', $departmentId);
         }
@@ -137,17 +137,51 @@ class HomeController extends Controller
     }
     private function getTopEmployees($tableName, $startDate, $endDate, $limit = 10, $sameDay = null, $departmentId = null)
     {
-        $query = DB::table("{$tableName} as e")->join('hrims.hrm_employee as emp', 'emp.EmployeeID', '=', 'e.CrBy')->join('hrims.hrm_employee_general as gen', 'gen.EmployeeID', '=', 'e.CrBy')->leftJoin('hrims.core_departments as dep', 'gen.DepartmentId', '=', 'dep.id')->whereBetween('e.BillDate', [$startDate, $endDate])->where('e.BillDate', '!=', '0000-00-00')->whereNotNull('e.BillDate')->whereNotIn('e.ClaimStatus', ['Draft', 'Submitted', 'Deactivate']);
+        $query = DB::table("{$tableName} as e")
+            ->join('hrims.hrm_employee as emp', 'emp.EmployeeID', '=', 'e.CrBy')
+            ->join('hrims.hrm_employee_general as gen', 'gen.EmployeeID', '=', 'e.CrBy')
+            ->leftJoin('hrims.core_departments as dep', 'gen.DepartmentId', '=', 'dep.id')
+            ->whereBetween('e.BillDate', [$startDate, $endDate])
+            ->where('e.BillDate', '!=', '0000-00-00')
+            ->whereNotNull('e.BillDate')
+            ->whereNotIn('e.ClaimStatus', ['Draft', 'Submitted', 'Deactivate']);
+
         if ($sameDay === true) {
             $query->whereRaw('DATE(e.BillDate) = DATE(e.CrDate)');
         } elseif ($sameDay === false) {
             $query->whereRaw('DATE(e.BillDate) <> DATE(e.CrDate)');
         }
+
         if ($departmentId) {
             $query->whereIn('dep.id', $departmentId);
         }
-        return $query->groupBy('e.CrBy', 'emp.Fname', 'emp.Sname', 'emp.Lname', 'emp.EmpCode', 'dep.department_name')->select('e.CrBy', DB::raw("CONCAT(emp.Fname, ' ', emp.Sname, ' ', emp.Lname) AS employee_name"), 'emp.EmpCode', 'dep.department_name', DB::raw('SUM(e.FilledTAmt) as filled_total_amount'), DB::raw('SUM(e.FinancedTAmt) as payment_total_amount'))->orderByDesc('payment_total_amount')->limit($limit)->get();
+
+        return $query->groupBy(
+            'e.CrBy',
+            'emp.Fname',
+            'emp.Sname',
+            'emp.Lname',
+            'emp.EmpCode',
+            'dep.department_name',
+            'dep.department_code'
+        )
+            ->select(
+                'e.CrBy',
+                DB::raw("CONCAT(emp.Fname, ' ', emp.Sname, ' ', emp.Lname) AS employee_name"),
+                'emp.EmpCode',
+                'dep.department_name',
+                'dep.department_code',
+                DB::raw('SUM(e.FilledTAmt) as filled_total_amount'),
+                DB::raw('SUM(e.FinancedTAmt) as payment_total_amount'),
+                DB::raw('COUNT(e.ExpId) as claim_count'),
+                DB::raw('MIN(e.BillDate) as first_bill_date'),
+                DB::raw('MAX(e.BillDate) as last_bill_date')
+            )
+            ->orderByDesc('claim_count')
+            ->limit($limit)
+            ->get();
     }
+
     public function getEmployeeTrend(Request $request)
     {
         $yearId = (int) session('year_id');
@@ -179,6 +213,69 @@ class HomeController extends Controller
         }
         return $query->get();
     }
+    private function getDepartmentTotalsClaimTypeWise(
+        $tableName,
+        $previousYearTable,
+        $yearId,
+        $previousYearId,
+        $startDate,
+        $endDate,
+        $previousYearStartDate,
+        $previousYearEndDate,
+        $departmentId = null
+    ) {
+        $query = DB::table(DB::raw("(
+            SELECT ExpId, CrBy, ClaimId, ClaimYearId, FinancedTAmt, ClaimStatus, BillDate, FinancedBy 
+            FROM {$previousYearTable}
+            WHERE BillDate BETWEEN '{$previousYearStartDate}' AND '{$previousYearEndDate}'
+
+            UNION ALL 
+
+            SELECT ExpId, CrBy, ClaimId, ClaimYearId, FinancedTAmt, ClaimStatus, BillDate, FinancedBy 
+            FROM {$tableName}
+            WHERE BillDate BETWEEN '{$startDate}' AND '{$endDate}'
+        ) as e"))
+            ->leftJoin('hrims.hrm_employee_general as gen', 'gen.EmployeeID', '=', 'e.CrBy')
+            ->leftJoin('hrims.core_departments as dep', 'gen.DepartmentId', '=', 'dep.id')
+            ->leftJoin('claimtype as ct', 'ct.ClaimId', '=', 'e.ClaimId')
+            ->whereNotIn('e.ClaimStatus', ['Draft', 'Submitted', 'Deactivate'])
+            ->where('e.BillDate', '!=', '0000-00-00')
+            ->whereNotNull('e.BillDate')
+            ->where('e.FinancedBy', '!=', '0');
+
+        if ($departmentId) {
+            $query->whereIn('dep.id', $departmentId);
+        }
+
+        return $query
+            ->groupBy('ct.ClaimName', 'ct.ClaimCode', 'dep.department_name', 'dep.department_code')
+            ->select(
+                'ct.ClaimName',
+                'ct.ClaimCode',
+                'dep.department_name',
+                'dep.department_code',
+                DB::raw("SUM(CASE WHEN e.ClaimYearId = {$yearId} THEN e.FinancedTAmt ELSE 0 END) as TotalFinancedTAmt_Y{$yearId}"),
+                DB::raw("SUM(CASE WHEN e.ClaimYearId = {$previousYearId} THEN e.FinancedTAmt ELSE 0 END) as TotalFinancedTAmt_Y{$previousYearId}"),
+                DB::raw("
+                ROUND(
+                    CASE 
+                        WHEN SUM(CASE WHEN e.ClaimYearId = {$previousYearId} THEN e.FinancedTAmt ELSE 0 END) = 0 
+                        THEN NULL
+                        ELSE (
+                            (
+                                SUM(CASE WHEN e.ClaimYearId = {$yearId} THEN e.FinancedTAmt ELSE 0 END) -
+                                SUM(CASE WHEN e.ClaimYearId = {$previousYearId} THEN e.FinancedTAmt ELSE 0 END)
+                            ) / SUM(CASE WHEN e.ClaimYearId = {$previousYearId} THEN e.FinancedTAmt ELSE 0 END)
+                        ) * 100
+                    END, 2
+                ) as VariationPercentage
+            ")
+            )
+            ->orderBy('dep.department_name')
+            ->orderBy('ct.ClaimName')
+            ->get();
+    }
+
     public function exportExpenseMonthWise(Request $request)
     {
         $request->validate(['bill_date_from' => 'required|date_format:Y-m-d', 'bill_date_to' => 'required|date_format:Y-m-d|after_or_equal:bill_date_from']);
@@ -223,8 +320,14 @@ class HomeController extends Controller
     {
         $page = $request->route('page');
         $departments = CoreDepartments::where('is_active', 1)->get(['id', 'department_name']);
-        return view('admin.analytics', compact('page', 'departments'));
+
+        $view = 'reports.' . $page;
+        if (!view()->exists($view)) {
+            abort(404, "Page not found");
+        }
+        return view($view, compact('page', 'departments'));
     }
+
     public function analyticsDashboardData(Request $request)
     {
         $request->validate(['bill_date_from' => 'required|date_format:Y-m-d', 'bill_date_to' => 'required|date_format:Y-m-d|after_or_equal:bill_date_from', 'filter_type' => 'nullable|in:all,increased,decreased,critical', 'sort_by' => 'nullable|in:variation,current,previous']);
@@ -238,6 +341,7 @@ class HomeController extends Controller
         $previousYearEndDate = Carbon::parse($request->input('bill_date_to'))->subYear()->addDay()->toDateString();
         $departmentId = $request->input('department');
         $departmentTotals = $this->getDepartmentTotals($table, $previousYearTable, $yearId, $previousYearId, $startDate, $endDate, $previousYearStartDate, $previousYearEndDate, $departmentId);
+
         $topEmployees = $this->getTopEmployees($table, $startDate, $endDate, 10, null, $departmentId);
         $topEmployeesSameDay = $this->getTopEmployees($table, $startDate, $endDate, 10, true, $departmentId);
         $topEmployeesRevert = $this->getTopEmployees($table, $startDate, $endDate, 10, false, $departmentId);
@@ -251,7 +355,31 @@ class HomeController extends Controller
                 'variation' => (float) $item->VariationPercentage,
             ];
         })->toArray();
-        $data = ['departments' => $data, 'topEmployees' => $topEmployees, 'topEmployeesSameDay' => $topEmployeesSameDay, 'topEmployeesRevert' => $topEmployeesRevert, 'departmentMonthlyTotals' => $departmentMonthlyTotals,];
+        $departmentTotalsClaimTypeWise = $this->getDepartmentTotalsClaimTypeWise($table, $previousYearTable, $yearId, $previousYearId, $startDate, $endDate, $previousYearStartDate, $previousYearEndDate, $departmentId);
+        $formatted = [];
+
+        foreach ($departmentTotalsClaimTypeWise as $row) {
+            $deptName = $row->department_name ?? 'Unknown';
+
+            if (!isset($formatted[$deptName])) {
+                $formatted[$deptName] = [
+                    'department_name' => $deptName,
+                    'claims' => []
+                ];
+            }
+
+            $formatted[$deptName]['claims'][] = [
+                'ClaimName' => $row->ClaimName,
+                'ClaimCode' => $row->ClaimCode,
+                "TotalFinancedTAmt_Y{$yearId}" => (float) ($row->{"TotalFinancedTAmt_Y{$yearId}"} ?? 0),
+                "TotalFinancedTAmt_Y{$previousYearId}" => (float) ($row->{"TotalFinancedTAmt_Y{$previousYearId}"} ?? 0),
+                'VariationPercentage' => $row->VariationPercentage !== null
+                    ? (float) $row->VariationPercentage
+                    : null,
+            ];
+        }
+
+        $data = ['departments' => $data, 'topEmployees' => $topEmployees, 'topEmployeesSameDay' => $topEmployeesSameDay, 'topEmployeesRevert' => $topEmployeesRevert, 'departmentMonthlyTotals' => $departmentMonthlyTotals, 'departmentTotalsClaimTypeWise' => array_values($formatted)];
         return $this->jsonSuccess($data, 'Department expense analytics loaded successfully.');
     }
 }
