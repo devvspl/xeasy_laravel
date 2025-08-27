@@ -38,7 +38,7 @@
                             <h4 class="card-title mb-0 flex-grow-1">Month Wise Expense Overview</h4>
                             <div class="flex-shrink-0">
                                 <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#expenseModal"
-                                    class="link-primary">Source Data<i class="ri-arrow-right-line"></i></a>
+                                    class="link-primary"><i class="ri-database-2-line"></i></a>
                             </div>
                         </div>
                         <div class="card-body p-0 pb-2">
@@ -84,7 +84,7 @@
                             <h4 class="card-title mb-0 flex-grow-1">Claim Type Financials</h4>
                             <div class="flex-shrink-0">
                                 <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#claimTypeModal"
-                                    class="link-primary">Source Data<i class="ri-arrow-right-line"></i></a>
+                                    class="link-primary"><i class="ri-database-2-line"></i></a>
                             </div>
                         </div>
                         <div class="card-body p-0 pb-2">

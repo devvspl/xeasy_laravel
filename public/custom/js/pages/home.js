@@ -381,11 +381,14 @@ $(document).ready(function () {
 
     createMonthToggleWithDropdown();
 
-    function formatNumber(value) {
+    function formatCurrency(value) {
         const numValue = Number(value || 0);
         return numValue === 0
-            ? "0"
+            ? "₹0"
             : numValue.toLocaleString("en-IN", {
+                  style: "currency",
+                  currency: "INR",
+                  minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
               });
     }
@@ -442,6 +445,7 @@ $(document).ready(function () {
                 const cardData = data.cardData || {};
                 const monthlyTotals = data.monthlyTotals || [];
                 const departmentTotals = data.departmentTotals || [];
+                console.log(departmentTotals);
                 const totalAllMonths = data.totalAllMonths || {};
                 const yearId = data.yearId;
                 const previousYearId = yearId - 1;
@@ -449,7 +453,6 @@ $(document).ready(function () {
                 const yearlyComparison = data.yearlyComparison;
                 const topTravelersByWType = data.topTravelersByWType;
                 const topEmployees = data.topEmployees || [];
-
                 tableUpdateYearlyComparison(yearlyComparison);
                 tableUpdateCards(cardData);
                 tableUpdateMonthlyTotals(monthlyTotals);
@@ -476,17 +479,12 @@ $(document).ready(function () {
             },
         });
     }
-
     function tableUpdateYearlyComparison(yearlyComparison) {
-        $("#cyExpense").text(
-            Number(yearlyComparison.CY_Expense).toLocaleString()
-        );
-        $("#pyExpense").text(
-            Number(yearlyComparison.PY_Expense).toLocaleString()
-        );
-        $("#variancePercent").text(
-            Number(yearlyComparison.Variance_Percentage).toFixed(2) + "%"
-        );
+        const variance = parseFloat(yearlyComparison.Variance_Percentage);
+
+        $("#cyExpense").text(formatCurrency(yearlyComparison.CY_Expense));
+        $("#pyExpense").text(formatCurrency(yearlyComparison.PY_Expense));
+        $("#variancePercent").text(variance.toFixed(2) + "%");
     }
 
     function tableUpdateCards(cardData) {
@@ -577,7 +575,7 @@ $(document).ready(function () {
                                 }</p>
                                 <h4 class="mb-0"><span class="counter-value" data-target="${
                                     card.value
-                                }">${formatNumber(card.value)}</span></h4>
+                                }">${formatCurrency(card.value)}</span></h4>
                             </div>
                         </div>
                     </div>
@@ -599,10 +597,10 @@ $(document).ready(function () {
                           (item) => `
                 <tr>
                     <td>${item.MonthName || "N/A"}</td>
-                    <td>${formatNumber(item.FilledTotal)}</td>
-                    <td>${formatNumber(item.VerifiedTotal)}</td>
-                    <td>${formatNumber(item.ApprovedTotal)}</td>
-                    <td>${formatNumber(item.FinancedTotal)}</td>
+                    <td>${formatCurrency(item.FilledTotal)}</td>
+                    <td>${formatCurrency(item.VerifiedTotal)}</td>
+                    <td>${formatCurrency(item.ApprovedTotal)}</td>
+                    <td>${formatCurrency(item.FinancedTotal)}</td>
                 </tr>
             `
                       )
@@ -612,25 +610,25 @@ $(document).ready(function () {
         $modalTableFooter.html(`
         <tr>
             <td><strong>Total</strong></td>
-            <td><strong>${formatNumber(
+            <td><strong>${formatCurrency(
                 monthlyTotals.reduce(
                     (sum, item) => sum + parseFloat(item.FilledTotal || 0),
                     0
                 )
             )}</strong></td>
-            <td><strong>${formatNumber(
+            <td><strong>${formatCurrency(
                 monthlyTotals.reduce(
                     (sum, item) => sum + parseFloat(item.VerifiedTotal || 0),
                     0
                 )
             )}</strong></td>
-            <td><strong>${formatNumber(
+            <td><strong>${formatCurrency(
                 monthlyTotals.reduce(
                     (sum, item) => sum + parseFloat(item.ApprovedTotal || 0),
                     0
                 )
             )}</strong></td>
-            <td><strong>${formatNumber(
+            <td><strong>${formatCurrency(
                 monthlyTotals.reduce(
                     (sum, item) => sum + parseFloat(item.FinancedTotal || 0),
                     0
@@ -661,15 +659,15 @@ $(document).ready(function () {
                     <td style="text-align:left">${
                         dept.department_name || "Unknown"
                     } (${dept.department_code})</td>
-                    <td>${formatNumber(
+                    <td>${formatCurrency(
                         dept["TotalFinancedTAmt_Y" + previousYearId]
                     )}</td>
-                    <td>${formatNumber(
+                    <td>${formatCurrency(
                         dept["TotalFinancedTAmt_Y" + yearId]
                     )}</td>
                     <td>${
                         dept.VariationPercentage !== null
-                            ? formatNumber(dept.VariationPercentage) + "%"
+                            ? dept.VariationPercentage + "%"
                             : "-"
                     }</td>
                 </tr>
@@ -699,10 +697,10 @@ $(document).ready(function () {
             $departmentTableFooter.html(`
             <tr>
                 <td style="text-align:left"><strong>Total</strong></td>
-                <td><strong>${formatNumber(totalY6)}</strong></td>
-                <td><strong>${formatNumber(totalY7)}</strong></td>
+                <td><strong>${formatCurrency(totalY6)}</strong></td>
+                <td><strong>${formatCurrency(totalY7)}</strong></td>
                 <td><strong>${
-                    variation !== "-" ? formatNumber(variation) + "%" : "-"
+                    variation !== "-" ? variation + "%" : "-"
                 }</strong></td>
             </tr>
         `);
@@ -729,10 +727,10 @@ $(document).ready(function () {
                             <td style="text-align:left">${
                                 emp.department_name || "Unknown"
                             }</td>
-                            <td class="text-center">${formatNumber(
+                            <td class="text-center">${formatCurrency(
                                 emp.filled_total_amount
                             )}</td>
-                            <td class="text-center">${formatNumber(
+                            <td class="text-center">${formatCurrency(
                                 emp.payment_total_amount
                             )}</td>
                         </tr>
@@ -771,10 +769,10 @@ $(document).ready(function () {
                     <td style="text-align:left">${
                         item.ClaimName || item.ClaimCode
                     }</td>
-                    <td>${formatNumber(item.FilledTotal)}</td>
-                    <td>${formatNumber(item.VerifiedTotal)}</td>
-                    <td>${formatNumber(item.ApprovedTotal)}</td>
-                    <td>${formatNumber(item.FinancedTotal)}</td>
+                    <td>${formatCurrency(item.FilledTotal)}</td>
+                    <td>${formatCurrency(item.VerifiedTotal)}</td>
+                    <td>${formatCurrency(item.ApprovedTotal)}</td>
+                    <td>${formatCurrency(item.FinancedTotal)}</td>
                 </tr>
             `
                     )
@@ -801,10 +799,10 @@ $(document).ready(function () {
             $claimTypeTableFooter.html(`
             <tr>
                 <td style="text-align:left"><strong>Total</strong></td>
-                <td><strong>${formatNumber(filledTotal)}</strong></td>
-                <td><strong>${formatNumber(verifiedTotal)}</strong></td>
-                <td><strong>${formatNumber(approvedTotal)}</strong></td>
-                <td><strong>${formatNumber(financedTotal)}</strong></td>
+                <td><strong>${formatCurrency(filledTotal)}</strong></td>
+                <td><strong>${formatCurrency(verifiedTotal)}</strong></td>
+                <td><strong>${formatCurrency(approvedTotal)}</strong></td>
+                <td><strong>${formatCurrency(financedTotal)}</strong></td>
             </tr>
         `);
         } else {
@@ -922,19 +920,19 @@ $(document).ready(function () {
                 y: [
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                 ],
             },
@@ -1087,7 +1085,7 @@ $(document).ready(function () {
                             fontWeight: 600,
                         },
                     },
-                    formatter: (val) => formatNumber(val.toFixed(2)) + "%",
+                    formatter: (val) => formatCurrency(val.toFixed(2)) + "%",
                 },
             ],
             tooltip: {
@@ -1100,16 +1098,16 @@ $(document).ready(function () {
                 y: [
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                     {
                         formatter: (val) =>
                             val !== undefined
-                                ? formatNumber(val.toFixed(2)) + "%"
+                                ? formatCurrency(val.toFixed(2)) + "%"
                                 : val,
                     },
                 ],
@@ -1249,7 +1247,8 @@ $(document).ready(function () {
             tooltip: {
                 shared: true,
                 y: {
-                    formatter: (val) => (val != null ? formatNumber(val) : val),
+                    formatter: (val) =>
+                        val != null ? formatCurrency(val) : val,
                 },
             },
         };
@@ -1396,11 +1395,11 @@ $(document).ready(function () {
                         html += `<tr><td style="text-align:left;">${row.ClaimName}</td>`;
                         activeMonths.forEach((month) => {
                             const val = parseFloat(row[month]) || 0;
-                            html += `<td>${formatNumber(val)}</td>`;
+                            html += `<td>${formatCurrency(val)}</td>`;
                             monthlySums[month] += val;
                         });
                         const rowTotal = parseFloat(row.total_year) || 0;
-                        html += `<td><b>${formatNumber(
+                        html += `<td><b>${formatCurrency(
                             rowTotal
                         )}</b></td></tr>`;
                         grandTotal += rowTotal;
@@ -1409,9 +1408,11 @@ $(document).ready(function () {
                     html += `<tr style="font-weight:bold; background:#f1f1f1;">
                     <td style="text-align:left;">Grand Total</td>`;
                     activeMonths.forEach((month) => {
-                        html += `<td>${formatNumber(monthlySums[month])}</td>`;
+                        html += `<td>${formatCurrency(
+                            monthlySums[month]
+                        )}</td>`;
                     });
-                    html += `<td>${formatNumber(grandTotal)}</td></tr>`;
+                    html += `<td>${formatCurrency(grandTotal)}</td></tr>`;
                     html += "</tbody></table>";
 
                     $content.html(html);
@@ -1614,7 +1615,7 @@ $(document).ready(function () {
             },
         });
     });
-    
+
     $(document).on("click", "#exportExpenseClaimTypeExcelBtn", function () {
         const button = this;
         const selectedDates = datePicker.selectedDates;
