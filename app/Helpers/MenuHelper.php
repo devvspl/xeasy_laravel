@@ -69,7 +69,7 @@ if (!function_exists('getMenuTree')) {
                 renderMenuTree($menu->children, $menuItems, $level + 1);
                 echo '</div>';
             } else {
-                echo '<a href="' . htmlspecialchars($menu->url) . '" class="nav-link menu-link">';
+                echo '<a href="' . url($menu->url) . '" class="nav-link menu-link">';
                 if ($iconClass) {
                     echo '<i class="' . $iconClass . '"></i> ';
                 }

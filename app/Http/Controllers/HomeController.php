@@ -377,16 +377,13 @@ class HomeController extends Controller
             ]
         ];
 
-        
         $claimTypeMap = [];
         foreach ($departmentTotalsClaimTypeWise as $row) {
-            
-            $row = (array) $row; 
+            $row = (array) $row;
             $deptName = $row['department_name'] ?? 'Unknown';
             $cy = (float) ($row["TotalFinancedTAmt_Y{$yearId}"] ?? 0);
             $py = (float) ($row["TotalFinancedTAmt_Y{$previousYearId}"] ?? 0);
 
-            
             if (!isset($formatted['departments'][$deptName])) {
                 $formatted['departments'][$deptName] = [
                     'department_name' => $deptName,
@@ -407,11 +404,9 @@ class HomeController extends Controller
                 'VariationPercentage' => $row['VariationPercentage'] !== null ? (float) $row['VariationPercentage'] : null,
             ];
 
-            
             $formatted['departments'][$deptName]['totals']["TotalFinancedTAmt_Y{$yearId}"] += $cy;
             $formatted['departments'][$deptName]['totals']["TotalFinancedTAmt_Y{$previousYearId}"] += $py;
 
-            
             $claimCode = $row['ClaimCode'];
             if (!isset($claimTypeMap[$claimCode])) {
                 $claimTypeMap[$claimCode] = [
@@ -425,12 +420,10 @@ class HomeController extends Controller
             $claimTypeMap[$claimCode]["TotalFinancedTAmt_Y{$yearId}"] += $cy;
             $claimTypeMap[$claimCode]["TotalFinancedTAmt_Y{$previousYearId}"] += $py;
 
-            
             $formatted['grand_totals']["TotalFinancedTAmt_Y{$yearId}"] += $cy;
             $formatted['grand_totals']["TotalFinancedTAmt_Y{$previousYearId}"] += $py;
         }
 
-        
         foreach ($formatted['departments'] as &$dept) {
             $cy = $dept['totals']["TotalFinancedTAmt_Y{$yearId}"];
             $py = $dept['totals']["TotalFinancedTAmt_Y{$previousYearId}"];
@@ -449,7 +442,29 @@ class HomeController extends Controller
         $formatted['grand_totals']['VariationPercentage'] = ($pyGrand > 0) ? round(($cyGrand - $pyGrand) / $pyGrand * 100, 2) : ($cyGrand > 0 ? 100 : null);
 
 
-        $data = ['departments' => $data, 'topEmployees' => $topEmployees, 'topEmployeesSameDay' => $topEmployeesSameDay, 'topEmployeesRevert' => $topEmployeesRevert, 'departmentMonthlyTotals' => $departmentMonthlyTotals, 'departmentTotalsClaimTypeWise' => $formatted];
+        $grandTotalsArray = [
+            ["TotalFinancedTAmt_Y{$yearId}" => $formatted['grand_totals']["TotalFinancedTAmt_Y{$yearId}"]],
+            ["TotalFinancedTAmt_Y{$previousYearId}" => $formatted['grand_totals']["TotalFinancedTAmt_Y{$previousYearId}"]],
+            ['VariationPercentage' => $formatted['grand_totals']['VariationPercentage']]
+        ];
+        
+
+        $departmentTotalsClaimTypeWise = [
+            "departments" => array_values($formatted['departments']),
+            "claimTypeTotals" => $formatted['claimTypeTotals'],
+            "grandTotals" => $grandTotalsArray
+        ];
+
+
+        $data = [
+            'departments' => $data,
+            'topEmployees' => $topEmployees,
+            'topEmployeesSameDay' => $topEmployeesSameDay,
+            'topEmployeesRevert' => $topEmployeesRevert,
+            'departmentMonthlyTotals' => $departmentMonthlyTotals,
+            'departmentTotalsClaimTypeWise' => $departmentTotalsClaimTypeWise
+        ];
+
         return $this->jsonSuccess($data, 'Department expense analytics loaded successfully.');
     }
 }
