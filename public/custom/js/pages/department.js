@@ -751,7 +751,9 @@ $(function () {
                     <tr>
                    
                         <td>${i + 1}</td>
-                        <td class="text-start">${sd.sub_department_name || "N/A"}</td>
+                        <td class="text-start">${
+                            sd.sub_department_name || "N/A"
+                        }</td>
                         <td class="text-end">${formatCurrency(
                             sd.TotalFinancedTAmt_Y6
                         )}</td>
@@ -855,6 +857,7 @@ $(function () {
     });
 
     $("#exportReports").on("click", function () {
+        updateModalDateRange();
         const button = this;
         const selected = $(".report-option:checked")
             .map(function () {
@@ -940,7 +943,6 @@ $(function () {
                         "Department_Claim_Type_Totals",
                 };
 
-                // Assuming the response is a zip file containing multiple reports
                 const blob = new Blob([data], { type: contentType });
                 const url = window.URL.createObjectURL(blob);
                 const a = $("<a>", {
@@ -966,11 +968,43 @@ $(function () {
         });
     });
 
+    $("#exportModal").on("show.bs.modal", function () {
+        updateModalDateRange();
+    });
+
     const defaultStart = new Date(today.getFullYear(), 3, 1);
     const defaultEnd = today;
 
     datePicker.setDate([defaultStart, defaultEnd]);
     fetchDashboardData(formatDate(defaultStart), formatDate(defaultEnd));
+
+    function updateModalDateRange() {
+        const selectedDates = datePicker.selectedDates;
+        const displaySpan = $("#selectedDateRange");
+
+        if (selectedDates && selectedDates.length >= 2) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+           
+            const fromDate = new Date(selectedDates[0]);
+            if (fromDate.getTime() !== today.getTime()) {
+                fromDate.setDate(fromDate.getDate() + 1);
+            }
+            const from = formatDateForAPI(fromDate);
+
+           
+            const toDate = new Date(selectedDates[1]);
+            if (toDate.getTime() !== today.getTime()) {
+                toDate.setDate(toDate.getDate() + 1);
+            }
+            const to = formatDateForAPI(toDate);
+
+            displaySpan.text(`${from} to ${to}`);
+        } else {
+            displaySpan.text("None");
+        }
+    }
 
     function renderEmployeeTable(data, tableId) {
         let rows = "";

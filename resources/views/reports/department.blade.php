@@ -211,7 +211,7 @@
       </div>
    </div>
    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
+      <div class="modal-dialog modal-md">
          <div class="modal-content">
             <div class="progress-container" style="display: none;">
                <div class="progres" style="height: 5px;">
@@ -223,7 +223,10 @@
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-
+               <div class="mb-3">
+                  <strong>Selected Date Range:</strong>
+                  <span id="selectedDateRange">None</span>
+               </div>
                <div class="d-flex justify-content-between">
                   <p class="mb-2">Choose the reports you want to export:</p>
                   <div class="form-check">
@@ -252,7 +255,8 @@
                      id="report4">
                   <label class="form-check-label" for="report4">Department wise Claim Type Analysis</label>
                </div>
-               <small class="text-danger"><i class="ri-add-circle-line fa-plus-circle"></i><strong>Note:</strong> If more than one report is selected, the files will be
+               <small class="text-info"><strong>Note:</strong> If more than one
+                  report is selected, the files will be
                   downloaded as a ZIP
                   archive.</small>
             </div>
