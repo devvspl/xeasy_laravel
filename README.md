@@ -1,4 +1,4 @@
-# 🏢 XEasy Laravel - Enterprise Expense Management System
+# 🏢 Xeasy Laravel - Enterprise Expense Management System
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
@@ -22,7 +22,7 @@ A comprehensive, enterprise-grade expense management system built with Laravel 1
 
 ## 🎯 Description
 
-XEasy Laravel is a sophisticated expense management platform that automates and simplifies the entire expense claim lifecycle. From initial submission to final approval and reimbursement, the system provides a seamless experience for employees, managers, and finance teams.
+Xeasy Laravel is a sophisticated expense management platform that automates and simplifies the entire expense claim lifecycle. From initial submission to final approval and reimbursement, the system provides a seamless experience for employees, managers, and finance teams.
 
 ### Key Benefits:
 - **Streamlined Workflow**: Automated approval processes with configurable workflows
@@ -99,8 +99,6 @@ XEasy Laravel is a sophisticated expense management platform that automates and 
 - **Spatie Laravel Activity Log** - Comprehensive activity logging
 - **Maatwebsite Excel** - Excel import/export functionality
 - **Laravel DomPDF** - PDF generation
-- **Yajra DataTables** - Server-side DataTables integration
-- **Pusher** - Real-time notifications
 
 ## 🚀 Installation
 
@@ -108,13 +106,11 @@ XEasy Laravel is a sophisticated expense management platform that automates and 
 - PHP 8.2 or higher
 - Composer 2.0 or higher
 - MySQL 8.0 or MariaDB 10.5 or higher
-- Node.js 18+ and NPM (for asset compilation)
-- Redis (optional, for caching)
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/your-username/xeasy_laravel.git
-cd xeasy_laravel
+git clone https://github.com/devvspl/Xeasy_laravel.git
+cd Xeasy_laravel
 ```
 
 ### Step 2: Install Dependencies
@@ -134,13 +130,10 @@ Edit `.env` file with your database and application settings:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=xeasy_laravel
+DB_DATABASE=Xeasy_laravel
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 
-CACHE_DRIVER=redis
-SESSION_DRIVER=redis
-QUEUE_CONNECTION=redis
 ```
 
 ### Step 4: Database Setup
@@ -161,12 +154,7 @@ npm run build
 php artisan storage:link
 ```
 
-### Step 7: Queue Setup (Optional)
-```bash
-php artisan queue:work
-```
-
-### Step 8: Start the Application
+### Step 7: Start the Application
 ```bash
 php artisan serve
 ```
@@ -193,45 +181,6 @@ Visit `http://localhost:8000` to access the application.
 - **Custom Reports**: Create custom report templates
 - **Theme Customization**: Customize the application appearance
 - **Data Export**: Export data in various formats for external analysis
-
-## 🔌 API Documentation
-
-The system provides RESTful APIs for integration with external systems:
-
-### Authentication
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-    "email": "user@example.com",
-    "password": "password"
-}
-```
-
-### Expense Claims
-```http
-GET /api/expense-claims
-Authorization: Bearer {token}
-
-POST /api/expense-claims
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-    "claim_type": "travel",
-    "amount": 150.00,
-    "description": "Business travel expenses"
-}
-```
-
-### Reports
-```http
-GET /api/reports/expense-summary
-Authorization: Bearer {token}
-```
-
-For complete API documentation, refer to the `/api/documentation` endpoint when the application is running.
 
 ## 🤝 Contributing
 
@@ -272,9 +221,9 @@ The MIT License is a permissive license that allows for:
 ## 📞 Contact
 
 - **Project Maintainer**: [Your Name](mailto:your.email@example.com)
-- **GitHub Issues**: [Report a Bug](https://github.com/your-username/xeasy_laravel/issues)
-- **Documentation**: [Wiki](https://github.com/your-username/xeasy_laravel/wiki)
-- **Support**: [Get Help](mailto:support@xeasy-laravel.com)
+- **GitHub Issues**: [Report a Bug](https://github.com/your-username/Xeasy_laravel/issues)
+- **Documentation**: [Wiki](https://github.com/your-username/Xeasy_laravel/wiki)
+- **Support**: [Get Help](mailto:support@Xeasy-laravel.com)
 
 ## 🙏 Acknowledgements
 
@@ -287,7 +236,7 @@ The MIT License is a permissive license that allows for:
 
 ## 💡 Getting Started
 
-Ready to streamline your expense management? XEasy Laravel provides everything you need to modernize your expense processes. Start with the installation guide above, and you'll be up and running in minutes!
+Ready to streamline your expense management? Xeasy Laravel provides everything you need to modernize your expense processes. Start with the installation guide above, and you'll be up and running in minutes!
 
 **Happy coding! 🚀**
 
