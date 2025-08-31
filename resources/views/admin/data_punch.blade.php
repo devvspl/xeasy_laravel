@@ -8,28 +8,31 @@
                         <div class="card-header align-items-center d-flex" id="dataPunchSection">
                             <h4 class="card-title mb-0 flex-grow-1">Punched Data</h4>
                             <div class="status-buttons">
-                                <a href="{{ route('data-punch', ['status' => 'hold']) }}"
-                                    class="status-btn hold {{ $status == 'hold' ? 'active' : '' }}">
+                                <a href="{{ url('data-punch/hold') }}"
+                                    class="status-btn hold {{ $status === 'hold' ? 'active' : '' }}">
                                     <span>Hold</span><span>({{ $holdCount }})</span>
                                 </a>
-                                <a href="{{ route('data-punch', ['status' => 'draft']) }}"
-                                    class="status-btn draft {{ $status == 'draft' ? 'active' : '' }}">
+
+                                <a href="{{ url('data-punch/draft') }}"
+                                    class="status-btn draft {{ $status === 'draft' ? 'active' : '' }}">
                                     <span>Draft</span><span>({{ $draftCount }})</span>
                                 </a>
-                                <a href="{{ route('data-punch', ['status' => 'filled']) }}"
-                                    class="status-btn filled {{ $status == 'filled' ? 'active' : '' }}">
+
+                                <a href="{{ url('data-punch/filled') }}"
+                                    class="status-btn filled {{ $status === 'filled' ? 'active' : '' }}">
                                     <span>Filled</span><span>({{ $filledCount }})</span>
                                 </a>
-                                <a href="{{ route('data-punch', ['status' => 'uploaded']) }}"
-                                    class="status-btn uploaded {{ $status == 'uploaded' ? 'active' : '' }}">
+
+                                <a href="{{ url('data-punch/uploaded') }}"
+                                    class="status-btn uploaded {{ $status === 'uploaded' ? 'active' : '' }}">
                                     <span>Uploaded</span><span>({{ $uploadedCount }})</span>
                                 </a>
-                                <a href="{{ route('data-punch', ['status' => 'denied']) }}"
-                                    class="status-btn denied {{ $status == 'denied' ? 'active' : '' }}">
+
+                                <a href="{{ url('data-punch/denied') }}"
+                                    class="status-btn denied {{ $status === 'denied' ? 'active' : '' }}">
                                     <span>Denied</span><span>({{ $deniedCount }})</span>
                                 </a>
                             </div>
-
                             <div class="dropdowns">
                                 <select class="select2" id="selDate" name="date" style="width: 130px">
                                     <option value="">Select Date</option>
@@ -125,14 +128,22 @@
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
         });
-        $('#selDate, #selEmployee').on('change', function () {
+       $('#selDate, #selEmployee').on('change', function () {
             const date = $('#selDate').val();
             const emp = $('#selEmployee').val();
-            const status = '{{ $status }}';
-            let query = `?status=${status}`;
+            const status = '{{ $status }}'; 
+            
+            let query = '';
             if (date) query += `&date=${date}`;
             if (emp) query += `&emp=${emp}`;
-            window.location.href = `{{ route('data-punch') }}` + query;
+
+            if (query) {
+                query = '?' + query.substring(1); 
+            }
+
+            
+            window.location.href = `/data-punch/${status}${query}`;
         });
+
     </script>
 @endpush

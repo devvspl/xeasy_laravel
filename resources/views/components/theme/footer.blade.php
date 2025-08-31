@@ -11,21 +11,22 @@
    </div>
 </div>
 <div class="modal fade" id="companyModal" tabindex="-1" aria-labelledby="companyModalLabel" aria-hidden="true">
-   <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-dialog">
       <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title" id="companyModalLabel">Select Company and Financial Year</h5>
+         <div class="modal-header justify-content-between">
+            <h5 class="modal-title" id="companyModalLabel">
+               Current - <span>{{ session('company_name') }}</span>
+               <span>({{ session('year_value') }})</span>
+            </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
+
          <div class="modal-body">
             <form id="companyForm">
                <div class="mb-3">
                   <label for="companySelect" class="form-label">Company</label>
                   <select class="form-select" id="companySelect" required>
                      <option value="" disabled selected>Select a company</option>
-                     <option value="companyA">Company A</option>
-                     <option value="companyB">Company B</option>
-                     <option value="companyC">Company C</option>
                   </select>
                </div>
                <div class="mb-3">
@@ -37,7 +38,13 @@
             </form>
          </div>
          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="submitSelection">Swatch</button>
+            <button type="button" class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
+               id="submitSelection">
+               <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 me-2">
+                  <span class="loader" style="display: none;"></span>
+               </i>
+               Switch
+            </button>
          </div>
       </div>
    </div>

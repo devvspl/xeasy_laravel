@@ -2,18 +2,18 @@
    <div class="navbar-brand-box">
       <a href="#" class="logo logo-dark">
          <span class="logo-sm">
-            <img src="assets/images/logo-sm.png" alt="" height="22">
+            <img src="{{ asset('custom/xeasy_logo_dark.png') }}" alt="" height="22">
          </span>
          <span class="logo-lg">
-            <img src="assets/images/logo-dark.png" alt="" height="17">
+            <img src="{{ asset('custom/xeasy_logo_dark.png') }}" alt="" height="17">
          </span>
       </a>
       <a href="#" class="logo logo-light">
          <span class="logo-sm">
-            <img src="assets/images/logo-sm.png" alt="" height="22">
+            <img src="{{ asset('custom/xeasy_logo_dark.png') }}" alt="" height="22">
          </span>
          <span class="logo-lg">
-            <img src="assets/images/logo-light.png" alt="" height="17">
+            <img src="{{ asset('custom/xeasy_logo_dark.png') }}" alt="" height="17">
          </span>
       </a>
       <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
@@ -25,7 +25,7 @@
       <button type="button" class="btn material-shadow-none" id="page-header-user-dropdown" data-bs-toggle="dropdown"
          aria-haspopup="true" aria-expanded="false">
          <span class="d-flex align-items-center gap-2">
-            <img class="rounded header-profile-user" src="assets/images/users/avatar-1.jpg" alt="Header Avatar">
+            <img class="rounded header-profile-user" src="{{ asset('assets/images/users/avatar-1.jpg') }}" alt="Header Avatar">
             <span class="text-start">
                <span class="d-block fw-medium sidebar-user-name-text">Anna Adame</span>
                <span class="d-block fs-14 sidebar-user-name-sub-text"><i

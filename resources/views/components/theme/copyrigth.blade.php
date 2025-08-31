@@ -6,8 +6,7 @@
                &copy;
                <script>
                   document.write(new Date().getFullYear())
-               </script> XEasy – Employee Expense Management Software by VNR Seeds Pvt.
-               Ltd.
+               </script> Xeasy – Employee Expense Management Software by VNR Seeds Pvt. Ltd.
             </div>
          </div>
       </div>

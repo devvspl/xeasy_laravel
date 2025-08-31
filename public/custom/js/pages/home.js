@@ -67,18 +67,54 @@ $(document).ready(function () {
     const datePickerDiv = document.getElementById("date-picker-wrapper");
 
     const monthOptions = [
-        { label: "April", month: 3 },
-        { label: "May", month: 4 },
-        { label: "June", month: 5 },
-        { label: "July", month: 6 },
-        { label: "August", month: 7 },
-        { label: "September", month: 8 },
-        { label: "October", month: 9 },
-        { label: "November", month: 10 },
-        { label: "December", month: 11 },
-        { label: "January", month: 0 },
-        { label: "February", month: 1 },
-        { label: "March", month: 2 },
+        {
+            label: "April",
+            month: 3,
+        },
+        {
+            label: "May",
+            month: 4,
+        },
+        {
+            label: "June",
+            month: 5,
+        },
+        {
+            label: "July",
+            month: 6,
+        },
+        {
+            label: "August",
+            month: 7,
+        },
+        {
+            label: "September",
+            month: 8,
+        },
+        {
+            label: "October",
+            month: 9,
+        },
+        {
+            label: "November",
+            month: 10,
+        },
+        {
+            label: "December",
+            month: 11,
+        },
+        {
+            label: "January",
+            month: 0,
+        },
+        {
+            label: "February",
+            month: 1,
+        },
+        {
+            label: "March",
+            month: 2,
+        },
     ];
 
     function getDateRange(startMonth, startDay, endMonth, endDay, year) {
@@ -228,7 +264,6 @@ $(document).ready(function () {
         const adjustedEndDate = new Date(rangeEnd);
         adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
         const billDateTo = formatDateForAPI(adjustedEndDate);
-        //********** fetchDashboardData(billDateFrom, billDateTo); **********//
 
         button.addEventListener("click", () => {
             document
@@ -346,11 +381,14 @@ $(document).ready(function () {
 
     createMonthToggleWithDropdown();
 
-    function formatNumber(value) {
+    function formatCurrency(value) {
         const numValue = Number(value || 0);
         return numValue === 0
-            ? "0"
+            ? "₹0"
             : numValue.toLocaleString("en-IN", {
+                  style: "currency",
+                  currency: "INR",
+                  minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
               });
     }
@@ -407,13 +445,14 @@ $(document).ready(function () {
                 const cardData = data.cardData || {};
                 const monthlyTotals = data.monthlyTotals || [];
                 const departmentTotals = data.departmentTotals || [];
+                console.log(departmentTotals);
                 const totalAllMonths = data.totalAllMonths || {};
                 const yearId = data.yearId;
                 const previousYearId = yearId - 1;
                 const claimTypeTotals = data.claimTypeTotals || [];
                 const yearlyComparison = data.yearlyComparison;
                 const topTravelersByWType = data.topTravelersByWType;
-
+                const topEmployees = data.topEmployees || [];
                 tableUpdateYearlyComparison(yearlyComparison);
                 tableUpdateCards(cardData);
                 tableUpdateMonthlyTotals(monthlyTotals);
@@ -423,6 +462,7 @@ $(document).ready(function () {
                     previousYearId
                 );
                 tableUpdateClaimTypeTotals(claimTypeTotals);
+                tableTopEmployee(topEmployees);
                 chartRenderMonthlyExpense(monthlyTotals);
                 chartRenderDepartmentComparison(
                     departmentTotals,
@@ -439,17 +479,12 @@ $(document).ready(function () {
             },
         });
     }
-
     function tableUpdateYearlyComparison(yearlyComparison) {
-        $("#cyExpense").text(
-            Number(yearlyComparison.CY_Expense).toLocaleString()
-        );
-        $("#pyExpense").text(
-            Number(yearlyComparison.PY_Expense).toLocaleString()
-        );
-        $("#variancePercent").text(
-            Number(yearlyComparison.Variance_Percentage).toFixed(2) + "%"
-        );
+        const variance = parseFloat(yearlyComparison.Variance_Percentage);
+
+        $("#cyExpense").text(formatCurrency(yearlyComparison.CY_Expense));
+        $("#pyExpense").text(formatCurrency(yearlyComparison.PY_Expense));
+        $("#variancePercent").text(variance.toFixed(2) + "%");
     }
 
     function tableUpdateCards(cardData) {
@@ -463,7 +498,10 @@ $(document).ready(function () {
             Approved: 0,
             Financed: 0,
         };
-        const mergedCardData = { ...defaultCardData, ...cardData };
+        const mergedCardData = {
+            ...defaultCardData,
+            ...cardData,
+        };
         const cards = [
             {
                 label: "Total Expense",
@@ -537,7 +575,7 @@ $(document).ready(function () {
                                 }</p>
                                 <h4 class="mb-0"><span class="counter-value" data-target="${
                                     card.value
-                                }">${formatNumber(card.value)}</span></h4>
+                                }">${formatCurrency(card.value)}</span></h4>
                             </div>
                         </div>
                     </div>
@@ -559,10 +597,10 @@ $(document).ready(function () {
                           (item) => `
                 <tr>
                     <td>${item.MonthName || "N/A"}</td>
-                    <td>${formatNumber(item.FilledTotal)}</td>
-                    <td>${formatNumber(item.VerifiedTotal)}</td>
-                    <td>${formatNumber(item.ApprovedTotal)}</td>
-                    <td>${formatNumber(item.FinancedTotal)}</td>
+                    <td>${formatCurrency(item.FilledTotal)}</td>
+                    <td>${formatCurrency(item.VerifiedTotal)}</td>
+                    <td>${formatCurrency(item.ApprovedTotal)}</td>
+                    <td>${formatCurrency(item.FinancedTotal)}</td>
                 </tr>
             `
                       )
@@ -572,25 +610,25 @@ $(document).ready(function () {
         $modalTableFooter.html(`
         <tr>
             <td><strong>Total</strong></td>
-            <td><strong>${formatNumber(
+            <td><strong>${formatCurrency(
                 monthlyTotals.reduce(
                     (sum, item) => sum + parseFloat(item.FilledTotal || 0),
                     0
                 )
             )}</strong></td>
-            <td><strong>${formatNumber(
+            <td><strong>${formatCurrency(
                 monthlyTotals.reduce(
                     (sum, item) => sum + parseFloat(item.VerifiedTotal || 0),
                     0
                 )
             )}</strong></td>
-            <td><strong>${formatNumber(
+            <td><strong>${formatCurrency(
                 monthlyTotals.reduce(
                     (sum, item) => sum + parseFloat(item.ApprovedTotal || 0),
                     0
                 )
             )}</strong></td>
-            <td><strong>${formatNumber(
+            <td><strong>${formatCurrency(
                 monthlyTotals.reduce(
                     (sum, item) => sum + parseFloat(item.FinancedTotal || 0),
                     0
@@ -621,15 +659,15 @@ $(document).ready(function () {
                     <td style="text-align:left">${
                         dept.department_name || "Unknown"
                     } (${dept.department_code})</td>
-                    <td>${formatNumber(
+                    <td>${formatCurrency(
                         dept["TotalFinancedTAmt_Y" + previousYearId]
                     )}</td>
-                    <td>${formatNumber(
+                    <td>${formatCurrency(
                         dept["TotalFinancedTAmt_Y" + yearId]
                     )}</td>
                     <td>${
                         dept.VariationPercentage !== null
-                            ? formatNumber(dept.VariationPercentage) + "%"
+                            ? dept.VariationPercentage + "%"
                             : "-"
                     }</td>
                 </tr>
@@ -659,16 +697,60 @@ $(document).ready(function () {
             $departmentTableFooter.html(`
             <tr>
                 <td style="text-align:left"><strong>Total</strong></td>
-                <td><strong>${formatNumber(totalY6)}</strong></td>
-                <td><strong>${formatNumber(totalY7)}</strong></td>
+                <td><strong>${formatCurrency(totalY6)}</strong></td>
+                <td><strong>${formatCurrency(totalY7)}</strong></td>
                 <td><strong>${
-                    variation !== "-" ? formatNumber(variation) + "%" : "-"
+                    variation !== "-" ? variation + "%" : "-"
                 }</strong></td>
             </tr>
         `);
         } else {
             $departmentTableBody.html(
                 `<tr><td colspan="4" class="text-center">No data available</td></tr>`
+            );
+        }
+    }
+
+    function tableTopEmployee(topEmployees) {
+        const $employeeTableBody = $("#employee-table-body");
+
+        if (topEmployees.length) {
+            $employeeTableBody.html(
+                topEmployees
+                    .map(
+                        (emp, index) => `
+                            <tr class="employee-row" data-empid="${emp.CrBy}">
+                                <td class="toggle-icon text-center"><i class="ri-add-circle-line"></i></td>
+                                <td>${index + 1}</td>
+                                <td style="text-align:left">${emp.employee_name} - ${
+                                                emp.EmpCode
+                                            }</td>
+                                <td style="text-align:left">${emp.department_name || "Unknown"}</td>
+                                <td class="text-center">${formatCurrency(
+                                    emp.filled_total_amount
+                                )}</td>
+                                <td class="text-center">${formatCurrency(
+                                    emp.payment_total_amount
+                                )}</td>
+                            </tr>
+                            <tr class="employee-detail-row" id="detail-${
+                                emp.CrBy
+                            }" style="display:none;">
+                                <td colspan="6" style="background-color: #f3f6f9;">
+                                    <canvas id="chart-${
+                                        emp.CrBy
+                                    }" style="width:100%; height:200px;"></canvas>
+                                    <div class="employee-detail-content"></div>
+                                </td>
+                            </tr>
+                        `
+                    )
+
+                    .join("")
+            );
+        } else {
+            $employeeTableBody.html(
+                `<tr><td colspan="6" class="text-center">No data available</td></tr>`
             );
         }
     }
@@ -686,10 +768,10 @@ $(document).ready(function () {
                     <td style="text-align:left">${
                         item.ClaimName || item.ClaimCode
                     }</td>
-                    <td>${formatNumber(item.FilledTotal)}</td>
-                    <td>${formatNumber(item.VerifiedTotal)}</td>
-                    <td>${formatNumber(item.ApprovedTotal)}</td>
-                    <td>${formatNumber(item.FinancedTotal)}</td>
+                    <td>${formatCurrency(item.FilledTotal)}</td>
+                    <td>${formatCurrency(item.VerifiedTotal)}</td>
+                    <td>${formatCurrency(item.ApprovedTotal)}</td>
+                    <td>${formatCurrency(item.FinancedTotal)}</td>
                 </tr>
             `
                     )
@@ -716,10 +798,10 @@ $(document).ready(function () {
             $claimTypeTableFooter.html(`
             <tr>
                 <td style="text-align:left"><strong>Total</strong></td>
-                <td><strong>${formatNumber(filledTotal)}</strong></td>
-                <td><strong>${formatNumber(verifiedTotal)}</strong></td>
-                <td><strong>${formatNumber(approvedTotal)}</strong></td>
-                <td><strong>${formatNumber(financedTotal)}</strong></td>
+                <td><strong>${formatCurrency(filledTotal)}</strong></td>
+                <td><strong>${formatCurrency(verifiedTotal)}</strong></td>
+                <td><strong>${formatCurrency(approvedTotal)}</strong></td>
+                <td><strong>${formatCurrency(financedTotal)}</strong></td>
             </tr>
         `);
         } else {
@@ -760,53 +842,96 @@ $(document).ready(function () {
                     data: monthlyTotals.map((item) => item.FinancedTotal || 0),
                 },
             ],
-            chart: { height: 374, type: "line", toolbar: { show: false } },
+            chart: {
+                height: 374,
+                type: "line",
+                toolbar: {
+                    show: false,
+                },
+            },
             stroke: {
                 curve: "smooth",
                 dashArray: [0, 0, 0, 3],
                 width: [0, 0, 0, 1],
             },
-            fill: { opacity: [1, 1, 1, 0.1] },
-            markers: { size: [0, 0, 0, 4], strokeWidth: 2, hover: { size: 4 } },
+            fill: {
+                opacity: [1, 1, 1, 0.1],
+            },
+            markers: {
+                size: [0, 0, 0, 4],
+                strokeWidth: 2,
+                hover: {
+                    size: 4,
+                },
+            },
             xaxis: {
                 categories: monthlyTotals.map((item) => item.MonthName || ""),
-                axisTicks: { show: false },
-                axisBorder: { show: false },
+                axisTicks: {
+                    show: false,
+                },
+                axisBorder: {
+                    show: false,
+                },
             },
             grid: {
                 show: true,
-                xaxis: { lines: { show: true } },
-                yaxis: { lines: { show: false } },
-                padding: { top: 0, right: -2, bottom: 15, left: 10 },
+                xaxis: {
+                    lines: {
+                        show: true,
+                    },
+                },
+                yaxis: {
+                    lines: {
+                        show: false,
+                    },
+                },
+                padding: {
+                    top: 0,
+                    right: -2,
+                    bottom: 15,
+                    left: 10,
+                },
             },
             legend: {
                 show: true,
                 horizontalAlign: "center",
                 offsetX: 0,
                 offsetY: -5,
-                markers: { width: 9, height: 9, radius: 6 },
-                itemMargin: { horizontal: 10, vertical: 0 },
+                markers: {
+                    width: 9,
+                    height: 9,
+                    radius: 6,
+                },
+                itemMargin: {
+                    horizontal: 10,
+                    vertical: 0,
+                },
             },
-            plotOptions: { bar: { columnWidth: "30%", barHeight: "70%" } },
+            plotOptions: {
+                bar: {
+                    columnWidth: "30%",
+                    barHeight: "70%",
+                },
+            },
             colors: expenseChartColors,
             tooltip: {
                 shared: true,
                 y: [
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                 ],
             },
@@ -863,10 +988,16 @@ $(document).ready(function () {
                 height: 350,
                 type: "line",
                 stacked: false,
-                toolbar: { show: false },
+                toolbar: {
+                    show: false,
+                },
             },
-            dataLabels: { enabled: false },
-            stroke: { width: [1, 1, 4] },
+            dataLabels: {
+                enabled: false,
+            },
+            stroke: {
+                width: [1, 1, 4],
+            },
             xaxis: {
                 categories: departmentTotals.map(
                     (item) => item.department_code || "N/A"
@@ -875,43 +1006,85 @@ $(document).ready(function () {
                     rotate: -45,
                     rotateAlways: true,
                     trim: false,
-                    style: { fontSize: "11px" },
+                    style: {
+                        fontSize: "11px",
+                    },
                 },
-                tooltip: { enabled: true },
+                tooltip: {
+                    enabled: true,
+                },
             },
             yaxis: [
                 {
-                    axisTicks: { show: true },
-                    axisBorder: { show: true, color: chartMultiColors[0] },
-                    labels: { style: { colors: chartMultiColors[0] } },
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: chartMultiColors[0],
+                    },
+                    labels: {
+                        style: {
+                            colors: chartMultiColors[0],
+                        },
+                    },
                     title: {
                         text: "Current Year Expenses",
-                        style: { color: chartMultiColors[0], fontWeight: 600 },
+                        style: {
+                            color: chartMultiColors[0],
+                            fontWeight: 600,
+                        },
                     },
-                    tooltip: { enabled: true },
+                    tooltip: {
+                        enabled: true,
+                    },
                 },
                 {
                     seriesName: "Previous Year",
                     opposite: true,
-                    axisTicks: { show: true },
-                    axisBorder: { show: true, color: chartMultiColors[1] },
-                    labels: { style: { colors: chartMultiColors[1] } },
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: chartMultiColors[1],
+                    },
+                    labels: {
+                        style: {
+                            colors: chartMultiColors[1],
+                        },
+                    },
                     title: {
                         text: "Previous Year Expenses",
-                        style: { color: chartMultiColors[1], fontWeight: 600 },
+                        style: {
+                            color: chartMultiColors[1],
+                            fontWeight: 600,
+                        },
                     },
                 },
                 {
                     seriesName: "Variation",
                     opposite: true,
-                    axisTicks: { show: true },
-                    axisBorder: { show: true, color: chartMultiColors[2] },
-                    labels: { style: { colors: chartMultiColors[2] } },
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: chartMultiColors[2],
+                    },
+                    labels: {
+                        style: {
+                            colors: chartMultiColors[2],
+                        },
+                    },
                     title: {
                         text: "Variation (%)",
-                        style: { color: chartMultiColors[2], fontWeight: 600 },
+                        style: {
+                            color: chartMultiColors[2],
+                            fontWeight: 600,
+                        },
                     },
-                    formatter: (val) => formatNumber(val.toFixed(2)) + "%",
+                    formatter: (val) => formatCurrency(val.toFixed(2)) + "%",
                 },
             ],
             tooltip: {
@@ -924,16 +1097,16 @@ $(document).ready(function () {
                 y: [
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                     {
                         formatter: (val) =>
-                            val !== undefined ? formatNumber(val) : val,
+                            val !== undefined ? formatCurrency(val) : val,
                     },
                     {
                         formatter: (val) =>
                             val !== undefined
-                                ? formatNumber(val.toFixed(2)) + "%"
+                                ? formatCurrency(val.toFixed(2)) + "%"
                                 : val,
                     },
                 ],
@@ -943,7 +1116,11 @@ $(document).ready(function () {
                 position: "bottom",
                 fontSize: "14px",
                 fontWeight: 500,
-                markers: { width: 12, height: 12, radius: 12 },
+                markers: {
+                    width: 12,
+                    height: 12,
+                    radius: 12,
+                },
             },
             colors: chartMultiColors,
         };
@@ -990,40 +1167,87 @@ $(document).ready(function () {
                     ),
                 },
             ],
-            chart: { height: 370, type: "line", toolbar: { show: false } },
+            chart: {
+                height: 370,
+                type: "line",
+                toolbar: {
+                    show: false,
+                },
+            },
             stroke: {
                 curve: "smooth",
                 width: [2, 0, 2.2, 2.2],
                 dashArray: [0, 0, 5, 3],
             },
-            fill: { opacity: [0.2, 1, 1, 1] },
-            markers: { size: [4, 0, 5, 5], hover: { size: 6 } },
+            fill: {
+                opacity: [0.2, 1, 1, 1],
+            },
+            markers: {
+                size: [4, 0, 5, 5],
+                hover: {
+                    size: 6,
+                },
+            },
             xaxis: {
                 categories: claimTypeTotals.map((item) => item.ClaimCode),
-                axisTicks: { show: false },
-                axisBorder: { show: false },
-                labels: { rotate: -45, style: { fontSize: "12px" } },
+                axisTicks: {
+                    show: false,
+                },
+                axisBorder: {
+                    show: false,
+                },
+                labels: {
+                    rotate: -45,
+                    style: {
+                        fontSize: "12px",
+                    },
+                },
             },
             grid: {
                 show: true,
-                xaxis: { lines: { show: true } },
-                yaxis: { lines: { show: true } },
-                padding: { top: 0, right: -2, bottom: 15, left: 10 },
+                xaxis: {
+                    lines: {
+                        show: true,
+                    },
+                },
+                yaxis: {
+                    lines: {
+                        show: true,
+                    },
+                },
+                padding: {
+                    top: 0,
+                    right: -2,
+                    bottom: 15,
+                    left: 10,
+                },
             },
             legend: {
                 show: true,
                 horizontalAlign: "center",
                 offsetX: 0,
                 offsetY: -5,
-                markers: { width: 9, height: 9, radius: 6 },
-                itemMargin: { horizontal: 10, vertical: 0 },
+                markers: {
+                    width: 9,
+                    height: 9,
+                    radius: 6,
+                },
+                itemMargin: {
+                    horizontal: 10,
+                    vertical: 0,
+                },
             },
             colors: claimTypeColors,
-            plotOptions: { bar: { columnWidth: "30%" } },
+            plotOptions: {
+                bar: {
+                    columnWidth: "30%",
+                },
+            },
             tooltip: {
                 shared: true,
                 y: {
-                    formatter: (val) => (val != null ? formatNumber(val) : val),
+                    formatter: (val) =>
+                        val != null ? formatCurrency(val) : val,
                 },
             },
         };
@@ -1034,7 +1258,7 @@ $(document).ready(function () {
         claimTypeChart.render();
     }
 
-    function exportExportExpenseMonth() {
+    function exportExpenseMonthExcel() {
         const button = this;
         $.ajax({
             url: "",
@@ -1043,9 +1267,13 @@ $(document).ready(function () {
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
             },
-            xhrFields: { responseType: "blob" },
+            xhrFields: {
+                responseType: "blob",
+            },
             beforeSend: function () {
-                startLoader({ currentTarget: button });
+                startLoader({
+                    currentTarget: button,
+                });
             },
             success: function (data, status, xhr) {
                 if (
@@ -1062,7 +1290,7 @@ $(document).ready(function () {
                 const url = window.URL.createObjectURL(data);
                 const a = $("<a>", {
                     href: url,
-                    download: `expense_claims_${new Date()
+                    download: `expense_month_wise_${new Date()
                         .toISOString()
                         .replace(/[:.]/g, "")}.xlsx`,
                 }).appendTo("body");
@@ -1073,8 +1301,404 @@ $(document).ready(function () {
             },
             error: function (xhr) {},
             complete: function () {
-                endLoader({ currentTarget: button });
+                endLoader({
+                    currentTarget: button,
+                });
             },
         });
     }
+
+    function randomColor() {
+        const r = Math.floor(Math.random() * 200);
+        const g = Math.floor(Math.random() * 200);
+        const b = Math.floor(Math.random() * 200);
+        return `rgba(${r},${g},${b},0.7)`;
+    }
+
+    $(document).on("click", ".employee-row", function () {
+        const $row = $(this);
+        const empId = $row.data("empid");
+        const $detailRow = $("#detail-" + empId);
+        const $content = $detailRow.find(".employee-detail-content");
+        const $icon = $row.find(".toggle-icon i");
+
+        $(".employee-detail-row").not($detailRow).hide();
+        $(".employee-row")
+            .not($row)
+            .removeClass("active-row")
+            .find(".toggle-icon i")
+            .removeClass("fa-minus-circle")
+            .addClass("fa-plus-circle");
+
+        if ($detailRow.is(":visible")) {
+            $detailRow.hide();
+            $row.removeClass("active-row");
+            $icon.removeClass("fa-minus-circle").addClass("fa-plus-circle");
+            return;
+        }
+
+        $row.addClass("active-row");
+        $icon.removeClass("fa-plus-circle").addClass("fa-minus-circle");
+
+        $content.html("<p>Loading...</p>");
+        $detailRow.show();
+
+        const selectedDates = datePicker.selectedDates;
+        if (!selectedDates || selectedDates.length < 2) {
+            alert("Please select a valid date range first.");
+            return;
+        }
+
+        const billDateFrom = formatDateForAPI(selectedDates[0]);
+        const billDateTo = formatDateForAPI(selectedDates[1]);
+
+        $.ajax({
+            url: "/get-employee-trend",
+            method: "POST",
+            data: {
+                bill_date_from: billDateFrom,
+                bill_date_to: billDateTo,
+                employee_id: empId,
+            },
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (res) {
+                const data = Array.isArray(res) ? res : res.data;
+
+                if (data && data.length) {
+                    const months = [
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec",
+                    ];
+                    const activeMonths = months.filter((month) =>
+                        data.some((row) => parseFloat(row[month]) > 0)
+                    );
+
+                    let html = `<table class="table table-bordered">
+                    <thead>
+                        <tr style="font-weight:bold; background:#f1f1f1;">
+                            <th style="text-align:left;">Claim Type</th>`;
+                    activeMonths.forEach(
+                        (month) => (html += `<th>${month}</th>`)
+                    );
+                    html += `<th>Total</th></tr></thead><tbody>`;
+
+                    const monthlySums = {};
+                    activeMonths.forEach((month) => (monthlySums[month] = 0));
+                    let grandTotal = 0;
+
+                    data.forEach((row) => {
+                        html += `<tr><td style="text-align:left;">${row.ClaimName}</td>`;
+                        activeMonths.forEach((month) => {
+                            const val = parseFloat(row[month]) || 0;
+                            html += `<td>${formatCurrency(val)}</td>`;
+                            monthlySums[month] += val;
+                        });
+                        const rowTotal = parseFloat(row.total_year) || 0;
+                        html += `<td><b>${formatCurrency(
+                            rowTotal
+                        )}</b></td></tr>`;
+                        grandTotal += rowTotal;
+                    });
+
+                    html += `<tr style="font-weight:bold; background:#f1f1f1;">
+                    <td style="text-align:left;">Grand Total</td>`;
+                    activeMonths.forEach((month) => {
+                        html += `<td>${formatCurrency(
+                            monthlySums[month]
+                        )}</td>`;
+                    });
+                    html += `<td>${formatCurrency(grandTotal)}</td></tr>`;
+                    html += "</tbody></table>";
+
+                    $content.html(html);
+
+                    const ctx = document
+                        .getElementById(`chart-${empId}`)
+                        .getContext("2d");
+                    new Chart(ctx, {
+                        type: "bar",
+                        data: {
+                            labels: activeMonths,
+                            datasets: data.map((row) => ({
+                                label: row.ClaimName,
+                                data: activeMonths.map(
+                                    (m) => parseFloat(row[m]) || 0
+                                ),
+                                backgroundColor: randomColor(),
+                            })),
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: "bottom",
+                                },
+                                title: {
+                                    display: true,
+                                    text: "Monthly Claim Trend",
+                                },
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                },
+                            },
+                        },
+                    });
+                } else {
+                    $content.html("<p>No claim data found.</p>");
+                }
+            },
+            error: function () {
+                $content.html("<p class='text-danger'>Error loading data</p>");
+            },
+        });
+    });
+
+    $(document).on("click", "#exportExpenseMonthExcelBtn", function () {
+        const button = this;
+        const selectedDates = datePicker.selectedDates;
+
+        // Validate date selection
+        if (!selectedDates || selectedDates.length < 2) {
+            alert("Please select a valid date range.");
+            return;
+        }
+
+        const billDateFrom = formatDateForAPI(selectedDates[0]);
+        const billDateTo = formatDateForAPI(selectedDates[1]);
+
+        // Log the payload for debugging
+        console.log("Sending payload:", {
+            bill_date_from: billDateFrom,
+            bill_date_to: billDateTo,
+        });
+
+        $.ajax({
+            url: "/export/expense-month-wise",
+            method: "POST",
+            data: JSON.stringify({
+                bill_date_from: billDateFrom,
+                bill_date_to: billDateTo,
+            }),
+            contentType: "application/json",
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            xhrFields: {
+                responseType: "blob",
+            },
+            beforeSend: function () {
+                startLoader({ currentTarget: button });
+            },
+            success: function (data, status, xhr) {
+                if (
+                    xhr
+                        .getResponseHeader("content-type")
+                        .includes("application/json")
+                ) {
+                    data.text().then((text) => {
+                        const response = JSON.parse(text);
+                        alert(response.error || "Export failed.");
+                    });
+                    return;
+                }
+
+                const startDate = billDateFrom.replace(/-/g, "");
+                const endDate = billDateTo.replace(/-/g, "");
+                const url = window.URL.createObjectURL(data);
+                const a = $("<a>", {
+                    href: url,
+                    download: `expense_month_wise_report_${startDate}_to_${endDate}.xlsx`,
+                }).appendTo("body");
+                a[0].click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                $("#exportModal").modal("hide");
+            },
+            complete: function () {
+                endLoader({ currentTarget: button });
+            },
+            error: function (xhr, status, error) {
+                console.error(
+                    "Error exporting Excel:",
+                    error,
+                    xhr.responseText
+                );
+                alert(
+                    "An error occurred while exporting the report: " +
+                        (xhr.responseJSON?.error || "Unknown error")
+                );
+            },
+        });
+    });
+
+    $(document).on("click", "#exportExpenseDepartmentExcelBtn", function () {
+        const button = this;
+        const selectedDates = datePicker.selectedDates;
+
+        // Validate date selection
+        if (!selectedDates || selectedDates.length < 2) {
+            alert("Please select a valid date range.");
+            return;
+        }
+
+        const billDateFrom = formatDateForAPI(selectedDates[0]);
+        const billDateTo = formatDateForAPI(selectedDates[1]);
+
+        // Log the payload for debugging
+        console.log("Sending payload:", {
+            bill_date_from: billDateFrom,
+            bill_date_to: billDateTo,
+        });
+
+        $.ajax({
+            url: "/export/expense-department-wise",
+            method: "POST",
+            data: JSON.stringify({
+                bill_date_from: billDateFrom,
+                bill_date_to: billDateTo,
+            }),
+            contentType: "application/json",
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            xhrFields: {
+                responseType: "blob",
+            },
+            beforeSend: function () {
+                startLoader({ currentTarget: button });
+            },
+            success: function (data, status, xhr) {
+                if (
+                    xhr
+                        .getResponseHeader("content-type")
+                        .includes("application/json")
+                ) {
+                    data.text().then((text) => {
+                        const response = JSON.parse(text);
+                        alert(response.error || "Export failed.");
+                    });
+                    return;
+                }
+
+                const startDate = billDateFrom.replace(/-/g, "");
+                const endDate = billDateTo.replace(/-/g, "");
+                const url = window.URL.createObjectURL(data);
+                const a = $("<a>", {
+                    href: url,
+                    download: `expense_department_wise_report_${startDate}_to_${endDate}.xlsx`,
+                }).appendTo("body");
+                a[0].click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                $("#exportModal").modal("hide");
+            },
+            complete: function () {
+                endLoader({ currentTarget: button });
+            },
+            error: function (xhr, status, error) {
+                console.error(
+                    "Error exporting Excel:",
+                    error,
+                    xhr.responseText
+                );
+                alert(
+                    "An error occurred while exporting the report: " +
+                        (xhr.responseJSON?.error || "Unknown error")
+                );
+            },
+        });
+    });
+
+    $(document).on("click", "#exportExpenseClaimTypeExcelBtn", function () {
+        const button = this;
+        const selectedDates = datePicker.selectedDates;
+
+        // Validate date selection
+        if (!selectedDates || selectedDates.length < 2) {
+            alert("Please select a valid date range.");
+            return;
+        }
+
+        const billDateFrom = formatDateForAPI(selectedDates[0]);
+        const billDateTo = formatDateForAPI(selectedDates[1]);
+
+        // Log the payload for debugging
+        console.log("Sending payload:", {
+            bill_date_from: billDateFrom,
+            bill_date_to: billDateTo,
+        });
+
+        $.ajax({
+            url: "/export/expense-claim-type-wise",
+            method: "POST",
+            data: JSON.stringify({
+                bill_date_from: billDateFrom,
+                bill_date_to: billDateTo,
+            }),
+            contentType: "application/json",
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            xhrFields: {
+                responseType: "blob",
+            },
+            beforeSend: function () {
+                startLoader({ currentTarget: button });
+            },
+            success: function (data, status, xhr) {
+                if (
+                    xhr
+                        .getResponseHeader("content-type")
+                        .includes("application/json")
+                ) {
+                    data.text().then((text) => {
+                        const response = JSON.parse(text);
+                        alert(response.error || "Export failed.");
+                    });
+                    return;
+                }
+
+                const startDate = billDateFrom.replace(/-/g, "");
+                const endDate = billDateTo.replace(/-/g, "");
+                const url = window.URL.createObjectURL(data);
+                const a = $("<a>", {
+                    href: url,
+                    download: `expense_claim_type_wise_report_${startDate}_to_${endDate}.xlsx`,
+                }).appendTo("body");
+                a[0].click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                $("#exportModal").modal("hide");
+            },
+            complete: function () {
+                endLoader({ currentTarget: button });
+            },
+            error: function (xhr, status, error) {
+                console.error(
+                    "Error exporting Excel:",
+                    error,
+                    xhr.responseText
+                );
+                alert(
+                    "An error occurred while exporting the report: " +
+                        (xhr.responseJSON?.error || "Unknown error")
+                );
+            },
+        });
+    });
 });

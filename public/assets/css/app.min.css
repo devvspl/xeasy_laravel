@@ -3005,7 +3005,7 @@
 }
 @media (max-width: 1024.1px) {
     [data-layout="horizontal"] .page-content {
-        padding: calc(45px + var(--vz-grid-gutter-width) * 1.8)
+        padding: calc(20px + var(--vz-grid-gutter-width) * 1.8)
             calc(var(--vz-grid-gutter-width) * 0.5) 60px
             calc(var(--vz-grid-gutter-width) * 0.5);
     }

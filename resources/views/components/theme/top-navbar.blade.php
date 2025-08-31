@@ -401,7 +401,7 @@
                     data-bs-toggle="modal" data-bs-target="#companyModal">
                     <i class='ri-community-line fs-22'></i>
                 </button>
-                
+
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     <button type="button" class="btn material-shadow-none" style="padding: 0 5px"
                         id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
@@ -414,15 +414,14 @@
                                     {{ Auth::user()->name }}
                                 </span>
                                 <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">
-                                    {{ Auth::user()->getRoleNames()->implode(', ') }}
+                                    <span>{{ session('company_name') }}</span> - <span id="financialYear">{{ session('year_value') }}</span>
                                 </span>
-
                             </span>
                         </span>
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
                         <h6 class="dropdown-header">Welcome {{ Auth::user()->name }}!</h6>
-                        <a class="dropdown-item" href="{{ route('users.profile') }}"><i
+                        <a class="dropdown-item" href=""><i
                                 class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span
                                 class="align-middle">Profile</span></a>
                         <a class="dropdown-item" href="#"><i
@@ -431,7 +430,7 @@
                         <div class="dropdown-divider"></div>
                         @can('View Setting')
                             <a class="dropdown-item d-flex justify-content-between align-items-center"
-                                href="{{ route('settings') }}">
+                                href="">
                                 <div>
                                     <i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i>
                                     <span class="align-middle">Settings</span>
