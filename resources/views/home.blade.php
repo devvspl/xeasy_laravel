@@ -106,6 +106,7 @@
                             <table class="table table-bordered table-centered align-middle table-nowrap mb-0">
                                 <thead class="text-muted table-light">
                                     <tr>
+                                        <th></th>
                                         <th>#</th>
                                         <th style="text-align: left">Employee</th>
                                         <th style="text-align: left">Department</th>

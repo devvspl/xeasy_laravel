@@ -719,39 +719,38 @@ $(document).ready(function () {
                 topEmployees
                     .map(
                         (emp, index) => `
-                        <tr class="employee-row" data-empid="${emp.CrBy}">
-                            <td>${index + 1}</td>
-                            <td style="text-align:left">
-                                ${emp.employee_name} - ${emp.EmpCode}
-                            </td>
-                            <td style="text-align:left">${
-                                emp.department_name || "Unknown"
-                            }</td>
-                            <td class="text-center">${formatCurrency(
-                                emp.filled_total_amount
-                            )}</td>
-                            <td class="text-center">${formatCurrency(
-                                emp.payment_total_amount
-                            )}</td>
-                        </tr>
-                        <tr class="employee-detail-row" id="detail-${
-                            emp.CrBy
-                        }" style="display:none;">
-                            <td colspan="5" style="background-color: #f3f6f9;">
-                                <canvas id="chart-${
-                                    emp.CrBy
-                                }" style="width:100%; height:200px;"></canvas>
-                                <div class="employee-detail-content"></div>
-                            </td>
-                        </tr>
-
-                    `
+                            <tr class="employee-row" data-empid="${emp.CrBy}">
+                                <td class="toggle-icon text-center"><i class="ri-add-circle-line"></i></td>
+                                <td>${index + 1}</td>
+                                <td style="text-align:left">${emp.employee_name} - ${
+                                                emp.EmpCode
+                                            }</td>
+                                <td style="text-align:left">${emp.department_name || "Unknown"}</td>
+                                <td class="text-center">${formatCurrency(
+                                    emp.filled_total_amount
+                                )}</td>
+                                <td class="text-center">${formatCurrency(
+                                    emp.payment_total_amount
+                                )}</td>
+                            </tr>
+                            <tr class="employee-detail-row" id="detail-${
+                                emp.CrBy
+                            }" style="display:none;">
+                                <td colspan="6" style="background-color: #f3f6f9;">
+                                    <canvas id="chart-${
+                                        emp.CrBy
+                                    }" style="width:100%; height:200px;"></canvas>
+                                    <div class="employee-detail-content"></div>
+                                </td>
+                            </tr>
+                        `
                     )
+
                     .join("")
             );
         } else {
             $employeeTableBody.html(
-                `<tr><td colspan="5" class="text-center">No data available</td></tr>`
+                `<tr><td colspan="6" class="text-center">No data available</td></tr>`
             );
         }
     }
@@ -1321,17 +1320,26 @@ $(document).ready(function () {
         const empId = $row.data("empid");
         const $detailRow = $("#detail-" + empId);
         const $content = $detailRow.find(".employee-detail-content");
+        const $icon = $row.find(".toggle-icon i");
 
         $(".employee-detail-row").not($detailRow).hide();
-        $(".employee-row").not($row).removeClass("active-row");
+        $(".employee-row")
+            .not($row)
+            .removeClass("active-row")
+            .find(".toggle-icon i")
+            .removeClass("fa-minus-circle")
+            .addClass("fa-plus-circle");
 
         if ($detailRow.is(":visible")) {
             $detailRow.hide();
             $row.removeClass("active-row");
+            $icon.removeClass("fa-minus-circle").addClass("fa-plus-circle");
             return;
         }
 
         $row.addClass("active-row");
+        $icon.removeClass("fa-plus-circle").addClass("fa-minus-circle");
+
         $content.html("<p>Loading...</p>");
         $detailRow.show();
 

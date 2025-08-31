@@ -46,7 +46,9 @@ Route::middleware('auth')->group(function () {
     Route::post('export/expense-department-wise', [HomeController::class, 'exportExpenseDepartmentWise']);
     Route::post('export/expense-claim-type-wise', [HomeController::class, 'exportExpenseClaimTypeWise']);
     Route::get('analytics/{page}', [HomeController::class, 'analytics']);
-    Route::get('analytics-dashboard-data', [HomeController::class, 'analyticsDashboardData'])->name('analytics-dashboard-data');
+    Route::get('analytics-dashboard-data', [HomeController::class, 'analyticsDashboardData']);
+    Route::post('get-sub-departments', [HomeController::class, 'getSubDepartments']);
+    Route::post('export-reports', [HomeController::class, 'exportReports']);
 
     // Permission Management
     // Routes for managing permission groups, permissions, and role assignments
@@ -132,5 +134,6 @@ Route::middleware('auth')->group(function () {
     // Data Punch
     // Routes for data punch operations (Note: Duplicate route detected, only one kept)
     Route::get('data-punch', [MediatorController::class, 'dataPunch']);
+    Route::get('data-punch/{status}', [MediatorController::class, 'dataPunch']);
 
 });
