@@ -410,13 +410,13 @@ class HomeController extends Controller
     private function prepareDateAndTableParams(Request $request): array
     {
         $startDate = Carbon::parse($request->input('bill_date_from'))
-            ->addDay()
             ->toDateString();
         $endDate = Carbon::parse($request->input('bill_date_to'))
-            ->addDay()
             ->toDateString();
+
         $yearId = (int) session('year_id', Carbon::parse($endDate)->year);
         $previousYearId = $yearId - 1;
+
         $table = ExpenseClaim::tableName();
         $previousYearTable = ExpenseClaim::tableName($previousYearId);
 

@@ -70,7 +70,10 @@ $(function () {
     });
 
     const formatDate = (date) => {
-        return date.toISOString().split("T")[0];
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0"); 
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
     };
 
     const formatCurrency = (v) =>
@@ -134,6 +137,7 @@ $(function () {
             },
         });
     };
+
     const updateDashboard = (expenseData, filterType, sortBy) => {
         const filterData = (data, filterType) => {
             if (filterType === "increased") {
@@ -495,116 +499,16 @@ $(function () {
         return "text-muted";
     };
 
-    function renderDepartmentMonthlyChart(departmentMonthlyTotals) {
-        const months = [
-            ...new Set(departmentMonthlyTotals.map((d) => d.MonthName)),
-        ];
-        const departmentMap = {};
-        departmentMonthlyTotals.forEach((d) => {
-            if (!departmentMap[d.department_name]) {
-                departmentMap[d.department_name] = {};
-            }
-            departmentMap[d.department_name][d.MonthName] = parseFloat(
-                d.FinancedTotal
-            );
-        });
+    const defaultStart = new Date(today.getFullYear(), 3, 1);
+    const defaultEnd = today;
 
-        const datasets = Object.keys(departmentMap).map((dept, i) => {
-            const data = months.map((m) => departmentMap[dept][m] || 0);
-            return {
-                label: dept,
-                data: data,
-                borderColor: [
-                    "#8884d8",
-                    "#82ca9d",
-                    "#ffc658",
-                    "#ff7c7c",
-                    "#8dd1e1",
-                    "#d084d0",
-                    "#87ceeb",
-                    "#dda0dd",
-                    "#a0522d",
-                    "#ffb347",
-                    "#3cb371",
-                    "#20b2aa",
-                    "#9370db",
-                    "#4682b4",
-                    "#ff69b4",
-                    "#cd5c5c",
-                    "#40e0d0",
-                    "#9acd32",
-                    "#ff6347",
-                ][i % 20],
-                backgroundColor: [
-                    "#8884d8",
-                    "#82ca9d",
-                    "#ffc658",
-                    "#ff7c7c",
-                    "#8dd1e1",
-                    "#d084d0",
-                    "#87ceeb",
-                    "#dda0dd",
-                    "#a0522d",
-                    "#ffb347",
-                    "#3cb371",
-                    "#20b2aa",
-                    "#9370db",
-                    "#4682b4",
-                    "#ff69b4",
-                    "#cd5c5c",
-                    "#40e0d0",
-                    "#9acd32",
-                    "#ff6347",
-                ][i % 20],
-                fill: false,
-            };
-        });
+    datePicker.setDate([defaultStart, defaultEnd]);
 
-        const ctx = document.getElementById("lineChart").getContext("2d");
-        if (window.lineChartInstance) {
-            window.lineChartInstance.destroy();
-        }
-
-        window.lineChartInstance = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: months,
-                datasets: datasets,
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: "top",
-                    },
-                    tooltip: {
-                        mode: "index",
-                        intersect: false,
-                    },
-                },
-                interaction: {
-                    mode: "nearest",
-                    intersect: false,
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: "Financed Total",
-                        },
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: "Month",
-                        },
-                    },
-                },
-            },
-        });
+    function formatDateForAPI(date) {
+        return date.toISOString().split("T")[0];
     }
+
+    fetchDashboardData(formatDate(defaultStart), formatDate(defaultEnd));
 
     $("#filterType, #sortBy").on("change", function () {
         const selectedDates = datePicker.selectedDates;
@@ -846,6 +750,7 @@ $(function () {
     $("#checkAll").on("change", function () {
         $(".report-option").prop("checked", $(this).is(":checked"));
     });
+
     $(".report-option").on("change", function () {
         if (!$(this).is(":checked")) {
             $("#checkAll").prop("checked", false);
@@ -972,12 +877,6 @@ $(function () {
         updateModalDateRange();
     });
 
-    const defaultStart = new Date(today.getFullYear(), 3, 1);
-    const defaultEnd = today;
-
-    datePicker.setDate([defaultStart, defaultEnd]);
-    fetchDashboardData(formatDate(defaultStart), formatDate(defaultEnd));
-
     function updateModalDateRange() {
         const selectedDates = datePicker.selectedDates;
         const displaySpan = $("#selectedDateRange");
@@ -986,14 +885,12 @@ $(function () {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-           
             const fromDate = new Date(selectedDates[0]);
             if (fromDate.getTime() !== today.getTime()) {
                 fromDate.setDate(fromDate.getDate() + 1);
             }
             const from = formatDateForAPI(fromDate);
 
-           
             const toDate = new Date(selectedDates[1]);
             if (toDate.getTime() !== today.getTime()) {
                 toDate.setDate(toDate.getDate() + 1);
@@ -1277,7 +1174,114 @@ $(function () {
         container.innerHTML = html;
     }
 
-    function formatDateForAPI(date) {
-        return date.toISOString().split("T")[0];
+    function renderDepartmentMonthlyChart(departmentMonthlyTotals) {
+        const months = [
+            ...new Set(departmentMonthlyTotals.map((d) => d.MonthName)),
+        ];
+        const departmentMap = {};
+        departmentMonthlyTotals.forEach((d) => {
+            if (!departmentMap[d.department_name]) {
+                departmentMap[d.department_name] = {};
+            }
+            departmentMap[d.department_name][d.MonthName] = parseFloat(
+                d.FinancedTotal
+            );
+        });
+
+        const datasets = Object.keys(departmentMap).map((dept, i) => {
+            const data = months.map((m) => departmentMap[dept][m] || 0);
+            return {
+                label: dept,
+                data: data,
+                borderColor: [
+                    "#8884d8",
+                    "#82ca9d",
+                    "#ffc658",
+                    "#ff7c7c",
+                    "#8dd1e1",
+                    "#d084d0",
+                    "#87ceeb",
+                    "#dda0dd",
+                    "#a0522d",
+                    "#ffb347",
+                    "#3cb371",
+                    "#20b2aa",
+                    "#9370db",
+                    "#4682b4",
+                    "#ff69b4",
+                    "#cd5c5c",
+                    "#40e0d0",
+                    "#9acd32",
+                    "#ff6347",
+                ][i % 20],
+                backgroundColor: [
+                    "#8884d8",
+                    "#82ca9d",
+                    "#ffc658",
+                    "#ff7c7c",
+                    "#8dd1e1",
+                    "#d084d0",
+                    "#87ceeb",
+                    "#dda0dd",
+                    "#a0522d",
+                    "#ffb347",
+                    "#3cb371",
+                    "#20b2aa",
+                    "#9370db",
+                    "#4682b4",
+                    "#ff69b4",
+                    "#cd5c5c",
+                    "#40e0d0",
+                    "#9acd32",
+                    "#ff6347",
+                ][i % 20],
+                fill: false,
+            };
+        });
+
+        const ctx = document.getElementById("lineChart").getContext("2d");
+        if (window.lineChartInstance) {
+            window.lineChartInstance.destroy();
+        }
+
+        window.lineChartInstance = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: months,
+                datasets: datasets,
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: "top",
+                    },
+                    tooltip: {
+                        mode: "index",
+                        intersect: false,
+                    },
+                },
+                interaction: {
+                    mode: "nearest",
+                    intersect: false,
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Financed Total",
+                        },
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Month",
+                        },
+                    },
+                },
+            },
+        });
     }
 });

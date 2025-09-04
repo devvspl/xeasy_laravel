@@ -94,7 +94,7 @@
                 processing: true,
                 serverSide: false,
                 ajax: {
-                    url: '{{ route('daily_activity.data') }}',
+                    url: '/daily-activity/data',
                     type: 'POST',
                     data: function (d) {
                         var dates = $('#dateRange').val().split(' to ');
@@ -132,7 +132,7 @@
 
                 var form = $('<form>', {
                     'method': 'POST',
-                    'action': '{{ route('daily_activity.export') }}',
+                    'action': '/daily-activity/export',
                     'target': '_blank'
                 }).append(
                     $('<input>', {
@@ -151,7 +151,6 @@
                         'value': toDate
                     })
                 );
-
                 form.appendTo('body').submit().remove();
                 $('#exportModal').modal('hide');
             });

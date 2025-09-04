@@ -1,15 +1,10 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="page-content">
         <div class="container-fluid">
-
-
-
             <div class="row">
                 <div class="col-xl-12">
                     <div class="card card-height-100">
-
                         <div class="card-header align-items-center d-flex gap-2">
                             <h4 class="card-title mb-0 flex-grow-1">Top Rating Employees (Same Day Uploads)</h4>
                             <input type="text" class="form-control" data-provider="flatpickr" data-date-format="Y-m-d"
@@ -19,7 +14,6 @@
                         <div class="card-body pb-3 pt-0">
                             <form method="GET" class="row g-1 mb-1 mt-1" action="{{ url()->current() }}">
                             </form>
-
                             <table id="claimReportTable"
                                 class="table nowrap dt-responsive align-middle table-hover table-bordered"
                                 style="width:100%">
@@ -52,16 +46,13 @@
                                     @endforelse
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 @endsection
-
 @push('styles')
     <link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/classic.min.css" />
     <link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/monolith.min.css" />
@@ -76,20 +67,20 @@
             flatpickr("#dateRange", {
                 dateFormat: "Y-m-d",
                 mode: "range",
-                onChange: function (selectedDates) {
+                onChange: function (selectedDates, dateStr, instance) {
                     if (selectedDates.length === 2) {
-                        var dates = selectedDates.map(date => date.toISOString().split('T')[0]);
+                        var dates = selectedDates.map(date =>
+                            instance.formatDate(date, "Y-m-d")
+                        );
                         $('#dateRange').val(dates.join(' to '));
-                        // Trigger form submission to filter data
                         var form = $('form');
-                        form.find('input[name="fromDate"]').remove();
-                        form.find('input[name="toDate"]').remove();
-                        form.append($('<input>').attr({
+                        form.find('input[name="fromDate"], input[name="toDate"]').remove();
+                        form.append($('<input>', {
                             type: 'hidden',
                             name: 'fromDate',
                             value: dates[0]
                         }));
-                        form.append($('<input>').attr({
+                        form.append($('<input>', {
                             type: 'hidden',
                             name: 'toDate',
                             value: dates[1]
@@ -98,14 +89,12 @@
                     }
                 }
             });
-
             let table;
             if ($.fn.DataTable.isDataTable("#claimReportTable")) {
                 table = $("#claimReportTable").DataTable();
                 table.destroy();
                 $("#claimReportTable").empty();
             }
-
             table = $("#claimReportTable").DataTable({
                 responsive: true,
                 ordering: true,

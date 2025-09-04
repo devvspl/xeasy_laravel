@@ -46,6 +46,7 @@ $(document).ready(function () {
         onClose: function (selectedDates) {
             if (selectedDates.length === 2 && currentAllowedRange) {
                 const [start, end] = selectedDates;
+
                 if (
                     start < currentAllowedRange[0] ||
                     end > currentAllowedRange[1]
@@ -67,54 +68,18 @@ $(document).ready(function () {
     const datePickerDiv = document.getElementById("date-picker-wrapper");
 
     const monthOptions = [
-        {
-            label: "April",
-            month: 3,
-        },
-        {
-            label: "May",
-            month: 4,
-        },
-        {
-            label: "June",
-            month: 5,
-        },
-        {
-            label: "July",
-            month: 6,
-        },
-        {
-            label: "August",
-            month: 7,
-        },
-        {
-            label: "September",
-            month: 8,
-        },
-        {
-            label: "October",
-            month: 9,
-        },
-        {
-            label: "November",
-            month: 10,
-        },
-        {
-            label: "December",
-            month: 11,
-        },
-        {
-            label: "January",
-            month: 0,
-        },
-        {
-            label: "February",
-            month: 1,
-        },
-        {
-            label: "March",
-            month: 2,
-        },
+        { label: "April", month: 3 },
+        { label: "May", month: 4 },
+        { label: "June", month: 5 },
+        { label: "July", month: 6 },
+        { label: "August", month: 7 },
+        { label: "September", month: 8 },
+        { label: "October", month: 9 },
+        { label: "November", month: 10 },
+        { label: "December", month: 11 },
+        { label: "January", month: 0 },
+        { label: "February", month: 1 },
+        { label: "March", month: 2 },
     ];
 
     function getDateRange(startMonth, startDay, endMonth, endDay, year) {
@@ -133,22 +98,10 @@ $(document).ready(function () {
     }
 
     function formatDateForAPI(date) {
-        return date.toISOString().split("T")[0];
-    }
-
-    function formatDateRangeForDisplay([start, end]) {
-        return [
-            start.toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-            }),
-            end.toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-            }),
-        ].join(" - ");
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
     }
 
     function createButton(
@@ -192,9 +145,7 @@ $(document).ready(function () {
                 datePicker.setDate([currentAllowedRange[0], rangeEnd], true);
 
                 const billDateFrom = formatDateForAPI(currentAllowedRange[0]);
-                const adjustedEndDate = new Date(rangeEnd);
-                adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
-                const billDateTo = formatDateForAPI(adjustedEndDate);
+                const billDateTo = formatDateForAPI(rangeEnd);
                 fetchDashboardData(billDateFrom, billDateTo);
             } else {
                 datePicker.set("minDate", null);
@@ -206,13 +157,12 @@ $(document).ready(function () {
 
                 const fyStart = new Date(currentYear, 3, 1);
                 const fyEnd = new Date(currentYear + 1, 2, 31);
+
                 const billDateFrom = formatDateForAPI(fyStart);
-                const adjustedFyEnd = new Date(fyEnd);
-                adjustedFyEnd.setDate(adjustedFyEnd.getDate() + 1);
                 const billDateTo = formatDateForAPI(
                     fyEnd > today
                         ? new Date(today.setHours(23, 59, 59, 999))
-                        : adjustedFyEnd
+                        : fyEnd
                 );
                 fetchDashboardData(billDateFrom, billDateTo);
             }
@@ -248,22 +198,24 @@ $(document).ready(function () {
         const button = div.querySelector("#month-toggle-button");
         const dropdown = div.querySelector("#month-dropdown");
 
-        const selectedMonth = parseInt(dropdown.value);
-        const year = selectedMonth >= 3 ? currentYear : currentYear + 1;
-        const startDate = new Date(year, selectedMonth, 1);
-        const endDate = new Date(year, selectedMonth + 1, 0);
-        const maxEnd = new Date(today.setHours(23, 59, 59, 999));
-        const rangeEnd = endDate > maxEnd ? maxEnd : endDate;
+        function setMonthRange(month) {
+            const year = month >= 3 ? currentYear : currentYear + 1;
+            const startDate = new Date(year, month, 1);
+            const endDate = new Date(year, month + 1, 0);
+            const maxEnd = new Date(today.setHours(23, 59, 59, 999));
+            const rangeEnd = endDate > maxEnd ? maxEnd : endDate;
 
-        currentAllowedRange = [startDate, rangeEnd];
-        datePicker.set("minDate", startDate);
-        datePicker.set("maxDate", maxEnd);
-        datePicker.setDate([startDate, rangeEnd], true);
+            currentAllowedRange = [startDate, rangeEnd];
+            datePicker.set("minDate", startDate);
+            datePicker.set("maxDate", maxEnd);
+            datePicker.setDate([startDate, rangeEnd], true);
 
-        const billDateFrom = formatDateForAPI(startDate);
-        const adjustedEndDate = new Date(rangeEnd);
-        adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
-        const billDateTo = formatDateForAPI(adjustedEndDate);
+            const billDateFrom = formatDateForAPI(startDate);
+            const billDateTo = formatDateForAPI(rangeEnd);
+            fetchDashboardData(billDateFrom, billDateTo);
+        }
+
+        setMonthRange(parseInt(dropdown.value));
 
         button.addEventListener("click", () => {
             document
@@ -278,43 +230,11 @@ $(document).ready(function () {
 
             dropdown.style.display = "block";
 
-            const selectedMonth = parseInt(dropdown.value);
-            const year = selectedMonth >= 3 ? currentYear : currentYear + 1;
-            const startDate = new Date(year, selectedMonth, 1);
-            const endDate = new Date(year, selectedMonth + 1, 0);
-            const maxEnd = new Date(today.setHours(23, 59, 59, 999));
-            const rangeEnd = endDate > maxEnd ? maxEnd : endDate;
-
-            currentAllowedRange = [startDate, rangeEnd];
-            datePicker.set("minDate", startDate);
-            datePicker.set("maxDate", maxEnd);
-            datePicker.setDate([startDate, rangeEnd], true);
-
-            const billDateFrom = formatDateForAPI(startDate);
-            const adjustedEndDate = new Date(rangeEnd);
-            adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
-            const billDateTo = formatDateForAPI(adjustedEndDate);
-            fetchDashboardData(billDateFrom, billDateTo);
+            setMonthRange(parseInt(dropdown.value));
         });
 
         dropdown.addEventListener("change", (e) => {
-            const selectedMonth = parseInt(e.target.value);
-            const year = selectedMonth >= 3 ? currentYear : currentYear + 1;
-            const startDate = new Date(year, selectedMonth, 1);
-            const endDate = new Date(year, selectedMonth + 1, 0);
-            const maxEnd = new Date(today.setHours(23, 59, 59, 999));
-            const rangeEnd = endDate > maxEnd ? maxEnd : endDate;
-
-            currentAllowedRange = [startDate, rangeEnd];
-            datePicker.set("minDate", startDate);
-            datePicker.set("maxDate", maxEnd);
-            datePicker.setDate([startDate, rangeEnd], true);
-
-            const billDateFrom = formatDateForAPI(startDate);
-            const adjustedEndDate = new Date(rangeEnd);
-            adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
-            const billDateTo = formatDateForAPI(adjustedEndDate);
-            fetchDashboardData(billDateFrom, billDateTo);
+            setMonthRange(parseInt(e.target.value));
         });
 
         container.insertBefore(div, datePickerDiv);
@@ -416,7 +336,6 @@ $(document).ready(function () {
                               ")";
                 });
             }
-            console.warn("data-colors attributes not found on", e);
             return ["#5156be", "#ffbf53", "#2ab57d", "#fd625e"];
         }
     }
@@ -445,7 +364,6 @@ $(document).ready(function () {
                 const cardData = data.cardData || {};
                 const monthlyTotals = data.monthlyTotals || [];
                 const departmentTotals = data.departmentTotals || [];
-                console.log(departmentTotals);
                 const totalAllMonths = data.totalAllMonths || {};
                 const yearId = data.yearId;
                 const previousYearId = yearId - 1;
@@ -479,12 +397,25 @@ $(document).ready(function () {
             },
         });
     }
+
     function tableUpdateYearlyComparison(yearlyComparison) {
         const variance = parseFloat(yearlyComparison.Variance_Percentage);
-
         $("#cyExpense").text(formatCurrency(yearlyComparison.CY_Expense));
         $("#pyExpense").text(formatCurrency(yearlyComparison.PY_Expense));
-        $("#variancePercent").text(variance.toFixed(2) + "%");
+        let cssClass = "text-muted";
+
+        if (variance > 0) {
+            cssClass = "text-success";
+        } else if (variance < 0) {
+            cssClass = "text-danger";
+        } else {
+            cssClass = "text-secondary";
+        }
+
+        $("#variancePercent")
+            .removeClass("text-success text-danger text-secondary text-muted")
+            .addClass(cssClass)
+            .html(`${variance.toFixed(2)}%`);
     }
 
     function tableUpdateCards(cardData) {
@@ -722,10 +653,12 @@ $(document).ready(function () {
                             <tr class="employee-row" data-empid="${emp.CrBy}">
                                 <td class="toggle-icon text-center"><i class="ri-add-circle-line"></i></td>
                                 <td>${index + 1}</td>
-                                <td style="text-align:left">${emp.employee_name} - ${
-                                                emp.EmpCode
-                                            }</td>
-                                <td style="text-align:left">${emp.department_name || "Unknown"}</td>
+                                <td style="text-align:left">${
+                                    emp.employee_name
+                                } - ${emp.EmpCode}</td>
+                                <td style="text-align:left">${
+                                    emp.department_name || "Unknown"
+                                }</td>
                                 <td class="text-center">${formatCurrency(
                                     emp.filled_total_amount
                                 )}</td>
@@ -1258,56 +1191,6 @@ $(document).ready(function () {
         claimTypeChart.render();
     }
 
-    function exportExpenseMonthExcel() {
-        const button = this;
-        $.ajax({
-            url: "",
-            method: "POST",
-            contentType: "application/json",
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
-            xhrFields: {
-                responseType: "blob",
-            },
-            beforeSend: function () {
-                startLoader({
-                    currentTarget: button,
-                });
-            },
-            success: function (data, status, xhr) {
-                if (
-                    xhr
-                        .getResponseHeader("content-type")
-                        .includes("application/json")
-                ) {
-                    data.text().then((text) => {
-                        const response = JSON.parse(text);
-                        alert(response.error || "Export failed.");
-                    });
-                    return;
-                }
-                const url = window.URL.createObjectURL(data);
-                const a = $("<a>", {
-                    href: url,
-                    download: `expense_month_wise_${new Date()
-                        .toISOString()
-                        .replace(/[:.]/g, "")}.xlsx`,
-                }).appendTo("body");
-                a[0].click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-                $("#exportModal").modal("hide");
-            },
-            error: function (xhr) {},
-            complete: function () {
-                endLoader({
-                    currentTarget: button,
-                });
-            },
-        });
-    }
-
     function randomColor() {
         const r = Math.floor(Math.random() * 200);
         const g = Math.floor(Math.random() * 200);
@@ -1472,7 +1355,6 @@ $(document).ready(function () {
         const button = this;
         const selectedDates = datePicker.selectedDates;
 
-        // Validate date selection
         if (!selectedDates || selectedDates.length < 2) {
             alert("Please select a valid date range.");
             return;
@@ -1480,12 +1362,6 @@ $(document).ready(function () {
 
         const billDateFrom = formatDateForAPI(selectedDates[0]);
         const billDateTo = formatDateForAPI(selectedDates[1]);
-
-        // Log the payload for debugging
-        console.log("Sending payload:", {
-            bill_date_from: billDateFrom,
-            bill_date_to: billDateTo,
-        });
 
         $.ajax({
             url: "/export/expense-month-wise",
@@ -1502,7 +1378,9 @@ $(document).ready(function () {
                 responseType: "blob",
             },
             beforeSend: function () {
-                startLoader({ currentTarget: button });
+                startLoader({
+                    currentTarget: button,
+                });
             },
             success: function (data, status, xhr) {
                 if (
@@ -1530,7 +1408,9 @@ $(document).ready(function () {
                 $("#exportModal").modal("hide");
             },
             complete: function () {
-                endLoader({ currentTarget: button });
+                endLoader({
+                    currentTarget: button,
+                });
             },
             error: function (xhr, status, error) {
                 console.error(
@@ -1550,7 +1430,6 @@ $(document).ready(function () {
         const button = this;
         const selectedDates = datePicker.selectedDates;
 
-        // Validate date selection
         if (!selectedDates || selectedDates.length < 2) {
             alert("Please select a valid date range.");
             return;
@@ -1558,13 +1437,6 @@ $(document).ready(function () {
 
         const billDateFrom = formatDateForAPI(selectedDates[0]);
         const billDateTo = formatDateForAPI(selectedDates[1]);
-
-        // Log the payload for debugging
-        console.log("Sending payload:", {
-            bill_date_from: billDateFrom,
-            bill_date_to: billDateTo,
-        });
-
         $.ajax({
             url: "/export/expense-department-wise",
             method: "POST",
@@ -1580,7 +1452,9 @@ $(document).ready(function () {
                 responseType: "blob",
             },
             beforeSend: function () {
-                startLoader({ currentTarget: button });
+                startLoader({
+                    currentTarget: button,
+                });
             },
             success: function (data, status, xhr) {
                 if (
@@ -1608,7 +1482,9 @@ $(document).ready(function () {
                 $("#exportModal").modal("hide");
             },
             complete: function () {
-                endLoader({ currentTarget: button });
+                endLoader({
+                    currentTarget: button,
+                });
             },
             error: function (xhr, status, error) {
                 console.error(
@@ -1628,7 +1504,6 @@ $(document).ready(function () {
         const button = this;
         const selectedDates = datePicker.selectedDates;
 
-        // Validate date selection
         if (!selectedDates || selectedDates.length < 2) {
             alert("Please select a valid date range.");
             return;
@@ -1637,7 +1512,6 @@ $(document).ready(function () {
         const billDateFrom = formatDateForAPI(selectedDates[0]);
         const billDateTo = formatDateForAPI(selectedDates[1]);
 
-        // Log the payload for debugging
         console.log("Sending payload:", {
             bill_date_from: billDateFrom,
             bill_date_to: billDateTo,
@@ -1658,7 +1532,9 @@ $(document).ready(function () {
                 responseType: "blob",
             },
             beforeSend: function () {
-                startLoader({ currentTarget: button });
+                startLoader({
+                    currentTarget: button,
+                });
             },
             success: function (data, status, xhr) {
                 if (
@@ -1686,7 +1562,9 @@ $(document).ready(function () {
                 $("#exportModal").modal("hide");
             },
             complete: function () {
-                endLoader({ currentTarget: button });
+                endLoader({
+                    currentTarget: button,
+                });
             },
             error: function (xhr, status, error) {
                 console.error(

@@ -15,7 +15,7 @@
                     <div class="mb-4">
                         <h6>Select Report Type</h6>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <select class="form-select" id="reportType" name="reportType" style="width: 100%;">
                                     <option value="general" selected>General (Single Sheet)</option>
                                     @can('Filter Month')
@@ -29,7 +29,7 @@
                                     @endcan
                                 </select>
                             </div>
-                            <div class="col-md-4" style="align-content: center">
+                            <div class="col-md-2" style="align-content: center">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="protectSheets"
                                         name="protectSheets">
