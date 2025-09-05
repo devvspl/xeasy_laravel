@@ -344,7 +344,8 @@ $(document).ready(function () {
                     d.function_ids = $("#functionSelect").val() || [];
                     d.vertical_ids = $("#verticalSelect").val() || [];
                     d.department_ids = $("#departmentSelect").val() || [];
-                    d.sub_department_ids = $("#subDepartmentSelect").val() || [];
+                    d.sub_department_ids =
+                        $("#subDepartmentSelect").val() || [];
                     d.user_ids = $("#userSelect").val() || [];
                     d.months = $("#monthSelect").val() || [];
                     d.claim_type_ids = $("#claimTypeSelect").val() || [];
