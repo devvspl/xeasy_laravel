@@ -71,7 +71,7 @@ $(function () {
 
     const formatDate = (date) => {
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0"); 
+        const month = String(date.getMonth() + 1).padStart(2, "0");
         const day = String(date.getDate()).padStart(2, "0");
         return `${year}-${month}-${day}`;
     };
@@ -411,7 +411,7 @@ $(function () {
                         <tr class="department-row" data-dept="${
                             d.department_id
                         }">
-                          <td class="toggle-icon text-center"><i class="ri-add-circle-line fa-plus-circle"></i></td>
+                          <td class="toggle-icon text-center"><i class="ri-add-circle-fill"></i></td>
                             <td class="text-center">${idx + 1}</td>
                             <td class="text-start">${d.department ?? "N/A"}</td>
                             <td class="text-end">${formatCurrency(
@@ -448,7 +448,7 @@ $(function () {
                 getStatusAndClass(overallVariationPercent);
 
             rows += `<tr class="fw-bold">
-                               <td class="text-center"></td>                                                                                                             <td class="text-center">#</td>
+                                                                                                                                     <td class="text-center" colspan='2'>#</td>
                                                                                                                                             <td class="text-start">Overall Total</td>
                                                                                                                                             <td class="text-end">${formatCurrency(
                                                                                                                                                 overallPrevTotal

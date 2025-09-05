@@ -1,9 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Artisan;
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DatabaseSwitchController;
 use App\Http\Controllers\admin\{
@@ -21,7 +18,8 @@ use App\Http\Controllers\admin\{
     APIManagerController,
     EmployeeController,
     ExpenseDetailsController,
-    MediatorController
+    MediatorController,
+    CoreAPIController
 };
 
 // Authentication Routes
@@ -135,5 +133,11 @@ Route::middleware('auth')->group(function () {
     // Routes for data punch operations (Note: Duplicate route detected, only one kept)
     Route::get('data-punch', [MediatorController::class, 'dataPunch']);
     Route::get('data-punch/{status}', [MediatorController::class, 'dataPunch']);
+
+
+    // Core API
+    Route::get('core', [CoreAPIController::class, 'index'])->name('core');
+    Route::get('core_api_sync', [CoreAPIController::class, 'sync'])->name('core_api_sync');
+    Route::post('importAPISData', [CoreAPIController::class, 'importAPISData'])->name('importAPISData');
 
 });

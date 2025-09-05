@@ -328,7 +328,7 @@ $(document).ready(function () {
                                     data-bs-toggle="modal" data-bs-target="#configModal"
                                     data-company-id="${company.id}"
                                     data-company-name="${company.company_name}">
-                                    <i class="ri-add-circle-line"></i> Config
+                                    <i class="ri-add-circle-fill"></i> Config
                                 </button>
                             </td>
                         </tr>

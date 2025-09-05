@@ -121,8 +121,8 @@
                   <table class="table table-bordered" id="deptTable">
                      <thead class="table-light">
                         <tr>
-                           <th></th>
-                           <th class="text-center">Sn</th>
+                           <th colspan='2'>#</th>
+                           {{-- <th class="text-center"></th> --}}
                            <th class="text-start">Department</th>
                            <th class="text-end">Previous Year</th>
                            <th class="text-end">Current Year</th>

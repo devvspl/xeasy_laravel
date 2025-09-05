@@ -651,7 +651,7 @@ $(document).ready(function () {
                     .map(
                         (emp, index) => `
                             <tr class="employee-row" data-empid="${emp.CrBy}">
-                                <td class="toggle-icon text-center"><i class="ri-add-circle-line"></i></td>
+                                <td class="toggle-icon text-center"><i class="ri-add-circle-fill"></i></td>
                                 <td>${index + 1}</td>
                                 <td style="text-align:left">${
                                     emp.employee_name
