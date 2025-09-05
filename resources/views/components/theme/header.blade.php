@@ -21,7 +21,7 @@
     <title>@yield('title', 'Xeasy Web')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{{ URL::to('/') }}/assets/images/favicon.ico">
+    <link rel="shortcut icon" href="{{ URL::to('/') }}/custom/favicon.png">
     <script src="{{ URL::to('/') }}/assets/js/layout.js"></script>
     <link href="{{ URL::to('/') }}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="{{ URL::to('/') }}/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
