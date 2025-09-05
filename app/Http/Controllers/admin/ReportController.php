@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 class ReportController extends Controller
 {
     public function claimReport()
@@ -156,7 +157,7 @@ class ReportController extends Controller
             }
             $query->select($selects);
         } else {
-            $query->select(["{$table}.ExpId as ExpId", DB::raw("MAX(claimtype.ClaimName) as claim_type_name"), DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name"), DB::raw("MAX(hrims.hrm_employee.EmpCode) as employee_code"), DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth"), DB::raw("MAX({$table}.CrDate) as CrDate"), DB::raw("MAX({$table}.BillDate) as BillDate"), DB::raw("MAX({$table}.FilledTAmt) as FilledTAmt"), DB::raw("MAX({$table}.ClaimAtStep) as ClaimAtStep"), DB::raw("MAX({$table}.ClaimId) as ClaimId"),]);
+            $query->select(["{$table}.ExpId as ExpId", DB::raw("MAX(claimtype.ClaimName) as claim_type_name"), DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name"), DB::raw("MAX(hrims.hrm_employee.EmpCode) as employee_code"), DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth"), DB::raw("MAX({$table}.CrDate) as CrDate"), DB::raw("MAX({$table}.BillDate) as BillDate"), DB::raw("MAX({$table}.FilledTAmt) as FilledTAmt"), DB::raw("MAX({$table}.ClaimAtStep) as ClaimAtStep"), DB::raw("MAX({$table}.ClaimStatus) as ClaimStatus"), DB::raw("MAX({$table}.ClaimId) as ClaimId"),]);
         }
         $query->leftJoin('claimtype', "{$table}.ClaimId", '=', 'claimtype.ClaimId');
         $query->leftJoin('hrims.hrm_employee', "{$table}.CrBy", '=', 'hrims.hrm_employee.EmployeeID');
@@ -241,75 +242,111 @@ class ReportController extends Controller
     public function filterClaims(Request $request)
     {
         try {
-            $filters = ['function_ids' => $request->input('function_ids', []), 'vertical_ids' => $request->input('vertical_ids', []), 'department_ids' => $request->input('department_ids', []), 'sub_department_ids' => $request->input('sub_department_ids', []), 'user_ids' => $request->input('user_ids', []), 'months' => $request->input('months', []), 'claim_type_ids' => $request->input('claim_type_ids', []), 'claim_statuses' => $request->input('claim_statuses', []), 'from_date' => $request->input('from_date'), 'to_date' => $request->input('to_date'), 'date_type' => $request->input('date_type', 'billDate'), 'policy_ids' => $request->input('policy_ids', []), 'vehicle_types' => $request->input('vehicle_types', []), 'wheeler_type' => $request->input('wheeler_type'), 'claim_filter_type' => $request->input('claim_filter_type')];
+            $filters = [
+                'function_ids' => $request->input('function_ids', []),
+                'vertical_ids' => $request->input('vertical_ids', []),
+                'department_ids' => $request->input('department_ids', []),
+                'sub_department_ids' => $request->input('sub_department_ids', []),
+                'user_ids' => $request->input('user_ids', []),
+                'months' => $request->input('months', []),
+                'claim_type_ids' => $request->input('claim_type_ids', []),
+                'claim_statuses' => $request->input('claim_statuses', []),
+                'from_date' => $request->input('from_date'),
+                'to_date' => $request->input('to_date'),
+                'date_type' => $request->input('date_type', 'billDate'),
+                'policy_ids' => $request->input('policy_ids', []),
+                'vehicle_types' => $request->input('vehicle_types', []),
+                'wheeler_type' => $request->input('wheeler_type'),
+                'claim_filter_type' => $request->input('claim_filter_type')
+            ];
+
             $table = ExpenseClaim::tableName();
             $countQuery = $this->buildClaimQuery($filters, $table, true);
             $totalRecords = $countQuery->get()->count();
+
             $query = $this->buildClaimQuery($filters, $table);
-            return DataTables::of($query)->with('recordsTotal', $totalRecords)->with('recordsFiltered', $totalRecords)->addIndexColumn()->editColumn('ClaimAtStep', function ($row) {
-                $badgeClass = 'bg-secondary-subtle text-secondary';
-                $statusText = 'Unknown';
-                switch ($row->ClaimAtStep) {
-                    case 1:
-                        $badgeClass = 'bg-dark-subtle text-dark';
-                        $statusText = 'Deactivate';
-                        break;
-                    case 2:
-                        $badgeClass = 'bg-warning-subtle text-warning';
-                        $statusText = 'Draft / Submitted';
-                        break;
-                    case 3:
-                        $badgeClass = 'bg-info-subtle text-info';
-                        $statusText = 'Filled';
-                        break;
-                    case 4:
-                        $badgeClass = 'bg-primary-subtle text-primary';
-                        $statusText = 'Verified';
-                        break;
-                    case 5:
-                        $badgeClass = 'bg-success-subtle text-success';
-                        $statusText = 'Approved';
-                        break;
-                    case 6:
-                        $badgeClass = 'bg-success-subtle text-success';
-                        $statusText = 'Financed';
-                        break;
-                }
-                return '<span class="badge ' . $badgeClass . ' badge-border">' . $statusText . '</span>';
-            })->addColumn('action', function ($row) {
-                $dropdownId = 'dropdownMenuLink' . $row->ExpId;
-                $html = '
-                <div class="dropdown">
-                    <a href="#" role="button" id="' . $dropdownId . '" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="ri-more-2-fill"></i>
+
+            return DataTables::of($query)
+                ->with('recordsTotal', $totalRecords)
+                ->with('recordsFiltered', $totalRecords)
+                ->addIndexColumn()
+                ->editColumn('ClaimStatus', function ($row) {
+                    $badgeClass = 'bg-secondary-subtle text-secondary';
+                    $statusText = ucfirst($row->ClaimStatus);
+
+                    switch (strtolower($row->ClaimStatus)) {
+                        case 'deactivate':
+                            $badgeClass = 'bg-dark-subtle text-dark';
+                            break;
+                        case 'draft':
+                        case 'submitted':
+                            $badgeClass = 'bg-warning-subtle text-warning';
+                            break;
+                        case 'filled':
+                            $badgeClass = 'bg-info-subtle text-info';
+                            break;
+                        case 'verified':
+                            $badgeClass = 'bg-primary-subtle text-primary';
+                            break;
+                        case 'approved':
+                            $badgeClass = 'bg-success-subtle text-success';
+                            break;
+                        case 'financed':
+                            $badgeClass = 'bg-teal-subtle text-teal';
+                            break;
+                    }
+
+                    return '<span class="badge ' . $badgeClass . ' badge-border">' . $statusText . '</span>';
+                })
+                ->editColumn('CrDate', function ($row) {
+                    return $row->CrDate ? Carbon::parse($row->CrDate)->format('d-m-Y') : '';
+                })
+                ->editColumn('BillDate', function ($row) {
+                    return $row->BillDate ? Carbon::parse($row->BillDate)->format('d-m-Y') : '';
+                })
+                ->editColumn('ClaimMonth', function ($row) {
+                    return $row->ClaimMonth ? Carbon::create()->month($row->ClaimMonth)->format('F') : '';
+                })
+                ->addColumn('action', function ($row) {
+                    $dropdownId = 'dropdownMenuLink' . $row->ExpId;
+                    $html = '
+        <div class="dropdown">
+            <a href="#" role="button" id="' . $dropdownId . '" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="ri-more-2-fill"></i>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="' . $dropdownId . '">
+                <li>
+                    <a class="dropdown-item view-claim" href="#" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#claimDetailModal" 
+                    data-claim-id="' . $row->ClaimId . '" 
+                    data-expid="' . $row->ExpId . '">
+                    View
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="' . $dropdownId . '">
-                        <li>
-                            <a class="dropdown-item view-claim" href="#" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#claimDetailModal" 
-                            data-claim-id="' . $row->ClaimId . '" 
-                            data-expid="' . $row->ExpId . '">
-                            View
-                            </a>
-                        </li>';
-                if ($row->ClaimAtStep == 1) {
-                    $html .= '
-                        <li>
-                            <a class="dropdown-item return-claim" href="#" 
-                            data-claim-id="' . $row->ClaimId . '" 
-                            data-expid="' . $row->ExpId . '">
-                            Return
-                            </a>
-                        </li>';
-                }
-                $html .= '</ul></div>';
-                return $html;
-            })->rawColumns(['ClaimAtStep', 'action'])->make(true);
+                </li>';
+
+                    if (strtolower($row->ClaimStatus) === 'deactivate') {
+                        $html .= '
+                <li>
+                    <a class="dropdown-item return-claim" href="#" 
+                    data-claim-id="' . $row->ClaimId . '" 
+                    data-expid="' . $row->ExpId . '">
+                    Return
+                    </a>
+                </li>';
+                    }
+
+                    $html .= '</ul></div>';
+                    return $html;
+                })
+                ->rawColumns(['ClaimStatus', 'action'])
+                ->make(true);
+
         } catch (\Exception $e) {
             return response()->json(['error' => 'Could not load claims: ' . $e->getMessage()], 500);
         }
     }
+
     public function export(Request $request)
     {
         ini_set('max_execution_time', 1000);

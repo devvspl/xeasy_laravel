@@ -485,7 +485,6 @@ table.table-bordered.dataTable td {
 	background-color: #f0f0f0;
 }
 
-
 .employee-row.active-row {
 	background-color: #e0f7fa;
 	font-weight: bold;
@@ -500,8 +499,17 @@ table.table-bordered.dataTable td {
 	background-color: #f0f0f0;
 }
 
-
 .department-row.active-row {
 	background-color: #e0f7fa;
 	font-weight: bold;
+}
+
+
+.bg-teal-subtle {
+	background-color: #e6f7f7 !important;
+	color: #008080 !important;
+}
+
+.text-teal {
+	color: #008080 !important;
 }
