@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en" @foreach (session('theme_settings', [
-    'data-layout' => 'horizontal',
+    'data-layout' => 'vertical',
     'data-topbar' => 'light',
-    'data-sidebar' => 'light',
-    'data-sidebar-size' => 'lg',
+    'data-sidebar' => 'dark',
+    'data-sidebar-size' => 'sm',
     'data-sidebar-image' => 'none',
     'data-preloader' => 'enable',
     'data-theme' => 'default',

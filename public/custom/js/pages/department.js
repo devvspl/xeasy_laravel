@@ -411,7 +411,7 @@ $(function () {
                         <tr class="department-row" data-dept="${
                             d.department_id
                         }">
-                          <td class="toggle-icon text-center"><i class="ri-add-circle-fill"></i></td>
+                          <td class="toggle-icon text-center" title="View"><i class="ri-add-circle-fill"></i></td>
                             <td class="text-center">${idx + 1}</td>
                             <td class="text-start">${d.department ?? "N/A"}</td>
                             <td class="text-end">${formatCurrency(

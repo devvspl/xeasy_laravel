@@ -301,7 +301,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
 }
 
 .table> :not(caption)>*>* {
-	padding: 5px 5px !important;
+	padding: 5px 2px !important;
 }
 
 table.table-bordered.dataTable th,
@@ -512,4 +512,14 @@ table.table-bordered.dataTable td {
 
 .text-teal {
 	color: #008080 !important;
+}
+
+/* Vertical & Semibox (small sidebar) */
+:is([data-layout="vertical"], [data-layout="semibox"])[data-sidebar-size="sm"] .card.sticky-card {
+    top: 0px; /* your existing value */
+}
+
+/* Horizontal layout */
+[data-layout="horizontal"] .card.sticky-card {
+    top: 64px; /* smaller since no vertical sidebar */
 }

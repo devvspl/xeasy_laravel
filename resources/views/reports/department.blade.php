@@ -2,7 +2,7 @@
 @section('content')
    <div class="page-content">
       <div class="container-fluid">
-         <div class="card mb-3 shadow-sm" style="position: sticky; top: 88px; z-index: 99;">
+         <div class="card mb-3 shadow-sm sticky-card">
             <div class="card-body">
                <div class="d-flex flex-wrap justify-content-between align-items-center mb-1">
                   <div>

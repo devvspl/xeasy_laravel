@@ -46,7 +46,8 @@ if (!function_exists('getMenuTree')) {
         if (empty($menuTree)) {
             return;
         }
-        echo '<ul class="nav' . ($level > 1 ? ' nav-sm' : '') . '">';
+        $ulClass = ($level === 1) ? 'nav flex-column' : 'nav nav-sm flex-column';
+        echo '<ul class="' . $ulClass . '">';
         foreach ($menuTree as $menu) {
             if (empty($menu->permission_name)) {
                 continue;
@@ -59,7 +60,12 @@ if (!function_exists('getMenuTree')) {
             echo '<li class="nav-item">';
             $iconClass = !empty($menu->icon) ? htmlspecialchars($menu->icon) : (($menu->parent_id === null) ? 'ri-folder-line' : '');
             if ($hasChildren) {
-                echo '<a class="nav-link menu-link" href="#' . $collapseId . '" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="' . $collapseId . '">';
+                echo '<a class="nav-link menu-link collapsed" 
+                        href="#' . $collapseId . '" 
+                        data-bs-toggle="collapse" 
+                        role="button" 
+                        aria-expanded="false" 
+                        aria-controls="' . $collapseId . '">';
                 if ($iconClass) {
                     echo '<i class="' . $iconClass . '"></i> ';
                 }
@@ -69,7 +75,7 @@ if (!function_exists('getMenuTree')) {
                 renderMenuTree($menu->children, $menuItems, $level + 1);
                 echo '</div>';
             } else {
-                echo '<a href="' . url($menu->url) . '" class="nav-link menu-link">';
+                echo '<a href="' . url($menu->url) . '" class="nav-link' . ($level === 1 ? ' menu-link' : '') . '">';
                 if ($iconClass) {
                     echo '<i class="' . $iconClass . '"></i> ';
                 }
