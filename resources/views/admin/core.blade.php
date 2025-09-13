@@ -28,9 +28,9 @@
                                         <th>#</th>
                                         <th>S.No</th>
                                         <th style="text-align:left"">API Name</th>
-                                       <th style=" text-align:left"">API End Point</th>
+                                               <th style=" text-align:left"">API End Point</th>
                                         <th style="text-align:left"">Parameter</th>
-                                       <th style=" text-align:left"">Description</th>
+                                               <th style=" text-align:left"">Description</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -42,10 +42,12 @@
                                             </td>
                                             <td class="text-center">{{ $loop->iteration }}</td>
                                             <td style="text-align:left"">{{ $api->api_name }}</td>
-                                                           <td style=" text-align:left"">{{ $api->api_end_point }}
+                                                                           <td style=" text-align:left"">
+                                                {{ $api->api_end_point }}
                                             </td>
                                             <td style="text-align:left"">{{ $api->parameters }}</td>
-                                                           <td style=" text-align:left"">{{ $api->description }}</td>
+                                                                           <td style=" text-align:left"">
+                                                {{ $api->description }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
