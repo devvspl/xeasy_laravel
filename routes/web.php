@@ -72,7 +72,7 @@ Route::middleware('auth')->group(function () {
     // Routes for managing menus and their logs
     Route::resource('menu', MenuController::class);
     Route::get('menu-list', [MenuController::class, 'menuList']);
-    Route::get('menu/{menu}/logs', [MenuController::class, 'getLogs']);
+    Route::get('menu/log/{id}', [MenuController::class, 'getLogs']);
 
     // Financial Year Management
     // Routes for managing financial years

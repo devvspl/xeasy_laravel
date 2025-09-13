@@ -200,7 +200,7 @@ $(document).ready(function () {
             pageLength: 5,
             lengthMenu: [5, 10, 25, 50],
             ajax: {
-                url: "/menus/" + menuId + "/logs",
+                url: "/menu/log/" + menuId,
                 type: "GET",
                 beforeSend: function () {
                     startLoader({
@@ -208,9 +208,9 @@ $(document).ready(function () {
                     });
                 },
                 dataSrc: function (response) {
-                    // Set the menu title in the modal header
+                    
                     $("#logMenuTitle").text(response.title || "Untitled");
-                    return response.data || []; // Return logs array for DataTables
+                    return response.data || []; 
                 },
                 error: function (xhr, error, thrown) {
                     console.error("Error fetching logs:", thrown);
@@ -255,7 +255,7 @@ $(document).ready(function () {
         }
 
         let changes = "<ul style='text-align: left;'>";
-        const now = new Date(); // 08:50 PM IST (UTC+5:30) as reference
+        const now = new Date(); 
 
         for (let key in properties.attributes) {
             if (properties.old && key in properties.old) {

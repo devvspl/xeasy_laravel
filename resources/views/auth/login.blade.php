@@ -25,7 +25,7 @@
                         <div class="text-center">
                             <div>
                                 <a href="index.html" class="d-inline-block auth-logo">
-                                    <img src="{{ URL::to('/') }}/custom/xeasy_logo.png" alt="" height="100">
+                                    <img src="{{ URL::to('/') }}/custom/xeasy_logo_ligth.png" alt="" height="100">
                                 </a>
                             </div>
                         </div>

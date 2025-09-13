@@ -190,8 +190,8 @@ class MenuController extends Controller
             });
 
         return response()->json([
-            'data' => $logs, // DataTables expects 'data' key, but we'll use 'logs' as per your code
-            'title' => $menu->title // Add the menu title to the response
+            'data' => $logs,
+            'title' => $menu->title
         ]);
     }
 }
