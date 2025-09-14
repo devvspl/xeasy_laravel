@@ -34,23 +34,21 @@ class AuthController extends Controller
             'company' => 'required|in:1',
             'financial_year' => 'required|in:7',
         ]);
-
         $employee = HRMEmployees::where('EmpCode_New', $request->employeeid)->first();
-
         if ($employee && $this->decrypt($employee->EmpPass) === $request->password) {
-            $user = User::where('employee_id', $employee->EmployeeID)->first();
-
+            $user = User::where([['employee_id', $employee->EmployeeID], ['status', 1]])->first();
+            Session::put('back_office', false);
+            Session::put('back_office_active', false);
             if ($user) {
-                Auth::login($user, $request->has('remember'));
-                Session::put('company', $request->company);
-                Session::put('financial_year', $request->financial_year);
                 Session::put('employee_id', $user->employee_id);
                 Session::put('role_id', $user->role_id);
-
-                return redirect()->route('dashboard')->with('success', 'Logged in successfully');
+                Session::put('back_office', true);
             }
+            Auth::login($user, $request->has('remember'));
+            Session::put('company', $request->company);
+            Session::put('financial_year', $request->financial_year);
+            return redirect()->route('dashboard')->with('success', 'Logged in successfully');
         }
-
         return back()->withErrors([
             'employeeid' => 'The provided credentials do not match our records.',
         ])->withInput($request->except('password'));
