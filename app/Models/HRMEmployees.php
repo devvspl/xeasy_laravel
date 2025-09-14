@@ -10,7 +10,7 @@ class HRMEmployees extends Model
     protected $table = 'hrm_employee';
     protected $primaryKey = 'EmployeeID';
     public $timestamps = false;
-    protected $fillable = ['EmployeeID', 'EmpCode', 'Fname', 'Sname', 'Lname', 'EmpStatus'];
+    protected $fillable = ['EmployeeID', 'EmpCode_New', 'EmpCode', 'Fname', 'Sname', 'Lname', 'EmpStatus'];
 
     public function department()
     {

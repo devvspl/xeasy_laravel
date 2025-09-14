@@ -40,21 +40,20 @@
                                     <p class="text-muted">Sign in to continue to Xeasy.</p>
                                 </div>
                                 <div class="p-2 mt-4">
+                                    @if (session('success'))
+                                        <div class="alert alert-success">
+                                            {{ session('success') }}
+                                        </div>
+                                    @endif
+
                                     <form method="POST" action="{{ route('login') }}">
                                         @csrf
                                         <div class="mb-3">
                                             <label for="company" class="form-label">Company</label>
                                             <select name="company" id="company"
                                                 class="form-control @error('company') is-invalid @enderror" required>
-                                                <option value="1">VNR Seeds Pvt Ltd</option>
-                                                {{-- @foreach ($companies as $company)
-                                                <option value="{{ $company->id }}" {{ old('company')==$company->id ?
-                                                    'selected' : '' }}>
-                                                    {{ $company->company_name }}
-                                                </option>
-
-                                                @endforeach
-                                                --}}
+                                                <option value="1" {{ old('company') == '1' ? 'selected' : '' }}>VNR Seeds
+                                                    Pvt Ltd</option>
                                             </select>
                                             @error('company')
                                                 <span class="invalid-feedback d-block" role="alert">
@@ -62,18 +61,14 @@
                                                 </span>
                                             @enderror
                                         </div>
+
                                         <div class="mb-3">
                                             <label for="financial_year" class="form-label">Financial Year</label>
                                             <select name="financial_year" id="financial_year"
                                                 class="form-control @error('financial_year') is-invalid @enderror"
                                                 required>
-                                                <option value="7">2025-2026</option>
-                                                {{-- @foreach ($financialYears as $year)
-                                                <option value="{{ $year->YearId }}" {{ old('financial_year')==$year->
-                                                    YearId ? 'selected' : '' }}>
-                                                    {{ $year->Year }}
-                                                </option>
-                                                @endforeach --}}
+                                                <option value="7" {{ old('financial_year') == '7' ? 'selected' : '' }}>
+                                                    2025-2026</option>
                                             </select>
                                             @error('financial_year')
                                                 <span class="invalid-feedback d-block" role="alert">
@@ -81,25 +76,22 @@
                                                 </span>
                                             @enderror
                                         </div>
+
                                         <div class="mb-3">
-                                            <label for="email" class="form-label">Email Address</label>
-                                            <input type="email"
-                                                class="form-control @error('email') is-invalid @enderror" id="email"
-                                                name="email" placeholder="Enter email" value="{{ old('email') }}"
-                                                required autocomplete="email" autofocus>
-                                            @error('email')
+                                            <label for="employeeid" class="form-label">Employee ID</label>
+                                            <input type="text"
+                                                class="form-control @error('employeeid') is-invalid @enderror"
+                                                id="employeeid" name="employeeid" placeholder="Enter employee ID"
+                                                value="{{ old('employeeid') }}" required autocomplete="username"
+                                                autofocus>
+                                            @error('employeeid')
                                                 <span class="invalid-feedback d-block" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
                                             @enderror
                                         </div>
+
                                         <div class="mb-3">
-                                            <div class="float-end">
-                                                @if (Route::has('password.request'))
-                                                    <a href="{{ route('password.request') }}" class="text-muted">Forgot
-                                                        password?</a>
-                                                @endif
-                                            </div>
                                             <label class="form-label" for="password">Password</label>
                                             <div class="position-relative auth-pass-inputgroup mb-3">
                                                 <input type="password"
@@ -118,6 +110,7 @@
                                                 </span>
                                             @enderror
                                         </div>
+
                                         <div class="form-check mb-3">
                                             <input class="form-check-input" type="checkbox" id="remember"
                                                 name="remember" {{ old('remember') ? 'checked' : '' }}>
@@ -125,9 +118,9 @@
                                                 Remember me
                                             </label>
                                         </div>
+
                                         <div class="mt-4">
-                                            <button class="btn btn-success w-100" type="submit">Sign
-                                                In</button>
+                                            <button class="btn btn-success w-100" type="submit">Sign In</button>
                                         </div>
                                     </form>
                                 </div>
