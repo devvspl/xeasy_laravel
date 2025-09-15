@@ -5,8 +5,30 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
-                        <div class="card-header align-items-center d-flex">
+                        <div class="card-header align-items-center d-flex gap-2">
                             <h4 class="card-title mb-0 flex-grow-1">User List</h4>
+                            <div class="dropdown card-header-dropdown">
+                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <span class="fw-semibold fs-12">Employee Status: </span>
+                                    <span class="text-muted">
+                                        @if($status === 'active')
+                                            Active
+                                        @elseif($status === 'inactive')
+                                            Inactive
+                                        @else
+                                            All
+                                        @endif
+                                        <i class="mdi mdi-chevron-down ms-1"></i>
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="{{ url()->current() }}?status=all">All</a>
+                                    <a class="dropdown-item" href="{{ url()->current() }}?status=active">Active</a>
+                                    <a class="dropdown-item" href="{{ url()->current() }}?status=inactive">Inactive</a>
+                                </div>
+                            </div>
+
                             <div class="flex-shrink-0">
                                 @can('Create User')
                                     <button type="button" class="btn btn-info btn-label waves-effect waves-light rounded-pill"
@@ -32,8 +54,8 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>S No.</th>
-                                        <th>Name</th>
-                                        <th>Username</th>
+                                        <th style="text-align: left">Name</th>
+                                        <th style="text-align: left">Email</th>
                                         <th>Roles</th>
                                         <th>Status</th>
                                         <th>Actions</th>
@@ -44,8 +66,8 @@
                                         @foreach ($users as $key => $user)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
-                                                <td>{{ $user->name }}</td>
-                                                <td>{{ $user->email }}</td>
+                                                <td style="text-align: left">{{ $user->name }}</td>
+                                                <td style="text-align: left">{{ $user->email }}</td>
                                                 <td>
                                                     @forelse ($user->roles as $role)
                                                         <span class="badge bg-primary-subtle text-primary">{{ $role->name }}</span>
@@ -72,9 +94,10 @@
                                                             data-id="{{ $user->id }}"><i class="ri-delete-bin-5-fill"></i></button>
                                                     @endcan
                                                     @can('Permission Access')
-                                                        <button type="button" class="btn btn-info btn-sm permission-access-user"
+                                                        <a href="user/{{ $user->id }}/permission" class="btn btn-info btn-sm permission-access-user"><i class="ri-lock-line"></i></a>
+                                                        {{-- <button type="button" class="btn btn-info btn-sm permission-access-user"
                                                             data-bs-toggle="modal" data-bs-target="#permissionModal"
-                                                            data-id="{{ $user->id }}"><i class="ri-lock-line"></i></button>
+                                                            data-id="{{ $user->id }}"><i class="ri-lock-line"></i></button> --}}
                                                     @endcan
                                                 </td>
                                             </tr>

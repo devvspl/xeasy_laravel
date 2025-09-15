@@ -9,6 +9,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Models\Roles;
+use App\Models\Permission;
 use App\Models\HRMEmployees;
 use Illuminate\Support\Facades\Hash;
 
@@ -24,10 +25,20 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+
+        $usersQuery = User::query();
+        $status = request('status', 'active');
+        if ($status === 'active') {
+            $usersQuery->where('status', 1);
+        } elseif ($status === 'inactive') {
+            $usersQuery->where('status', 0);
+        }
+        $users = $usersQuery->get();
         $roles = Roles::where('status', 1)->get();
-        return view('admin.users', compact('users', 'roles'));
+        return view('admin.users', compact('users', 'roles', 'status'));
     }
+
+
 
     /**
      * Shows a form to create a new user.
@@ -188,4 +199,51 @@ class UsersController extends Controller
         $user_detail = User::find($id);
         return view('admin.profile', compact('user_detail'));
     }
+
+
+public function getPermissionView($id)
+{
+    $roles = Roles::where('status', 1)->get(); // Fetch active roles
+    $user = User::findOrFail($id);
+
+    // User's direct permissions, grouped
+    $userPermissions = $user->getDirectPermissions()
+        ->load('group') // Assuming a 'group' relationship in Permission model
+        ->map(function ($permission) {
+            return [
+                'id' => $permission->id,
+                'name' => $permission->name,
+                'group' => $permission->group ? $permission->group->name : 'Other',
+            ];
+        })
+        ->groupBy('group')
+        ->toArray();
+
+    // Permissions assigned to each role, grouped by role and group
+    $rolePermissions = [];
+    foreach ($roles as $role) {
+        $permissions = Permission::whereIn('id', function ($query) use ($role) {
+            $query->select('permission_id')
+                  ->from('role_has_permissions')
+                  ->where('role_id', $role->id);
+        })
+        ->with('group')
+        ->get()
+        ->map(function ($permission) {
+            return [
+                'id' => $permission->id,
+                'name' => $permission->name,
+                'group' => $permission->group ? $permission->group->name : 'Other',
+            ];
+        })
+        ->groupBy('group')
+        ->toArray();
+
+        $rolePermissions[$role->name] = $permissions;
+    }
+
+    $hasRoles = $user->roles()->pluck('id')->toArray();
+
+    return view('admin.set-permission', compact('roles', 'user', 'userPermissions', 'rolePermissions', 'hasRoles'));
+}
 }

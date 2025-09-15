@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
     // User Management
     // Routes for user management, including permissions and profiles
     Route::resource('users', UsersController::class);
+    Route::get('user/{id}/permission', [UsersController::class, 'getPermissionView']);
     Route::get('users/{id}/permissions', [PermissionController::class, 'getPermissions']);
     Route::post('users/{id}/permissions/assign', [PermissionController::class, 'assignPermission']);
     Route::post('users/{id}/permissions/revoke', [PermissionController::class, 'revokePermission']);

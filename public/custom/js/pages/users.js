@@ -196,7 +196,7 @@ $(document).ready(function () {
             });
         }
     });
-    $(document).on("click", ".permission-access-user", function () {
+    $(document).on("click", ".permission-access-user", function (event) {
         const userId = $(this).data("id");
         const button = event.currentTarget;
 

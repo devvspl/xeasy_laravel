@@ -75,24 +75,29 @@
 <div class="modal fade" id="permissionModal" tabindex="-1" aria-labelledby="permissionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
+            <div class="progress-container" style="display: none;">
+                <div class="progres" style="height: 5px;">
+                    <div class="indeterminate" style="background-color: var(--vz-primary);"></div>
+                </div>
+            </div>
             <div class="modal-header">
                 <h5 class="modal-title" id="permissionModalLabel">Manage Permissions</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div id="current-permissions">
-                    <h6 class="text-primary">Current Permissions</h6>
+                    <h6 class="text-primary">Additional Permissions</h6>
                     <div id="permissions-table-container"
                         class="accordion nesting-accordion custom-accordionwithicon-plus">
-                        <!-- Accordion for current permissions -->
+
                     </div>
                 </div>
-                @can('Assign Permission')
+                @can('Permission Access')
                     <div id="add-permissions" class="mt-4">
                         <h6 class="text-primary">All Permissions</h6>
                         <div id="all-permissions-table-container"
                             class="accordion nesting-accordion custom-accordionwithicon-plus">
-                            <!-- Accordion for all permissions -->
+
                         </div>
                     </div>
                 @endcan
