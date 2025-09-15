@@ -39,6 +39,7 @@ class AuthController extends Controller
             $user = User::where([['employee_id', $employee->EmployeeID], ['status', 1]])->first();
             Session::put('back_office', false);
             Session::put('back_office_active', false);
+            Session::put('role_id', 7);
             if ($user) {
                 Session::put('employee_id', $user->employee_id);
                 Session::put('role_id', $user->role_id);
@@ -46,7 +47,7 @@ class AuthController extends Controller
             }
             Auth::login($user, $request->has('remember'));
             Session::put('company', $request->company);
-            Session::put('financial_year', $request->financial_year);
+            Session::put('year_id', $request->financial_year);
             return redirect()->route('dashboard')->with('success', 'Logged in successfully');
         }
         return back()->withErrors([

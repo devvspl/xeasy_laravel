@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::get('users/{id}/permissions', [PermissionController::class, 'getPermissions']);
     Route::post('users/{id}/permissions/assign', [PermissionController::class, 'assignPermission']);
     Route::post('users/{id}/permissions/revoke', [PermissionController::class, 'revokePermission']);
+    Route::post('/users/import', [UsersController::class, 'importEmployees'])->name('users.import');
     Route::get('profile', [UsersController::class, 'profile']);
 
     // Menu Management

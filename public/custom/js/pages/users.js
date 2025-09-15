@@ -1,4 +1,13 @@
 $(document).ready(function () {
+    $("#usersMasterTable").DataTable({
+        ordering: false,
+        searching: true,
+        paging: true,
+        info: true,
+        lengthChange: true,
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+    });
     $("#userModal").on("shown.bs.modal", function () {
         $("#role_id").select2({
             dropdownParent: $("#userModal"),
@@ -93,7 +102,7 @@ $(document).ready(function () {
             },
         });
     });
-    $(".edit-user").click(function (event) {
+    $(document).on("click", ".edit-user", function (event) {
         event.preventDefault();
         const userId = $(this).data("id");
         const button = event.currentTarget;
@@ -142,7 +151,7 @@ $(document).ready(function () {
             },
         });
     });
-    $(".delete-user").click(function (event) {
+    $(document).on("click", ".delete-user", function (event) {
         event.preventDefault();
         const userId = $(this).data("id");
         const confirmation = confirm(
@@ -187,7 +196,7 @@ $(document).ready(function () {
             });
         }
     });
-    $(".permission-access-user").click(function () {
+    $(document).on("click", ".permission-access-user", function () {
         const userId = $(this).data("id");
         const button = event.currentTarget;
 
@@ -403,6 +412,62 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 console.error("Failed to fetch permissions:", xhr);
+            },
+            complete: function () {
+                endLoader({
+                    currentTarget: button,
+                });
+            },
+        });
+    });
+    $("#importEmployee").click(function (event) {
+        event.preventDefault();
+        $("#importEmployeeModal").modal("show");
+    });
+    $("#confirmImportBtn").click(function (event) {
+        event.preventDefault();
+        const button = event.currentTarget;
+
+        $.ajax({
+            url: "users/import",
+            type: "POST",
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            dataType: "json",
+            beforeSend: function () {
+                startLoader({
+                    currentTarget: button,
+                });
+            },
+            success: function (response) {
+                if (response.success) {
+                    $("#importEmployeeModal").modal("hide");
+                    showAlert(
+                        "success",
+                        "ri-checkbox-circle-line",
+                        response.message || "Employees imported successfully!"
+                    );
+                    setTimeout(() => {
+                        window.location.href = window.location.href;
+                    }, 2000);
+                } else {
+                    $("#importEmployeeModal").modal("hide");
+                    showAlert(
+                        "danger",
+                        "ri-error-warning-line",
+                        response.message ||
+                            "An error occurred while importing employees."
+                    );
+                }
+            },
+            error: function (xhr, status, error) {
+                $("#importEmployeeModal").modal("hide");
+                let errorMsg = "Failed to import employees.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                showAlert("danger", "ri-error-warning-line", errorMsg);
             },
             complete: function () {
                 endLoader({

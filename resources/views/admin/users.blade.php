@@ -9,6 +9,13 @@
                             <h4 class="card-title mb-0 flex-grow-1">User List</h4>
                             <div class="flex-shrink-0">
                                 @can('Create User')
+                                    <button type="button" class="btn btn-info btn-label waves-effect waves-light rounded-pill"
+                                        id="importEmployee">
+                                        <i class="ri-download-2-fill label-icon align-middle rounded-pill fs-16 me-2"></i>
+                                        Import
+                                    </button>
+                                @endcan
+                                @can('Create User')
                                     <button type="button"
                                         class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
                                         data-bs-toggle="modal" data-bs-target="#userModal" id="addUserBtn">
@@ -38,8 +45,7 @@
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
                                                 <td>{{ $user->name }}</td>
-                                                <td><a class="text-underline"
-                                                        href="mailto:{{ $user->email }}">{{ $user->email }}</a></td>
+                                                <td>{{ $user->email }}</td>
                                                 <td>
                                                     @forelse ($user->roles as $role)
                                                         <span class="badge bg-primary-subtle text-primary">{{ $role->name }}</span>

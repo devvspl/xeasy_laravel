@@ -82,18 +82,44 @@
             <div class="modal-body">
                 <div id="current-permissions">
                     <h6 class="text-primary">Current Permissions</h6>
-                    <div id="permissions-table-container" class="accordion nesting-accordion custom-accordionwithicon-plus">
+                    <div id="permissions-table-container"
+                        class="accordion nesting-accordion custom-accordionwithicon-plus">
                         <!-- Accordion for current permissions -->
                     </div>
                 </div>
                 @can('Assign Permission')
                     <div id="add-permissions" class="mt-4">
                         <h6 class="text-primary">All Permissions</h6>
-                        <div id="all-permissions-table-container" class="accordion nesting-accordion custom-accordionwithicon-plus">
+                        <div id="all-permissions-table-container"
+                            class="accordion nesting-accordion custom-accordionwithicon-plus">
                             <!-- Accordion for all permissions -->
                         </div>
                     </div>
                 @endcan
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="importEmployeeModal" tabindex="-1" aria-labelledby="importEmployeeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importEmployeeModalLabel">Confirm Employee Import</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to import employees from the HRIMS database? This will create new user accounts
+                    for employees who do not already have one.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
+                    id="confirmImportBtn">
+                    <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 me-2">
+                        <span class="loader" style="display: none;"></span>
+                    </i>
+                    Confirm
+                </button>
             </div>
         </div>
     </div>

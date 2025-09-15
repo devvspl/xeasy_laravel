@@ -9,6 +9,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Models\Roles;
+use App\Models\HRMEmployees;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -55,7 +56,7 @@ class UsersController extends Controller
             'updated_by' => auth()->id(),
         ]);
 
-        // Assign roles to the user if any are provided
+
         if ($request->has('role_id') && !empty($request->role_id)) {
             $roleIds = is_array($request->role_id) ? $request->role_id : [$request->role_id];
             $roleIds = array_map('intval', $roleIds);
@@ -63,6 +64,52 @@ class UsersController extends Controller
         }
 
         return $this->jsonSuccess($user, 'User created successfully.');
+    }
+
+    public function importEmployees(Request $request)
+    {
+        $this->authorize('Create User');
+        try {
+
+            $employees = HRMEmployees::on('hrims')
+                ->leftJoin('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
+                ->select(
+                    'hrm_employee.EmployeeID',
+                    'hrm_employee.Fname',
+                    'hrm_employee.Sname',
+                    'hrm_employee.Lname',
+                    'hrm_employee.EmpStatus',
+                    'hrm_employee.EmpPass',
+                    'hrm_employee_general.EmailId_Vnr as email'
+                )
+                ->get();
+
+            $importedCount = 0;
+            $defaultRoleId = 7;
+            $authUserId = auth()->id();
+            foreach ($employees as $employee) {
+                if (empty($employee->email) || User::where('email', $employee->email)->exists()) {
+                    continue;
+                }
+                $user = User::create([
+                    'name' => trim($employee->Fname . ' ' . ($employee->Sname ? $employee->Sname . ' ' : '') . $employee->Lname),
+                    'email' => $employee->email,
+                    'password' => $employee->EmpPass,
+                    'employee_id' => $employee->EmployeeID,
+                    'role_id' => $defaultRoleId,
+                    'status' => $employee->EmpStatus === 'A' ? 1 : 0,
+                    'created_by' => $authUserId,
+                    'updated_by' => $authUserId,
+                ]);
+                if ($defaultRoleId) {
+                    $user->assignRole($defaultRoleId);
+                }
+                $importedCount++;
+            }
+            return $this->jsonSuccess(['imported_count' => $importedCount], "$importedCount employees imported successfully.");
+        } catch (\Exception $e) {
+            return $this->jsonError($e->getMessage(), 500);
+        }
     }
 
     /**
@@ -106,7 +153,7 @@ class UsersController extends Controller
             'updated_at' => now(),
         ]);
 
-        // Update user roles: assign new ones or remove all if none provided
+
         if ($request->has('role_id') && !empty($request->role_id)) {
             $roleIds = is_array($request->role_id) ? $request->role_id : [$request->role_id];
             $roleIds = array_map('intval', $roleIds);
