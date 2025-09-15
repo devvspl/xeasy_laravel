@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\admin\DashboardController;
 
 // Public routes (accessible without login)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

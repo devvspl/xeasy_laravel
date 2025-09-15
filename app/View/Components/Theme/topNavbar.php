@@ -21,6 +21,6 @@ class topNavbar extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.theme.top-navbar');
+        return view('components.theme.topNavbar');
     }
 }
