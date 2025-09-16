@@ -19,7 +19,8 @@ use App\Http\Controllers\admin\{
     EmployeeController,
     ExpenseDetailsController,
     MediatorController,
-    CoreAPIController
+    CoreAPIController,
+    EmailTemplateController
 };
 
 // Protected Routes (Requires Authentication)
@@ -58,6 +59,7 @@ Route::middleware('auth')->group(function () {
     // User Management
     // Routes for user management, including permissions and profiles
     Route::resource('users', UsersController::class);
+    Route::get('/users/data', [UsersController::class, 'getUsersData']);
     Route::get('user/{id}/permission', [UsersController::class, 'getPermissionView']);
     Route::get('users/{id}/permissions', [PermissionController::class, 'getPermissions']);
     Route::post('users/{id}/permissions/assign', [PermissionController::class, 'assignPermission']);
@@ -136,5 +138,14 @@ Route::middleware('auth')->group(function () {
     Route::get('core', [CoreAPIController::class, 'index'])->name('core');
     Route::get('core_api_sync', [CoreAPIController::class, 'sync'])->name('core_api_sync');
     Route::post('importAPISData', [CoreAPIController::class, 'importAPISData'])->name('importAPISData');
+
+
+    Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email_templates.index');
+    Route::post('email-template', [EmailTemplateController::class, 'store'])->name('email_template.store');
+    Route::get('email-template/{id}/edit', [EmailTemplateController::class, 'edit'])->name('email_template.edit');
+    Route::put('email-template/{template}', [EmailTemplateController::class, 'update'])->name('email_template.update');
+    Route::delete('email-template/{id}', [EmailTemplateController::class, 'destroy'])->name('email_template.destroy');
+    Route::get('email-template/log/{template}', [EmailTemplateController::class, 'getLogs'])->name('email_template.logs');
+    Route::get('email-template-list', [EmailTemplateController::class, 'templateList'])->name('email_template.list');
 
 });

@@ -30,46 +30,45 @@
                      </div>
                   </div>
                 <h5 class="mb-3">Permissions by Role</h5>
-@foreach ($rolePermissions as $roleName => $groups)
-<div class="mb-4">
-    <div class="d-flex align-items-center justify-content-between">
-        <h6 class="mb-2 text-primary mb-0">{{ $roleName }}</h6>
-        <button type="button" 
-                class="btn btn-sm btn-outline-primary toggle-permissions" 
-                data-target="#permissions-{{ Str::slug($roleName) }}">
-            <i class="ri-arrow-down-s-line"></i> <!-- default icon -->
-        </button>
-    </div>
+                @foreach ($rolePermissions as $roleName => $groups)
+                <div class="mb-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="mb-2 text-primary mb-0">{{ $roleName }}</h6>
+                        <button type="button" 
+                                class="btn btn-sm btn-outline-primary toggle-permissions" 
+                                data-target="#permissions-{{ Str::slug($roleName) }}">
+                            <i class="ri-arrow-down-s-line"></i> <!-- default icon -->
+                        </button>
+                    </div>
 
-    <div id="permissions-{{ Str::slug($roleName) }}" class="permissions-group mt-2">
-        @if (empty($groups))
-            <p class="text-muted">No permissions assigned to this role.</p>
-        @else
-            @foreach ($groups as $groupName => $permissions)
-                <div class="ms-3 mb-3">
-                    <h6 class="mb-2">{{ $groupName }}</h6>
-                    <div class="row ms-3">
-                        @foreach ($permissions as $permission)
-                            <div class="col-md-4">
-                                <div class="form-check mb-2 d-flex align-items-center">
-                                    <input class="form-check-input permission-checkbox me-2" 
-                                        type="checkbox" 
-                                        id="permission-{{ $permission['id'] }}-{{ $roleName }}" 
-                                        value="{{ $permission['id'] }}"
-                                        {{ isset($userPermissions[$groupName]) && in_array($permission['id'], array_column($userPermissions[$groupName], 'id')) ? 'checked' : '' }}
-                                        data-user-id="{{ $user->id }}">
-                                    <label class="form-check-label" for="permission-{{ $permission['id'] }}-{{ $roleName }}">{{ $permission['name'] }}</label>
+                    <div id="permissions-{{ Str::slug($roleName) }}" class="permissions-group mt-2">
+                        @if (empty($groups))
+                            <p class="text-muted">No permissions assigned to this role.</p>
+                        @else
+                            @foreach ($groups as $groupName => $permissions)
+                                <div class="ms-3 mb-3">
+                                    <h6 class="mb-2">{{ $groupName }}</h6>
+                                    <div class="row ms-3">
+                                        @foreach ($permissions as $permission)
+                                            <div class="col-md-4">
+                                                <div class="form-check mb-2 d-flex align-items-center">
+                                                    <input class="form-check-input permission-checkbox me-2" 
+                                                        type="checkbox" 
+                                                        id="permission-{{ $permission['id'] }}-{{ $roleName }}" 
+                                                        value="{{ $permission['id'] }}"
+                                                        {{ isset($userPermissions[$groupName]) && in_array($permission['id'], array_column($userPermissions[$groupName], 'id')) ? 'checked' : '' }}
+                                                        data-user-id="{{ $user->id }}">
+                                                    <label class="form-check-label" for="permission-{{ $permission['id'] }}-{{ $roleName }}">{{ $permission['name'] }}</label>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        @endif
                     </div>
                 </div>
-            @endforeach
-        @endif
-    </div>
-</div>
-@endforeach
-
+                @endforeach
                </div>
             </div>
          </div>
