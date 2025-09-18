@@ -69,7 +69,7 @@ class ReportController extends Controller
                 $selects[] = DB::raw("MAX(claimtype.ClaimName) as claim_type_name");
             }
             if (in_array('claim_status', $columns)) {
-                $selects[] = DB::raw("MAX({$table}.ClaimAtStep) as ClaimAtStep");
+                $selects[] = DB::raw("MAX({$table}.ClaimStatus) as ClaimStatus");
             }
             if (in_array('emp_name', $columns)) {
                 $selects[] = DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name");

@@ -18,13 +18,13 @@
                             <div class="col-md-3">
                                 <select class="form-select" id="reportType" name="reportType" style="width: 100%;">
                                     <option value="general" selected>General (Single Sheet)</option>
-                                    @can('Filter Month')
+                                    @can('Month Filter')
                                         <option value="month_wise">Month Wise (Multiple Sheets)</option>
                                     @endcan
-                                    @can('Filter Department')
+                                    @can('Department Filter')
                                         <option value="department_wise">Department Wise (Multiple Sheets)</option>
                                     @endcan
-                                    @can('Filter Claim Type')
+                                    @can('Claim Type Filter')
                                         <option value="claim_type_wise">Claim Type Wise (Multiple Sheets)</option>
                                     @endcan
                                 </select>
@@ -58,7 +58,7 @@
                                             <label class="form-check-label" for="colClaimId">Claim ID</label>
                                         </div>
                                     </div>
-                                    @can('Filter Claim Type')
+                                    @can('Claim Type Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"
@@ -67,7 +67,7 @@
                                             </div>
                                         </div>
                                     @endcan
-                                    @can('Filter Claim Status')
+                                    @can('Claim Status Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"
@@ -76,7 +76,7 @@
                                             </div>
                                         </div>
                                     @endcan
-                                    @can('Filter Users')
+                                    @can('User Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"
@@ -92,7 +92,7 @@
                                             </div>
                                         </div>
                                     @endcan
-                                    @can('Filter Month')
+                                    @can('Month Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"
@@ -115,7 +115,7 @@
                                             <label class="form-check-label" for="colBillDate">Bill Date</label>
                                         </div>
                                     </div>
-                                    @can('Filter Function')
+                                    @can('Function Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"
@@ -124,7 +124,7 @@
                                             </div>
                                         </div>
                                     @endcan
-                                    @can('Filter Vertical')
+                                    @can('Vertical Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"
@@ -133,7 +133,7 @@
                                             </div>
                                         </div>
                                     @endcan
-                                    @can('Filter Department')
+                                    @can('Department Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"
@@ -142,7 +142,7 @@
                                             </div>
                                         </div>
                                     @endcan
-                                    @can('Filter Sub Department')
+                                    @can('Sub-Department Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"
@@ -151,7 +151,7 @@
                                             </div>
                                         </div>
                                     @endcan
-                                    @can('Filter Policy')
+                                    @can('Policy Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"
@@ -160,7 +160,7 @@
                                             </div>
                                         </div>
                                     @endcan
-                                    @can('Filter Vehicle Type')
+                                    @can('Vehicle Type Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"
@@ -190,7 +190,7 @@
                                             <label class="form-check-label" for="colTotKm">Total KM</label>
                                         </div>
                                     </div>
-                                    @can('Filter Wheeler Type')
+                                    @can('Wheeler Type Filter')
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input column-checkbox" type="checkbox"

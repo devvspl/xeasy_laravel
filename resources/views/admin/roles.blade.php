@@ -8,7 +8,7 @@
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">Roles List</h4>
                             <div class="flex-shrink-0">
-                                @can('Create Role')
+                                @can('New Role')
                                     <button type="button"
                                         class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
                                         data-bs-toggle="modal" data-bs-target="#roleModal" id="addRoleBtn">
@@ -26,6 +26,8 @@
                                     <tr>
                                         <th>S No.</th>
                                         <th>Role</th>
+                                        <th>Permissions</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -35,17 +37,33 @@
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
                                                 <td>{{ $role->name }}</td>
+                                                <td style="white-space: normal;width: 60%;">
+                                                    @if ($role->permissions->isNotEmpty())
+                                                        @foreach ($role->permissions as $permission)
+                                                            <span
+                                                                class="badge bg-secondary">{{ $permission->name }}</span>
+                                                        @endforeach
+                                                    @else
+                                                        <span class="text-muted">-</span>
+                                                    @endif
+                                                </td>   
                                                 <td>
-                                                    @can('Edit Role')
+                                                    @if ($role->status == 1)
+                                                        <span class="badge bg-success-subtle text-success badge-border">Active</span>
+                                                    @else
+                                                        <span class="badge bg-danger-subtle text-danger badge-border">Inactive</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @can('Modify Role')
                                                         <button type="button" data-bs-toggle="modal" data-bs-target="#roleModal"
                                                             id="addRoleBtn" class="btn btn-primary btn-sm edit-role"
                                                             data-id="{{ $role->id }}"><i class="ri-edit-2-fill"></i></button>
                                                     @endcan
-                                                    @can('Delete Role')
+                                                    @can('Remove Role')
                                                         <button type="button" class="btn btn-danger btn-sm delete-role"
                                                             data-id="{{ $role->id }}"><i class="ri-delete-bin-5-fill"></i></button>
                                                     @endcan
-
                                                 </td>
                                             </tr>
                                         @endforeach

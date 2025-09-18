@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use Auth;
-use Illuminate\Http\Request;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Models\User;
-use App\Models\Roles;
-use App\Models\Permission;
 use App\Models\HRMEmployees;
+use App\Models\Permission;
+use App\Models\Roles;
+use App\Models\User;
+use Auth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -35,10 +35,9 @@ class UsersController extends Controller
         }
         $users = $usersQuery->get();
         $roles = Roles::where('status', 1)->get();
+
         return view('admin.users', compact('users', 'roles', 'status'));
     }
-
-
 
     /**
      * Shows a form to create a new user.
@@ -67,8 +66,7 @@ class UsersController extends Controller
             'updated_by' => auth()->id(),
         ]);
 
-
-        if ($request->has('role_id') && !empty($request->role_id)) {
+        if ($request->has('role_id') && ! empty($request->role_id)) {
             $roleIds = is_array($request->role_id) ? $request->role_id : [$request->role_id];
             $roleIds = array_map('intval', $roleIds);
             $user->assignRole($roleIds);
@@ -79,48 +77,43 @@ class UsersController extends Controller
 
     public function importEmployees(Request $request)
     {
-        $this->authorize('Create User');
-        try {
+        $employees = HRMEmployees::on('hrims')
+            ->leftJoin('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
+            ->select(
+                'hrm_employee.EmployeeID',
+                'hrm_employee.Fname',
+                'hrm_employee.Sname',
+                'hrm_employee.Lname',
+                'hrm_employee.EmpStatus',
+                'hrm_employee.EmpPass',
+                'hrm_employee_general.EmailId_Vnr as email'
+            )
+            ->get();
 
-            $employees = HRMEmployees::on('hrims')
-                ->leftJoin('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
-                ->select(
-                    'hrm_employee.EmployeeID',
-                    'hrm_employee.Fname',
-                    'hrm_employee.Sname',
-                    'hrm_employee.Lname',
-                    'hrm_employee.EmpStatus',
-                    'hrm_employee.EmpPass',
-                    'hrm_employee_general.EmailId_Vnr as email'
-                )
-                ->get();
-
-            $importedCount = 0;
-            $defaultRoleId = 7;
-            $authUserId = auth()->id();
-            foreach ($employees as $employee) {
-                if (empty($employee->email) || User::where('email', $employee->email)->exists()) {
-                    continue;
-                }
-                $user = User::create([
-                    'name' => trim($employee->Fname . ' ' . ($employee->Sname ? $employee->Sname . ' ' : '') . $employee->Lname),
-                    'email' => $employee->email,
-                    'password' => $employee->EmpPass,
-                    'employee_id' => $employee->EmployeeID,
-                    'role_id' => $defaultRoleId,
-                    'status' => $employee->EmpStatus === 'A' ? 1 : 0,
-                    'created_by' => $authUserId,
-                    'updated_by' => $authUserId,
-                ]);
-                if ($defaultRoleId) {
-                    $user->assignRole($defaultRoleId);
-                }
-                $importedCount++;
+        $importedCount = 0;
+        $defaultRoleId = 7;
+        $authUserId = auth()->id();
+        foreach ($employees as $employee) {
+            if (empty($employee->email) || User::where('email', $employee->email)->exists()) {
+                continue;
             }
-            return $this->jsonSuccess(['imported_count' => $importedCount], "$importedCount employees imported successfully.");
-        } catch (\Exception $e) {
-            return $this->jsonError($e->getMessage(), 500);
+            $user = User::create([
+                'name' => trim($employee->Fname.' '.($employee->Sname ? $employee->Sname.' ' : '').$employee->Lname),
+                'email' => $employee->email,
+                'password' => $employee->EmpPass,
+                'employee_id' => $employee->EmployeeID,
+                'role_id' => $defaultRoleId,
+                'status' => $employee->EmpStatus === 'A' ? 1 : 0,
+                'created_by' => $authUserId,
+                'updated_by' => $authUserId,
+            ]);
+            if ($defaultRoleId) {
+                $user->assignRole($defaultRoleId);
+            }
+            $importedCount++;
         }
+
+        return $this->jsonSuccess(['imported_count' => $importedCount], "$importedCount employees imported successfully.");
     }
 
     /**
@@ -145,6 +138,7 @@ class UsersController extends Controller
         $hasRoles = $user->roles()->pluck('id');
         $userData = $user->toArray();
         $userData['role_ids'] = $hasRoles;
+
         return $this->jsonSuccess($userData, 'User fetched successfully.');
     }
 
@@ -164,8 +158,7 @@ class UsersController extends Controller
             'updated_at' => now(),
         ]);
 
-
-        if ($request->has('role_id') && !empty($request->role_id)) {
+        if ($request->has('role_id') && ! empty($request->role_id)) {
             $roleIds = is_array($request->role_id) ? $request->role_id : [$request->role_id];
             $roleIds = array_map('intval', $roleIds);
             $user->syncRoles($roleIds);
@@ -185,6 +178,7 @@ class UsersController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
+
         return $this->jsonSuccess(null, 'User deleted successfully.');
     }
 
@@ -197,53 +191,43 @@ class UsersController extends Controller
     {
         $id = Auth::id();
         $user_detail = User::find($id);
+
         return view('admin.profile', compact('user_detail'));
     }
 
+    public function getPermissionView($id)
+    {
+        $roles = Roles::where('status', 1)->get();
+        $user = User::findOrFail($id);
 
-public function getPermissionView($id)
-{
-    $roles = Roles::where('status', 1)->get(); // Fetch active roles
-    $user = User::findOrFail($id);
+        // User's direct permissions
+        $userPermissions = $user->getDirectPermissions()
+            ->load('group')
+            ->map(function ($permission) {
+                return [
+                    'id' => $permission->id,
+                    'name' => $permission->name,
+                    'group' => $permission->group ? $permission->group->name : 'Other',
+                ];
+            })
+            ->groupBy('group')
+            ->toArray();
 
-    // User's direct permissions, grouped
-    $userPermissions = $user->getDirectPermissions()
-        ->load('group') // Assuming a 'group' relationship in Permission model
-        ->map(function ($permission) {
-            return [
-                'id' => $permission->id,
-                'name' => $permission->name,
-                'group' => $permission->group ? $permission->group->name : 'Other',
-            ];
-        })
-        ->groupBy('group')
-        ->toArray();
+        // All permissions grouped by group name
+        $allPermissions = Permission::with('group')
+            ->get()
+            ->map(function ($permission) {
+                return [
+                    'id' => $permission->id,
+                    'name' => $permission->name,
+                    'group' => $permission->group ? $permission->group->name : 'Other',
+                ];
+            })
+            ->groupBy('group')
+            ->toArray();
 
-    // Permissions assigned to each role, grouped by role and group
-    $rolePermissions = [];
-    foreach ($roles as $role) {
-        $permissions = Permission::whereIn('id', function ($query) use ($role) {
-            $query->select('permission_id')
-                  ->from('role_has_permissions')
-                  ->where('role_id', $role->id);
-        })
-        ->with('group')
-        ->get()
-        ->map(function ($permission) {
-            return [
-                'id' => $permission->id,
-                'name' => $permission->name,
-                'group' => $permission->group ? $permission->group->name : 'Other',
-            ];
-        })
-        ->groupBy('group')
-        ->toArray();
+        $hasRoles = $user->roles()->pluck('id')->toArray();
 
-        $rolePermissions[$role->name] = $permissions;
+        return view('admin.set-permission', compact('roles', 'user', 'userPermissions', 'allPermissions', 'hasRoles'));
     }
-
-    $hasRoles = $user->roles()->pluck('id')->toArray();
-
-    return view('admin.set-permission', compact('roles', 'user', 'userPermissions', 'rolePermissions', 'hasRoles'));
-}
 }

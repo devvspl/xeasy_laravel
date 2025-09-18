@@ -8,7 +8,7 @@
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">Menu List</h4>
                             <div class="flex-shrink-0">
-                                @can('Create Menu')
+                                @can('New Menu')
                                     <button type="button"
                                         class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
                                         data-bs-toggle="modal" data-bs-target="#menuModal" id="menuBtn">
@@ -36,16 +36,16 @@
                                                 <td>{{ $key + 1 }}</td>
                                                 <td>{{ $menu->title }}</td>
                                                 <td>
-                                                    @can('Edit Menu')
+                                                    @can('Modify Menu')
                                                         <button type="button" data-bs-toggle="modal" data-bs-target="#menuModal"
                                                             id="addMenuBtn" class="btn btn-primary btn-sm edit-menu"
                                                             data-id="{{ $menu->id }}"><i class="ri-edit-2-fill"></i></button>
                                                     @endcan
-                                                    @can('Delete Menu')
+                                                    @can('Remove Menu')
                                                         <button type="button" class="btn btn-danger btn-sm delete-menu"
                                                             data-id="{{ $menu->id }}"><i class="ri-delete-bin-5-fill"></i></button>
                                                     @endcan
-                                                    @can('View Menu Logs')
+                                                    @can('Menu Activity Logs')
                                                         <button type="button" class="btn btn-info btn-sm view-logs"
                                                             data-id="{{ $menu->id }}" data-bs-toggle="modal"
                                                             data-bs-target="#logModal"><i class="ri-file-list-3-fill"></i></button>

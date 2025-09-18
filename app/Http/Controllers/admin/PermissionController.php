@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Permission;
 use App\Http\Requests\StorePermissionRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use App\Models\Permission;
+use App\Models\PermissionGroup;
 use App\Models\Roles;
 use App\Models\User;
-use App\Models\PermissionGroup;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 /**
  * This controller manages permissions in the admin area, like creating, updating, or assigning permissions to users and roles.
@@ -40,15 +40,28 @@ class PermissionController extends Controller
         return view('admin.permissions', compact('permissions', 'roles', 'group'));
     }
 
+    public function permissionOld(Request $request)
+    {
+        $query = Permission::join('permission_groups', 'permissions.permission_group_id', '=', 'permission_groups.id')
+            ->select('permissions.*', 'permission_groups.name as group_name');
+
+        if ($request->filled('group_id')) {
+            $query->where('permissions.permission_group_id', $request->group_id);
+        }
+
+        $permissions = $query->get();
+        $roles = Roles::where('status', 1)->where('id', '!=', 1)->get();
+        $group = PermissionGroup::all();
+
+        return view('admin.permissions_old', compact('permissions', 'roles', 'group'));
+    }
+
     /**
      * Shows a form to create a new permission.
      *
      * Not used right now, but can be used to return a form view if needed.
      */
-    public function create()
-    {
-        // If needed, you can return a view for creating permissions
-    }
+    public function create() {}
 
     /**
      * Saves a new permission to the database.
@@ -78,10 +91,7 @@ class PermissionController extends Controller
      *
      * Not used right now, but can be used to show a single permission's details.
      */
-    public function show(string $id)
-    {
-        // If needed, you can implement this method to display a specific permission
-    }
+    public function show(string $id) {}
 
     /**
      * Gets a permission to edit it.
@@ -91,6 +101,7 @@ class PermissionController extends Controller
     public function edit(string $id)
     {
         $permission = Permission::findOrFail($id);
+
         return $this->jsonSuccess($permission, 'Permission fetched successfully.');
     }
 
@@ -177,7 +188,7 @@ class PermissionController extends Controller
             return response()->json(
                 [
                     'success' => false,
-                    'message' => 'Failed to update permission: ' . $e->getMessage(),
+                    'message' => 'Failed to update permission: '.$e->getMessage(),
                 ],
                 500
             );
@@ -192,7 +203,9 @@ class PermissionController extends Controller
      */
     public function getPermissions(string $id)
     {
+
         $user = User::findOrFail($id);
+
         $permissions = $user->getDirectPermissions()
             ->load('group')
             ->map(function ($permission) {
@@ -205,7 +218,16 @@ class PermissionController extends Controller
             ->groupBy('group')
             ->toArray();
 
-        return $this->jsonSuccess($permissions, 'Permissions fetched successfully.');
+        $data = [
+            'permissions' => $permissions,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
+        ];
+
+        return $this->jsonSuccess($data, 'Permissions fetched successfully.');
     }
 
     /**
@@ -223,9 +245,20 @@ class PermissionController extends Controller
                     'id' => $permission->id,
                     'name' => $permission->name,
                     'group' => $permission->group ? $permission->group->name : 'Other',
+                    'category' => $permission->group ? $permission->group->category : 'Uncategorized',
                 ];
             })
-            ->groupBy('group')
+            ->groupBy('category')
+            ->map(function ($categoryPermissions) {
+                return $categoryPermissions->groupBy('group')->map(function ($groupPermissions) {
+                    return $groupPermissions->map(function ($permission) {
+                        return [
+                            'id' => $permission['id'],
+                            'name' => $permission['name'],
+                        ];
+                    })->values()->toArray();
+                })->toArray();
+            })
             ->toArray();
 
         return $this->jsonSuccess($permissions, 'All permissions fetched successfully.');

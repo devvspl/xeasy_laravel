@@ -14,10 +14,7 @@ class UpdateEmailTemplateRequest extends FormRequest
             'subject' => 'required|string|max:255',
             'body_html' => 'required|string',
             'is_active' => 'required|boolean',
-            'category' => 'nullable|string|max:50',
-            'variables' => 'nullable|array',
-            'variables.*.variable_name' => 'required|string|max:100',
-            'variables.*.description' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:50'
         ];
     }
 }

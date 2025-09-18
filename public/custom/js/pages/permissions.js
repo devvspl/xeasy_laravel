@@ -130,7 +130,7 @@ $(document).ready(function () {
             },
         });
     });
-    $(document).on("clcik", ".delete-permission", function (event) {
+    $(document).on("click", ".delete-permission", function (event) {
         event.preventDefault();
         const permissionId = $(this).data("id");
         const confirmation = confirm(
@@ -176,8 +176,7 @@ $(document).ready(function () {
             });
         }
     });
-    $(document).on("clcik", ".edit-permission", function (event) {
-        alert('here');
+    $(document).on("click", ".edit-permission", function (event) {
         event.preventDefault();
         const permissionId = $(this).data("id");
         const button = event.currentTarget;
@@ -231,14 +230,14 @@ $(document).ready(function () {
         });
     });
     $(document).on("change", ".permission-checkbox", function () {
-        console.log('permission-checkbox');
+        console.log("permission-checkbox");
         const role_id = $(this).data("role-id");
         const permission_id = $(this).data("permission-id");
         const isChecked = $(this).is(":checked");
         $.ajax({
             url: "/permissions/assign",
             type: "POST",
-            contentType: "application/x-www-form-urlencoded; charset=UTF-8", 
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             data: {
                 role_id: role_id,
                 permission_id: permission_id,

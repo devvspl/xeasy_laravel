@@ -81,26 +81,13 @@
                 </div>
             </div>
             <div class="modal-header">
-                <h5 class="modal-title" id="permissionModalLabel">Manage Permissions</h5>
+                <h5 class="modal-title" id="permissionModalLabel">Assign Permission <span id="userNameTitle"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="current-permissions">
-                    <h6 class="text-primary">Additional Permissions</h6>
-                    <div id="permissions-table-container"
-                        class="accordion nesting-accordion custom-accordionwithicon-plus">
-
-                    </div>
+                <div id="permissions-container"
+                    class="accordion nesting-accordion custom-accordionwithicon accordion-border-box">
                 </div>
-                @can('Permission Access')
-                    <div id="add-permissions" class="mt-4">
-                        <h6 class="text-primary">All Permissions</h6>
-                        <div id="all-permissions-table-container"
-                            class="accordion nesting-accordion custom-accordionwithicon-plus">
-
-                        </div>
-                    </div>
-                @endcan
             </div>
         </div>
     </div>

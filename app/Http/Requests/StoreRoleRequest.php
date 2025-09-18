@@ -24,6 +24,7 @@ class StoreRoleRequest extends FormRequest
         return [
             'role_name' => 'required|string|max:255|unique:roles,name',
             'is_active' => 'required|boolean',
+            'permissions' => 'sometimes|array'
         ];
     }
 

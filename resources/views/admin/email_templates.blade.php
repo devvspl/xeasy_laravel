@@ -8,7 +8,7 @@
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">Email Template List</h4>
                             <div class="flex-shrink-0">
-                                @can('Create Email Template')
+                                @can('New Email Template')
                                     <button type="button"
                                         class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
                                         data-bs-toggle="modal" data-bs-target="#templateModal" id="templateBtn">
@@ -39,16 +39,16 @@
                                                 <td>{{ $template->subject }}</td>
                                                 <td>{{ $template->category ?? 'N/A' }}</td>
                                                 <td>
-                                                    @can('Edit Email Template')
+                                                    @can('Modify Email Template')
                                                         <button type="button" data-bs-toggle="modal" data-bs-target="#templateModal"
                                                             class="btn btn-primary btn-sm edit-template"
                                                             data-id="{{ $template->id }}"><i class="ri-edit-2-fill"></i></button>
                                                     @endcan
-                                                    @can('Delete Email Template')
+                                                    @can('Remove Email Template')
                                                         <button type="button" class="btn btn-danger btn-sm delete-template"
                                                             data-id="{{ $template->id }}"><i class="ri-delete-bin-5-fill"></i></button>
                                                     @endcan
-                                                    @can('View Email Template Logs')
+                                                    @can('Email Template Activity Logs')
                                                         <button type="button" class="btn btn-info btn-sm view-logs"
                                                             data-id="{{ $template->id }}" data-bs-toggle="modal"
                                                             data-bs-target="#logModal"><i class="ri-file-list-3-fill"></i></button>
@@ -59,7 +59,7 @@
                                     @else
                                         <tr>
                                             <td colspan="5" class="text-center">
-                                                <span class="text-danger">You do not have permission to view the email template list.</span>
+                                                <span class="text-danger">You do not have permission to view the Email Template List.</span>
                                             </td>
                                         </tr>
                                     @endcan
@@ -87,15 +87,15 @@
                 </div>
                 <div class="modal-body">
                     <form id="templateForm">
-                        <div class="mb-3">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-2">
                             <label for="name" class="form-label">Template Name</label>
                             <input type="text" class="form-control" id="name" name="name" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="subject" class="form-label">Subject</label>
-                            <input type="text" class="form-control" id="subject" name="subject" required>
-                        </div>
-                        <div class="mb-3">
+                            </div>
+                            <div class="col-md-4">
+                                 <div class="mb-2">
                             <label for="category" class="form-label">Category</label>
                             <select class="form-control" id="category" name="category">
                                 <option value="">Select a category</option>
@@ -104,37 +104,39 @@
                                 <option value="Policy">Policy / Updates</option>
                             </select>
                         </div>
-                       <div class="mb-3">
+                            </div>
+                        </div>
+                       
+                        <div class="mb-2">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" required>
+                        </div>
+                         <div class="mb-2">
+                            <label class="form-label">Available Variables</label>
+                            <div id="variableList"></div>
+                        </div>
+                        <div class="mb-2">
                             <label for="body_html" class="form-label">Body</label>
                             <textarea class="form-control" id="body_html" name="body_html" rows="6" required></textarea>
                         </div>
-                        <div class="mb-3">
-                           <div class="form-check form-switch">
+                        
+                        <div class="mb-2">
+                            <div class="form-check form-switch">
                                 <input class="form-check-input" name="is_active" type="checkbox" checked
                                     permission="switch" id="is_active" onchange="toggleSwitchText()" />
                                 <label class="form-check-label" for="is_active" id="is_active_label">Active</label>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Template Variables</label>
-                            <div id="variableContainer">
-                                <div class="variable-row mb-2">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            {{-- <input type="text" class="form-control" name="variables[0][variable_name]" placeholder="Variable Name (e.g., {{user_name}})" required> --}}
-                                        </div>
-                                        <div class="col-md-5">
-                                            {{-- <input type="text" class="form-control" name="variables[0][description]" placeholder="Description" required> --}}
-                                        </div>
-                                        <div class="col-md-1">
-                                            <button type="button" class="btn btn-danger btn-sm remove-variable"><i class="ri-delete-bin-5-fill"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-secondary btn-sm" id="addVariableBtn">Add Variable</button>
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="saveTemplateBtn">Save Template</button>
+                         <div class="col-lg-12">
+                           <div class="hstack gap-2 justify-content-end">
+                               <button type="button" class="btn btn-primary btn-label waves-effect waves-light rounded-pill" id="saveTemplateBtn">
+                                   <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 me-2">
+                                       <span class="loader" style="display: none;"></span>
+                                   </i>
+                                   Submit
+                               </button>
+                           </div>
+                       </div>
                     </form>
                 </div>
             </div>

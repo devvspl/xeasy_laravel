@@ -42,6 +42,9 @@
                                         <th>S No.</th>
                                         <th>Permission</th>
                                         <th>Group</th>
+                                        @foreach ($roles as $role)
+                                            <th>{{ $role->name }}</th>
+                                        @endforeach
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -55,6 +58,21 @@
                                             <td><span
                                                     class="badge bg-dark-subtle text-body">{{ $permission->group_name ?? '-' }}</span>
                                             </td>
+                                            @foreach ($roles as $role)
+                                                <td>
+                                                    @if ($role->hasPermissionTo($permission->name))
+                                                        <input type="checkbox" class="form-check-input permission-checkbox"
+                                                            name="permissions[]" value="{{ $permission->id }}"
+                                                            data-role-id="{{ $role->id }}" data-permission-id="{{ $permission->id }}"
+                                                            id="perm_{{ $permission->id }}" checked>
+                                                    @else
+                                                        <input type="checkbox" class="form-check-input permission-checkbox"
+                                                            name="permissions[]" value="{{ $permission->id }}"
+                                                            data-role-id="{{ $role->id }}" data-permission-id="{{ $permission->id }}"
+                                                            id="perm_{{ $permission->id }}">
+                                                    @endif
+                                                </td>
+                                            @endforeach
                                             <td>
                                                 @if ($permission->status == 1)
                                                     <span class="badge bg-success-subtle text-success badge-border">Active</span>

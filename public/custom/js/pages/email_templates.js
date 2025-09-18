@@ -9,17 +9,16 @@ $(document).ready(function () {
         lengthMenu: [10, 25, 50, 100],
     });
 
-    // Initialize TinyMCE for body_html (self-hosted, free version)
     tinymce.init({
         selector: "#body_html",
-        plugins: "lists charmap preview anchor", // removed link & image
+        plugins: "lists table preview paste",
         toolbar:
-            "undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist", // removed link & image
-        height: 400,
+            "bold italic underline | alignleft aligncenter alignright | bullist numlist | link image | table | preview",
+        height: 250,
         menubar: false,
         statusbar: false,
         branding: false,
-        license_key: "gpl", // keep this for free version
+        license_key: "gpl",
         setup: function (editor) {
             editor.on("change", function () {
                 editor.save();
@@ -31,79 +30,47 @@ $(document).ready(function () {
         $("#templateModalLabel").text("Add New Email Template");
         $("#templateForm")[0].reset();
         tinymce.get("body_html").setContent("");
-        $("#variableContainer").html(`
-            <div class="variable-row mb-2">
-                <div class="row">
-                    <div class="col-md-6">
-                        <input type="text" class="form-control" name="variables[0][variable_name]" placeholder="Variable Name (e.g., {{user_name}})" required>
-                    </div>
-                    <div class="col-md-5">
-                        <input type="text" class="form-control" name="variables[0][description]" placeholder="Description" required>
-                    </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-danger btn-sm remove-variable"><i class="ri-delete-bin-5-fill"></i></button>
-                    </div>
-                </div>
-            </div>
-        `);
+        $("#variableList").empty();
+        $.ajax({
+            url: "/eml-template-variables", // Endpoint to fetch variables
+            type: "GET",
+            success: function (response) {
+                response.forEach(function (variable) {
+                    $("#variableList").append(`
+                        <div class="mb-2">
+                            <span class="badge bg-primary-subtle text-primary add-variable" data-name="${variable.variable_name}">${variable.variable_name}</span>
+                        </div>
+                    `);
+                });
+            },
+        });
         $("#saveTemplateBtn").data("template-id", null);
         $("#templateModal").modal("show");
     });
 
-    let variableIndex = 1;
-    $("#addVariableBtn").click(function () {
-        $("#variableContainer").append(`
-            <div class="variable-row mb-2">
-                <div class="row">
-                    <div class="col-md-6">
-                        <input type="text" class="form-control" name="variables[${variableIndex}][variable_name]" placeholder="Variable Name (e.g., {{user_name}})" required>
-                    </div>
-                    <div class="col-md-5">
-                        <input type="text" class="form-control" name="variables[${variableIndex}][description]" placeholder="Description" required>
-                    </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-danger btn-sm remove-variable"><i class="ri-delete-bin-5-fill"></i></button>
-                    </div>
-                </div>
-            </div>
-        `);
-        variableIndex++;
-    });
-
-    $(document).on("click", ".remove-variable", function () {
-        if ($(".variable-row").length > 1) {
-            $(this).closest(".variable-row").remove();
-        }
+    $(document).on("click", ".add-variable", function () {
+        const variableName = $(this).data("name");
+        tinymce.get("body_html").insertContent(`{{${variableName}}}`);
     });
 
     $("#saveTemplateBtn").click(function (event) {
         event.preventDefault();
         const button = event.currentTarget;
         const form = $("#templateForm")[0];
+        const bodyHtml = tinymce.get("body_html").getContent();
+        const variables = bodyHtml.match(/\{\{[^{}]+}}/g) || []; // Extract variables from body_html
+
         const formData = {
             name: $("#name").val(),
             subject: $("#subject").val(),
-            body_html: tinymce.get("body_html").getContent(),
+            body_html: bodyHtml,
             is_active: $("#is_active").is(":checked") ? 1 : 0,
             category: $("#category").val() || null,
-            variables: [],
+            variables: variables.map((v) => ({
+                variable_name: v.replace(/{{|}}/g, ""),
+            })),
             id: $(button).data("template-id") || null,
         };
-
-        $(".variable-row").each(function () {
-            const variableName = $(this)
-                .find("input[name$='[variable_name]']")
-                .val();
-            const description = $(this)
-                .find("input[name$='[description]']")
-                .val();
-            if (variableName && description) {
-                formData.variables.push({
-                    variable_name: variableName,
-                    description: description,
-                });
-            }
-        });
 
         const requestType = formData.id ? "PUT" : "POST";
         const url = formData.id
@@ -186,46 +153,20 @@ $(document).ready(function () {
                     $("#is_active").prop("checked", template.is_active == 1);
                     $("#category").val(template.category || "");
 
-                    // Populate variables
-                    $("#variableContainer").empty();
-                    variableIndex = 0;
-                    if (template.variables && template.variables.length > 0) {
-                        template.variables.forEach((variable, index) => {
-                            $("#variableContainer").append(`
-                                <div class="variable-row mb-2">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <input type="text" class="form-control" name="variables[${index}][variable_name]" value="${variable.variable_name}" placeholder="Variable Name (e.g., {{user_name}})" required>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <input type="text" class="form-control" name="variables[${index}][description]" value="${variable.description}" placeholder="Description" required>
-                                        </div>
-                                        <div class="col-md-1">
-                                            <button type="button" class="btn btn-danger btn-sm remove-variable"><i class="ri-delete-bin-5-fill"></i></button>
-                                        </div>
+                    $("#variableList").empty();
+                    $.ajax({
+                        url: "/eml-template-variables",
+                        type: "GET",
+                        success: function (response) {
+                            response.forEach(function (variable) {
+                                $("#variableList").append(`
+                                    <div class="mb-2">
+                                      <span class="badge bg-primary-subtle text-primary add-variable" data-name="${variable.variable_name}">${variable.variable_name}</span>
                                     </div>
-                                </div>
-                            `);
-                            variableIndex = index + 1;
-                        });
-                    } else {
-                        $("#variableContainer").html(`
-                            <div class="variable-row mb-2">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control" name="variables[0][variable_name]" placeholder="Variable Name (e.g., {{user_name}})" required>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <input type="text" class="form-control" name="variables[0][description]" placeholder="Description" required>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <button type="button" class="btn btn-danger btn-sm remove-variable"><i class="ri-delete-bin-5-fill"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        `);
-                        variableIndex = 1;
-                    }
+                                `);
+                            });
+                        },
+                    });
 
                     $("#saveTemplateBtn").data("template-id", template.id);
                     $("#templateModal").modal("show");
@@ -249,6 +190,7 @@ $(document).ready(function () {
         });
     });
 
+    // Keep delete-template and view-logs functionality as is...
     $(document).on("click", ".delete-template", function (event) {
         event.preventDefault();
         const templateId = $(this).data("id");

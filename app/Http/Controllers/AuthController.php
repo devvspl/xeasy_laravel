@@ -46,8 +46,10 @@ class AuthController extends Controller
                 Session::put('back_office', true);
             }
             Auth::login($user, $request->has('remember'));
-            Session::put('company', $request->company);
+            Session::put('company_id', $request->company);
             Session::put('year_id', $request->financial_year);
+            Session::put('year_id', $request->financial_year);
+            Session::put('emp_code', $request->employeeid);
             return redirect()->route('dashboard')->with('success', 'Logged in successfully');
         }
         return back()->withErrors([

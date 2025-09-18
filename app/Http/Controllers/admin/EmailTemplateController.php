@@ -7,9 +7,7 @@ use App\Http\Requests\StoreEmailTemplateRequest;
 use App\Http\Requests\UpdateEmailTemplateRequest;
 use App\Models\EmailTemplate;
 use App\Models\TemplateVariable;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 /**
  * This controller handles everything related to email templates in the admin area.
@@ -22,6 +20,7 @@ class EmailTemplateController extends Controller
     public function index()
     {
         $templates = EmailTemplate::all();
+
         return view('admin.email_templates', compact('templates'));
     }
 
@@ -49,18 +48,6 @@ class EmailTemplateController extends Controller
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
         ]);
-
-        // Save template variables if provided
-        if (!empty($validated['variables'])) {
-            foreach ($validated['variables'] as $variable) {
-                TemplateVariable::create([
-                    'template_id' => $template->id,
-                    'variable_name' => $variable['variable_name'],
-                    'description' => $variable['description'],
-                ]);
-            }
-        }
-
         return $this->jsonSuccess($template, 'Email template created successfully.');
     }
 
@@ -78,7 +65,7 @@ class EmailTemplateController extends Controller
      */
     public function edit(string $id)
     {
-        $template = EmailTemplate::with('variables')->findOrFail($id);
+        $template = EmailTemplate::findOrFail($id);
         return $this->jsonSuccess($template, 'Email template fetched successfully.');
     }
 
@@ -97,20 +84,6 @@ class EmailTemplateController extends Controller
             'updated_by' => auth()->id(),
         ]);
 
-        // Update or create template variables
-        if (!empty($validated['variables'])) {
-            // Delete existing variables
-            $template->variables()->delete();
-            // Create new variables
-            foreach ($validated['variables'] as $variable) {
-                TemplateVariable::create([
-                    'template_id' => $template->id,
-                    'variable_name' => $variable['variable_name'],
-                    'description' => $variable['description'],
-                ]);
-            }
-        }
-
         return $this->jsonSuccess($template, 'Email template updated successfully.');
     }
 
@@ -121,6 +94,7 @@ class EmailTemplateController extends Controller
     {
         $template = EmailTemplate::findOrFail($id);
         $template->delete();
+
         return $this->jsonSuccess($template, 'Email template deleted successfully.');
     }
 
@@ -132,6 +106,7 @@ class EmailTemplateController extends Controller
         $query = EmailTemplate::select('id', 'name', 'subject', 'category', 'is_active', 'created_at', 'updated_at')
             ->where('is_active', 1);
         $data = $query->get();
+
         return response()->json($data);
     }
 
@@ -156,7 +131,13 @@ class EmailTemplateController extends Controller
 
         return response()->json([
             'data' => $logs,
-            'title' => $template->name
+            'title' => $template->name,
         ]);
+    }
+
+    public function getVariables()
+    {
+        $variables = DB::table('eml_template_variables')->select('variable_name')->get();
+        return response()->json($variables);
     }
 }

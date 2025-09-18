@@ -397,6 +397,49 @@ $(document).ready(function () {
         });
     }
 
+    function getActiveFiltersCount() {
+        let count = 0;
+
+        // multi selects
+        const multiFilters = [
+            "#functionSelect",
+            "#verticalSelect",
+            "#departmentSelect",
+            "#subDepartmentSelect",
+            "#userSelect",
+            "#monthSelect",
+            "#claimTypeSelect",
+            "#claimStatusSelect",
+            "#policySelect",
+            "#wheelerTypeSelect",
+            "#vehicleTypeSelect",
+        ];
+
+        multiFilters.forEach((selector) => {
+            const val = $(selector).val();
+            if (val && val.length > 0) count += val.length;
+        });
+
+        // radio filters
+        if ($("input[name='claim_filter_type']:checked").length) count++;
+
+        // date filters
+        if ($("#fromDate").val()) count++;
+        if ($("#toDate").val()) count++;
+
+        return count;
+    }
+
+    function updateFilterBadge() {
+        const count = getActiveFiltersCount();
+        const badge = $("#filterCountBadge");
+        if (count > 0) {
+            badge.text(count).show();
+        } else {
+            badge.hide();
+        }
+    }
+
     if ($("#searchButton").length) {
         initializeDataTable();
 
@@ -533,6 +576,21 @@ $(document).ready(function () {
             },
         });
     });
+
+    $("#additionalFiltersCanvas .btn.btn-primary.w-100").on("click",
+        function () {
+            if (table) {
+                startSimpleLoader({
+                    currentTarget: $("#searchButton")[0],
+                });
+                table.ajax.reload(function () {
+                    endSimpleLoader({
+                        currentTarget: $("#searchButton")[0],
+                    });
+                });
+            }
+        }
+    );
 
     $(document).on("click", ".return-claim", function (e) {
         e.preventDefault();

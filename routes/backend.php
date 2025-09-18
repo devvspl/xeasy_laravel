@@ -1,27 +1,26 @@
 <?php
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
+
+use App\Http\Controllers\admin\APIManagerController;
+use App\Http\Controllers\admin\ClaimViewController;
+use App\Http\Controllers\admin\CoreAPIController;
+use App\Http\Controllers\admin\EmailTemplateController;
+use App\Http\Controllers\admin\EmployeeController;
+use App\Http\Controllers\admin\ExpenseDetailsController;
+use App\Http\Controllers\admin\FilterController;
+use App\Http\Controllers\admin\FinancialYearController;
+use App\Http\Controllers\admin\MediatorController;
+use App\Http\Controllers\admin\MenuController;
+use App\Http\Controllers\admin\NotificationController;
+use App\Http\Controllers\admin\PermissionController;
+use App\Http\Controllers\admin\PermissionGroupController;
+use App\Http\Controllers\admin\ReportController;
+use App\Http\Controllers\admin\RolesController;
+use App\Http\Controllers\admin\SettingController;
+use App\Http\Controllers\admin\UsersController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DatabaseSwitchController;
-use App\Http\Controllers\admin\{
-    DashboardController,
-    PermissionController,
-    PermissionGroupController,
-    RolesController,
-    UsersController,
-    MenuController,
-    SettingController,
-    ReportController,
-    FinancialYearController,
-    FilterController,
-    ClaimViewController,
-    APIManagerController,
-    EmployeeController,
-    ExpenseDetailsController,
-    MediatorController,
-    CoreAPIController,
-    EmailTemplateController
-};
+use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Route;
 
 // Protected Routes (Requires Authentication)
 Route::middleware('auth')->group(function () {
@@ -48,6 +47,7 @@ Route::middleware('auth')->group(function () {
     // Routes for managing permission groups, permissions, and role assignments
     Route::resource('permission-groups', PermissionGroupController::class);
     Route::resource('permissions', PermissionController::class);
+    Route::get('permissions-old', [PermissionController::class, 'permissionOld']);
     Route::post('permissions/assign', [PermissionController::class, 'assignPermissions']);
     Route::get('permissions-list', [PermissionController::class, 'getAllPermissions']);
 
@@ -133,12 +133,10 @@ Route::middleware('auth')->group(function () {
     Route::get('data-punch', [MediatorController::class, 'dataPunch']);
     Route::get('data-punch/{status}', [MediatorController::class, 'dataPunch']);
 
-
     // Core API
     Route::get('core', [CoreAPIController::class, 'index'])->name('core');
     Route::get('core_api_sync', [CoreAPIController::class, 'sync'])->name('core_api_sync');
     Route::post('importAPISData', [CoreAPIController::class, 'importAPISData'])->name('importAPISData');
-
 
     Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email_templates.index');
     Route::post('email-template', [EmailTemplateController::class, 'store'])->name('email_template.store');
@@ -147,5 +145,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('email-template/{id}', [EmailTemplateController::class, 'destroy'])->name('email_template.destroy');
     Route::get('email-template/log/{template}', [EmailTemplateController::class, 'getLogs'])->name('email_template.logs');
     Route::get('email-template-list', [EmailTemplateController::class, 'templateList'])->name('email_template.list');
+    Route::get('/eml-template-variables', [EmailTemplateController::class, 'getVariables']);
+
+    // Notification Management
+    // Routes for sending notification emails
+    Route::get('submission-reminder', [NotificationController::class, 'submissionReminder']);
+    Route::get('get-submission-reminder', [NotificationController::class, 'getSubmissionReminderEmails']);
+    Route::post('admin/notifications/non-submitted/dynamic', [NotificationController::class, 'sendDynamicNonSubmittedEmails']);
 
 });

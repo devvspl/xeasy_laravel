@@ -395,18 +395,19 @@
                         </div>
                     </div>
                 </div>
-                <button type="button"
+                {{-- <button type="button"
                     class="btn btn-icon btn-topbar material-shadow-none btn-ghost-secondary rounded-circle"
                     data-bs-toggle="modal" data-bs-target="#companyModal">
                     <i class='ri-community-line fs-22'></i>
-                </button>
+                </button> --}}
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     <button type="button" class="btn material-shadow-none" style="padding: 0 5px"
                         id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false">
                         <span class="d-flex align-items-center">
                             <img class="rounded-circle header-profile-user"
-                                src="{{ URL::to('/') }}/assets/images/users/avatar-1.jpg" alt="Header Avatar">
+                                src="{{ 'https://vnrseeds.co.in/file-view/Employee_Image/' . session('company_id') . '/' . session('emp_code') . '.jpg' }}"
+                                alt="Header Avatar">
                             <span class="text-start ms-xl-2">
                                 <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
                                     {{ Auth::user()->name }}

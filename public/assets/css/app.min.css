@@ -6457,15 +6457,17 @@ code {
     position: relative;
 }
 .ribbon-box .ribbon {
-    padding: 5px 12px;
+    padding: 3px 10px;
     -webkit-box-shadow: 2px 5px 10px rgba(var(--vz-dark-rgb), 0.15);
     box-shadow: 2px 5px 10px rgba(var(--vz-dark-rgb), 0.15);
     color: #fff;
-    font-size: var(--vz-font-base);
+    font-size: 12px;
     font-weight: var(--vz-font-weight-semibold);
     position: absolute;
     left: -1px;
-    top: 5px;
+    top: 0px;
+    width: 160px;
+    border-radius: 2px;
 }
 .ribbon-box .ribbon.round-shape {
     border-radius: 0 30px 30px 0;
@@ -6479,6 +6481,7 @@ code {
     right: -17px;
     top: 0;
     border: 14px solid transparent;
+    display: none;
 }
 .ribbon-box .ribbon.ribbon-shape::after {
     content: "";
@@ -6486,6 +6489,7 @@ code {
     right: -17px;
     bottom: 0;
     border: 14px solid transparent;
+    display: none;
 }
 .ribbon-box.ribbon-circle .ribbon {
     width: 48px;

@@ -2,33 +2,39 @@
 
 namespace App\Exports;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Events\AfterSheet;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithStyles, WithEvents, WithTitle, WithChunkReading, ShouldQueue
+class ClaimReportExport implements FromQuery, ShouldQueue, WithChunkReading, WithEvents, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     protected $query;
+
     protected $filters;
+
     protected $columns;
+
     protected $totals;
+
     protected $sheetName;
+
     protected $protectSheets;
+
     protected $table;
+
     protected $rowNumber;
 
-    public function __construct($query, array $filters, array $columns, string $sheetName = 'Claims', bool $protectSheets = false, $table)
+    public function __construct($query, array $filters, array $columns, string $sheetName, bool $protectSheets, $table)
     {
         $this->query = $query;
         $this->filters = $filters;
@@ -91,35 +97,26 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
             'FinancedDate' => 'Finance Date',
         ];
 
-        return array_map(fn($column) => $headingsMap[$column] ?? $column, $this->columns);
+        return array_map(fn ($column) => $headingsMap[$column] ?? $column, $this->columns);
     }
 
     public function map($row): array
     {
         static $monthMap = [
-        1 => 'January',
-        2 => 'February',
-        3 => 'March',
-        4 => 'April',
-        5 => 'May',
-        6 => 'June',
-        7 => 'July',
-        8 => 'August',
-        9 => 'September',
-        10 => 'October',
-        11 => 'November',
-        12 => 'December'
+            1 => 'January',
+            2 => 'February',
+            3 => 'March',
+            4 => 'April',
+            5 => 'May',
+            6 => 'June',
+            7 => 'July',
+            8 => 'August',
+            9 => 'September',
+            10 => 'October',
+            11 => 'November',
+            12 => 'December',
         ];
         static $wheelerMap = [2 => '2 Wheeler', 4 => '4 Wheeler'];
-        static $statusMap = [
-        1 => 'Draft',
-        2 => 'Submitted',
-        3 => 'Filled',
-        4 => 'Approved',
-        5 => 'Financed',
-        6 => 'Payment',
-        ];
-
         $this->rowNumber++;
 
         $data = [];
@@ -128,7 +125,7 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
                 'exp_id' => $row->ExpId ?? '',
                 'claim_id' => $row->ClaimId ?? '',
                 'claim_type' => $row->claim_type_name ?? '',
-                'claim_status' => $statusMap[$row->ClaimAtStep] ?? '',
+                'claim_status' => $row->ClaimStatus ?? '',
                 'emp_name' => $row->employee_name ?? '',
                 'emp_code' => $row->employee_code ?? '',
                 'function' => $row->function_name ?? '',
@@ -175,7 +172,7 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
             'exp_id' => 'e.ExpId',
             'claim_id' => 'e.ClaimId',
             'claim_type' => 'ct.ClaimName AS claim_type_name',
-            'claim_status' => 'e.ClaimAtStep',
+            'claim_status' => 'e.ClaimStatus',
             'emp_name' => "CONCAT(emp.Fname, ' ', COALESCE(emp.Sname, ''), ' ', emp.Lname) AS employee_name",
             'emp_code' => 'emp.EmpCode AS employee_code',
             'function' => 'f.function_name',
@@ -206,8 +203,8 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
         ];
 
         return array_filter(
-            array_map(fn($column) => $columnMap[$column] ?? null, $this->columns),
-            fn($value) => !is_null($value)
+            array_map(fn ($column) => $columnMap[$column] ?? null, $this->columns),
+            fn ($value) => ! is_null($value)
         );
     }
 
@@ -217,8 +214,8 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
         $lastRow = $sheet->getHighestRow();
 
         $sheet->getStyle("A1:{$lastColumn}1")->applyFromArray([
-            'font' => ['bold' => true, 'size' => 12, 'color' => ['argb' => 'FFFFFFFF']],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF001868']],
+            'font' => ['bold' => true, 'size' => 10, 'color' => ['argb' => 'FFFFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => '1F4E78']],
             'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
         ]);
 
@@ -235,7 +232,7 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
             $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
         }
 
-        $sheet->getRowDimension(1)->setRowHeight(25);
+        $sheet->getRowDimension(1)->setRowHeight(18);
 
         return [];
     }
@@ -271,4 +268,3 @@ class ClaimReportExport implements FromQuery, WithHeadings, WithMapping, WithSty
         ];
     }
 }
-?>

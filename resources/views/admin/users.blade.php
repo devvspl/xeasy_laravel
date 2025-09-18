@@ -30,14 +30,14 @@
                             </div>
 
                             <div class="flex-shrink-0">
-                                @can('Create User')
+                                @can('New User')
                                     <button type="button" class="btn btn-info btn-label waves-effect waves-light rounded-pill"
                                         id="importEmployee">
                                         <i class="ri-download-2-fill label-icon align-middle rounded-pill fs-16 me-2"></i>
                                         Import
                                     </button>
                                 @endcan
-                                @can('Create User')
+                                @can('New User')
                                     <button type="button"
                                         class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
                                         data-bs-toggle="modal" data-bs-target="#userModal" id="addUserBtn">
@@ -62,7 +62,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @can('List User')
+                                    @can('User List')
                                         @foreach ($users as $key => $user)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
@@ -84,20 +84,22 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    @can('Edit User')
+                                                    @can('Modify User')
                                                         <button type="button" data-bs-toggle="modal" data-bs-target="#userModal"
                                                             id="adduserBtn" class="btn btn-primary btn-sm edit-user"
                                                             data-id="{{ $user->id }}"><i class="ri-edit-2-fill"></i></button>
                                                     @endcan
-                                                    @can('Delete User')
+                                                    @can('Remove User')
                                                         <button type="button" class="btn btn-danger btn-sm delete-user"
                                                             data-id="{{ $user->id }}"><i class="ri-delete-bin-5-fill"></i></button>
                                                     @endcan
-                                                    @can('Permission Access')
-                                                        <a href="user/{{ $user->id }}/permission" class="btn btn-info btn-sm permission-access-user"><i class="ri-lock-line"></i></a>
-                                                        {{-- <button type="button" class="btn btn-info btn-sm permission-access-user"
+                                                    @can('Manage Permissions')
+                                                        {{-- <a href="user/{{ $user->id }}/permission"
+                                                            class="btn btn-info btn-sm permission-access-user"><i
+                                                                class="ri-lock-line"></i></a> --}}
+                                                        <button type="button" class="btn btn-info btn-sm permission-access-user"
                                                             data-bs-toggle="modal" data-bs-target="#permissionModal"
-                                                            data-id="{{ $user->id }}"><i class="ri-lock-line"></i></button> --}}
+                                                            data-id="{{ $user->id }}"><i class="ri-lock-line"></i></button>
                                                     @endcan
                                                 </td>
                                             </tr>
