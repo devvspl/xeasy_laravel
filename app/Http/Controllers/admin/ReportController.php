@@ -237,7 +237,7 @@ class ReportController extends Controller
             };
             $query->whereBetween("{$table}.{$dateColumn}", [$filters['from_date'], $filters['to_date']]);
         }
-        return $query->groupBy("{$table}.ExpId")->orderBy("{$table}.ExpId", 'asc');
+        return $query->groupBy("{$table}.ExpId")->orderBy("{$table}.ExpId", 'DESC');
     }
     public function filterClaims(Request $request)
     {
