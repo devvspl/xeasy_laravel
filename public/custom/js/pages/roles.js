@@ -12,17 +12,15 @@ $(document).ready(function () {
         event.preventDefault();
         const button = event.currentTarget;
 
-        // Collect checked permission IDs
         const permissionIds = [];
         $(".permission-toggle:checked").each(function () {
             permissionIds.push($(this).data("permission-id"));
         });
-
         const formData = {
             role_name: document.getElementById("role_name").value,
             is_active: document.getElementById("is_active").checked ? 1 : 0,
             id: $(button).data("role-id") || null,
-            permissions: permissionIds, // Add permissions array
+            permissions: permissionIds,
         };
 
         const requestType = formData.id ? "PUT" : "POST";
@@ -48,6 +46,7 @@ $(document).ready(function () {
                         "ri-checkbox-circle-line",
                         response.message || "Role saved successfully!"
                     );
+
                     setTimeout(() => {
                         window.location.href = window.location.href;
                     }, 2000);
@@ -143,7 +142,6 @@ $(document).ready(function () {
                     $("#is_active").prop("checked", role.status);
                     $("#saveRoleBtn").attr("data-role-id", role.id);
 
-                    // Fetch all permissions and render them with checked status based on role permissions
                     $.ajax({
                         url: "permissions-list",
                         type: "GET",

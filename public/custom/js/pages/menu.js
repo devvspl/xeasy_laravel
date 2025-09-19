@@ -11,7 +11,7 @@ $(document).ready(function () {
     $("#menuBtn").click(function () {
         $("#addMenuLabel").text("Add New Menu");
         selectMenuList("menuSelect", "menuModal");
-        selectPermisstion("permissionSelect", "menuModal");
+        selectPermission("permissionSelect", "menuModal");
     });
     $("#saveMenuBtn").click(function (event) {
         event.preventDefault();
@@ -108,7 +108,7 @@ $(document).ready(function () {
                     $("#url").val(menu.url);
                     $("#is_active").prop("checked", menu.status == 1);
                     selectMenuList("menuSelect", "menuModal", menu.parent_id);
-                    selectPermisstion(
+                    selectPermission(
                         "permissionSelect",
                         "menuModal",
                         menu.permission_name
@@ -208,9 +208,8 @@ $(document).ready(function () {
                     });
                 },
                 dataSrc: function (response) {
-                    
                     $("#logMenuTitle").text(response.title || "Untitled");
-                    return response.data || []; 
+                    return response.data || [];
                 },
                 error: function (xhr, error, thrown) {
                     console.error("Error fetching logs:", thrown);
@@ -255,7 +254,7 @@ $(document).ready(function () {
         }
 
         let changes = "<ul style='text-align: left;'>";
-        const now = new Date(); 
+        const now = new Date();
 
         for (let key in properties.attributes) {
             if (properties.old && key in properties.old) {
@@ -347,7 +346,7 @@ $(document).ready(function () {
             },
         });
     }
-    function selectPermisstion(feildId, modalFeildId, permissionName = null) {
+    function selectPermission(feildId, modalFeildId, permissionName = null) {
         $.ajax({
             url: "permissions-list",
             type: "GET",
@@ -357,53 +356,53 @@ $(document).ready(function () {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
             },
             success: function (response) {
-                if (response.success && response.data) {
+                if (
+                    response.success &&
+                    response.data &&
+                    response.data.Navigation &&
+                    response.data.Navigation.Navigation
+                ) {
                     const selectElement = $(`#${feildId}`);
 
-                    const permissionData = Object.keys(response.data).map(
-                        function (group) {
-                            return {
-                                text: group,
-                                children: response.data[group].map(function (
-                                    item
-                                ) {
-                                    return {
-                                        id: item.name,
-                                        text: item.name,
-                                        group: group,
-                                        name: item.name,
-                                    };
-                                }),
-                            };
-                        }
-                    );
+                    // Only Navigation → Navigation list
+                    const permissionsArray =
+                        response.data.Navigation.Navigation;
+
+                    // Convert to Select2 format
+                    const permissionData = permissionsArray.map(function (
+                        item
+                    ) {
+                        return {
+                            id: item.name, // or item.id if you prefer
+                            text: item.name,
+                            group: "Navigation",
+                            name: item.name,
+                        };
+                    });
 
                     selectElement.empty().select2({
                         dropdownParent: $(`#${modalFeildId}`),
-                        placeholder: "Select a permission",
+                        placeholder: "Select a Navigation permission",
                         allowClear: true,
                         data: permissionData,
-                        templateResult: function (data, container) {
+                        templateResult: function (data) {
                             if (!data.id) {
                                 return data.text;
                             }
-
                             return $(`<span>${data.name}</span>`);
                         },
                         templateSelection: function (data) {
                             if (!data.id) {
                                 return data.text;
                             }
-
-                            return `${data.group}: ${data.name}`;
+                            return `${data.name}`;
                         },
                     });
 
+                    // Preselect if permissionName passed
                     if (permissionName !== null) {
-                        const permissionExists = permissionData.some((group) =>
-                            group.children.some(
-                                (item) => item.id === permissionName
-                            )
+                        const permissionExists = permissionData.some(
+                            (item) => item.id === permissionName
                         );
                         if (permissionExists) {
                             selectElement.val(permissionName).trigger("change");
@@ -414,13 +413,13 @@ $(document).ready(function () {
                         selectElement.val(null).trigger("change");
                     }
                 } else {
-                    console.error("No permissions found in response.");
+                    console.error("No Navigation permissions found.");
                     const selectElement = $(`#${feildId}`);
                     selectElement
                         .empty()
                         .append(
                             new Option(
-                                "No permissions available",
+                                "No Navigation permissions available",
                                 "",
                                 true,
                                 true

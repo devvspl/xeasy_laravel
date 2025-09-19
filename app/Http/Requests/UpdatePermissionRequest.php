@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StorePermissionRequest extends FormRequest
+class UpdatePermissionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,24 +22,18 @@ class StorePermissionRequest extends FormRequest
      */
     public function rules(): array
     {
-        $permissionId = $this->route('permission'); 
         return [
-            'permission_name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('permissions', 'name')->ignore($permissionId),
-            ],
+            'permission_name' => ['required', 'string', 'max:255', Rule::unique('permissions', 'name')->ignore($this->route('permission'))],
             'group_id' => 'required|exists:permission_groups,id',
             'is_active' => 'required|boolean',
         ];
     }
-
     public function messages()
     {
         return [
             'permission_name.required' => 'The permission name is required.',
-            'permission_name.unique' => 'The permission name must be unique.',
+            'permission_name.string' => 'The permission name must be a string.',
+            'permission_name.max' => 'The permission name may not be greater than 255 characters.',
             'group_id.required' => 'The group is required.',
             'group_id.exists' => 'The selected group does not exist.',
             'is_active.required' => 'The active status is required.',

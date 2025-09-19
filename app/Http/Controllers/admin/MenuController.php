@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Menu;
 use App\Http\Requests\StoreMenuRequest;
 use App\Http\Requests\UpdateMenuRequest;
+use App\Models\Menu;
+use App\Models\Permission;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 
 /**
  * This controller handles everything related to menus in the admin area.
@@ -22,8 +21,16 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $menus = Menu::all();
-        return view('admin.menu', compact('menus'));
+        $status = request('status', 'active');
+        $menusQuery = Menu::query();
+        if ($status === 'active') {
+            $menusQuery->where('status', 1);
+        } elseif ($status === 'inactive') {
+            $menusQuery->where('status', 0);
+        }
+        $menus = $menusQuery->get();
+
+        return view('admin.menu', compact('menus', 'status'));
     }
 
     /**
@@ -48,9 +55,8 @@ class MenuController extends Controller
         $validated = $request->validated();
         $newOrder = isset($validated['order']) ? (int) $validated['order'] : (Menu::where('parent_id', $validated['parent_id'] ?? null)->max('order') ?? 0) + 1;
         $parentId = $validated['parent_id'] ? (int) $validated['parent_id'] : null;
-        Menu::where('parent_id', $parentId)
-            ->where('order', '>=', $newOrder)
-            ->increment('order');
+        Menu::where('parent_id', $parentId)->where('order', '>=', $newOrder)->increment('order');
+        $permission = Permission::where('name', $validated['permission'] ?? null)->first();
         $menu = Menu::create([
             'title' => $validated['menu_name'],
             'data_key' => Str::kebab($validated['menu_name']),
@@ -59,11 +65,11 @@ class MenuController extends Controller
             'order' => $newOrder,
             'url' => $validated['url'],
             'permission_name' => $validated['permission'],
+            'permission_id' => $permission->id ?? null,
             'status' => $validated['is_active'],
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
         ]);
-
         return $this->jsonSuccess($menu, 'Menu created successfully.');
     }
 
@@ -85,6 +91,7 @@ class MenuController extends Controller
     public function edit(string $id)
     {
         $menu = Menu::findOrFail($id);
+
         return $this->jsonSuccess($menu, 'Menu fetched successfully.');
     }
 
@@ -103,7 +110,7 @@ class MenuController extends Controller
         if ($newOrder !== $oldOrder || $parentId !== $menu->parent_id) {
             $this->reorderMenuItems($menu, $newOrder, $oldOrder, $parentId);
         }
-
+        $permission = Permission::where('name', $validated['permission'] ?? null)->first();
         $menu->update([
             'title' => $validated['menu_name'],
             'parent_id' => $parentId,
@@ -111,12 +118,14 @@ class MenuController extends Controller
             'order' => $newOrder,
             'url' => $validated['url'],
             'permission_name' => $validated['permission'],
+            'permission_id' => $permission->id ?? null,
             'status' => $validated['is_active'],
             'updated_by' => auth()->id(),
         ]);
 
         return $this->jsonSuccess($menu, 'Menu updated successfully.');
     }
+
     /**
      * Deletes a menu from the database.
      *
@@ -126,6 +135,7 @@ class MenuController extends Controller
     {
         $menu = Menu::findOrFail($id);
         $menu->delete();
+
         return $this->jsonSuccess($menu, 'Menu deleted successfully.');
     }
 
@@ -139,6 +149,7 @@ class MenuController extends Controller
     {
         $query = Menu::select('id', 'title', 'url', 'icon', 'parent_id', 'order', 'data_key', 'status', 'created_at', 'updated_at')->where('status', 1);
         $data = $query->get();
+
         return response()->json($data);
     }
 
@@ -191,7 +202,7 @@ class MenuController extends Controller
 
         return response()->json([
             'data' => $logs,
-            'title' => $menu->title
+            'title' => $menu->title,
         ]);
     }
 }

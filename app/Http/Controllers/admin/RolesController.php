@@ -60,9 +60,8 @@ class RolesController extends Controller
             'updated_at' => now(),
         ]);
 
-        if (! empty($request->permissions)) {
-            $role->permissions()->sync($request->permissions);
-        }
+        // Sync permissions even if the array is empty
+        $role->permissions()->sync($request->permissions ?? []);
 
         return $this->jsonSuccess($role, 'Role updated successfully.');
     }
