@@ -5,8 +5,8 @@ $(document).ready(function () {
 
     flatpickr("#fromDate", {
         dateFormat: "Y-m-d",
-        disable: [],
         enableYearSelection: true,
+        maxDate: "today",
         onReady: function () {
             this.isDisabled = false;
         },
@@ -14,8 +14,8 @@ $(document).ready(function () {
 
     flatpickr("#toDate", {
         dateFormat: "Y-m-d",
-        disable: [],
         enableYearSelection: true,
+        maxDate: "today",
         onReady: function () {
             this.isDisabled = false;
         },
@@ -368,10 +368,13 @@ $(document).ready(function () {
                 },
                 {
                     data: "claim_type_name",
+                    className: "text-start",
                 },
                 {
                     data: "employee_name",
+                    className: "text-start",
                 },
+
                 {
                     data: "ClaimMonth",
                 },
@@ -397,11 +400,11 @@ $(document).ready(function () {
         });
     }
 
-    function getActiveFiltersCount() {
-        let count = 0;
+    function updateActiveFilterCount() {
+        let filterCount = 0;
 
-        // multi selects
-        const multiFilters = [
+        // List of filter selectors to check
+        const filterSelectors = [
             "#functionSelect",
             "#verticalSelect",
             "#departmentSelect",
@@ -413,31 +416,24 @@ $(document).ready(function () {
             "#policySelect",
             "#wheelerTypeSelect",
             "#vehicleTypeSelect",
+            "#fromDate",
+            "#toDate",
         ];
 
-        multiFilters.forEach((selector) => {
-            const val = $(selector).val();
-            if (val && val.length > 0) count += val.length;
+        // Count non-empty selections for each filter
+        filterSelectors.forEach((selector) => {
+            const value = $(selector).val();
+            if (value && value.length > 0 && value !== "") {
+                if (Array.isArray(value)) {
+                    filterCount += value.length; // For multi-selects, count each selected option
+                } else {
+                    filterCount += 1; // For single value inputs (e.g., date fields)
+                }
+            }
         });
 
-        // radio filters
-        if ($("input[name='claim_filter_type']:checked").length) count++;
-
-        // date filters
-        if ($("#fromDate").val()) count++;
-        if ($("#toDate").val()) count++;
-
-        return count;
-    }
-
-    function updateFilterBadge() {
-        const count = getActiveFiltersCount();
-        const badge = $("#filterCountBadge");
-        if (count > 0) {
-            badge.text(count).show();
-        } else {
-            badge.hide();
-        }
+        // Update the badge with the total count
+        $("#activeFilterCount").text(filterCount);
     }
 
     if ($("#searchButton").length) {
@@ -577,7 +573,8 @@ $(document).ready(function () {
         });
     });
 
-    $("#additionalFiltersCanvas .btn.btn-primary.w-100").on("click",
+    $("#additionalFiltersCanvas .btn.btn-primary.w-100").on(
+        "click",
         function () {
             if (table) {
                 startSimpleLoader({
@@ -625,5 +622,15 @@ $(document).ready(function () {
                 },
             });
         }
+    });
+
+    $(document).on("change", "#functionSelect, #verticalSelect, #departmentSelect, #subDepartmentSelect, #userSelect, #monthSelect, #claimTypeSelect, #claimStatusSelect, #policySelect, #wheelerTypeSelect, #vehicleTypeSelect",
+        function () {
+            updateActiveFilterCount();
+        }
+    );
+
+    $("#fromDate, #toDate").on("change", function () {
+        updateActiveFilterCount();
     });
 });

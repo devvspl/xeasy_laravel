@@ -8,7 +8,7 @@
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">Email Template List</h4>
                             <div class="flex-shrink-0">
-                                @can('New Email Template')
+                                @can('new_email_template')
                                     <button type="button"
                                         class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
                                         data-bs-toggle="modal" data-bs-target="#templateModal" id="templateBtn">
@@ -31,7 +31,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @can('Email Template List')
+                                    @can('email_template_list')
                                         @foreach ($templates as $key => $template)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
@@ -39,16 +39,16 @@
                                                 <td>{{ $template->subject }}</td>
                                                 <td>{{ $template->category ?? 'N/A' }}</td>
                                                 <td>
-                                                    @can('Modify Email Template')
+                                                    @can('modify_email_template')
                                                         <button type="button" data-bs-toggle="modal" data-bs-target="#templateModal"
                                                             class="btn btn-primary btn-sm edit-template"
                                                             data-id="{{ $template->id }}"><i class="ri-edit-2-fill"></i></button>
                                                     @endcan
-                                                    @can('Remove Email Template')
+                                                    @can('remove_email_template')
                                                         <button type="button" class="btn btn-danger btn-sm delete-template"
                                                             data-id="{{ $template->id }}"><i class="ri-delete-bin-5-fill"></i></button>
                                                     @endcan
-                                                    @can('Email Template Activity Logs')
+                                                    @can('email_template_activity_logs')
                                                         <button type="button" class="btn btn-info btn-sm view-logs"
                                                             data-id="{{ $template->id }}" data-bs-toggle="modal"
                                                             data-bs-target="#logModal"><i class="ri-file-list-3-fill"></i></button>

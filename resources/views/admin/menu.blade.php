@@ -6,7 +6,7 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Menu List</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">menu_list</h4>
                             <div class="dropdown card-header-dropdown">
                                 <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
@@ -29,7 +29,7 @@
                                 </div>
                             </div>
                             <div class="flex-shrink-0">
-                                @can('New Menu')
+                                @can('new_menu')
                                     <button type="button"
                                         class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
                                         data-bs-toggle="modal" data-bs-target="#menuModal" id="menuBtn">
@@ -52,7 +52,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @can('Menu List')
+                                    @can('menu_list')
                                         @foreach ($menus as $key => $menu)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
@@ -65,16 +65,16 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    @can('Modify Menu')
+                                                    @can('modify_menu')
                                                         <button type="button" data-bs-toggle="modal" data-bs-target="#menuModal"
                                                             id="addMenuBtn" class="btn btn-primary btn-sm edit-menu"
                                                             data-id="{{ $menu->id }}"><i class="ri-edit-2-fill"></i></button>
                                                     @endcan
-                                                    @can('Remove Menu')
+                                                    @can('remove_menu')
                                                         <button type="button" class="btn btn-danger btn-sm delete-menu"
                                                             data-id="{{ $menu->id }}"><i class="ri-delete-bin-5-fill"></i></button>
                                                     @endcan
-                                                    @can('Menu Activity Logs')
+                                                    @can('menu_activity_logs')
                                                         <button type="button" class="btn btn-info btn-sm view-logs"
                                                             data-id="{{ $menu->id }}" data-bs-toggle="modal"
                                                             data-bs-target="#logModal"><i class="ri-file-list-3-fill"></i></button>

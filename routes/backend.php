@@ -32,16 +32,16 @@ Route::middleware('auth')->group(function () {
 
     // Dashboard Routes
     // Routes for dashboard data and employee trends
-    Route::get('home', [HomeController::class, 'index']);
-    Route::get('home-data', [HomeController::class, 'getDashboardData']);
-    Route::post('get-employee-trend', [HomeController::class, 'getEmployeeTrend']);
-    Route::post('export/expense-month-wise', [HomeController::class, 'exportExpenseMonthWise']);
-    Route::post('export/expense-department-wise', [HomeController::class, 'exportExpenseDepartmentWise']);
-    Route::post('export/expense-claim-type-wise', [HomeController::class, 'exportExpenseClaimTypeWise']);
-    Route::get('analytics/{page}', [HomeController::class, 'analytics']);
-    Route::get('analytics-dashboard-data', [HomeController::class, 'analyticsDashboardData']);
-    Route::post('get-sub-departments', [HomeController::class, 'getSubDepartments']);
-    Route::post('export-reports', [HomeController::class, 'exportReports']);
+    Route::get('home', [HomeController::class, 'index'])->middleware('permission:Home Page');
+    Route::get('home-data', [HomeController::class, 'getDashboardData'])->middleware('permission:Home Page');
+    Route::post('get-employee-trend', [HomeController::class, 'getEmployeeTrend'])->middleware('permission:Home Page');
+    Route::post('export/expense-month-wise', [HomeController::class, 'exportExpenseMonthWise'])->middleware('permission:Home Page');
+    Route::post('export/expense-department-wise', [HomeController::class, 'exportExpenseDepartmentWise'])->middleware('permission:Home Page');
+    Route::post('export/expense-claim-type-wise', [HomeController::class, 'exportExpenseClaimTypeWise'])->middleware('permission:Home Page');
+    Route::get('analytics/{page}', [HomeController::class, 'analytics'])->middleware('permission:Home Page');
+    Route::get('analytics-dashboard-data', [HomeController::class, 'analyticsDashboardData'])->middleware('permission:Home Page');
+    Route::post('get-sub-departments', [HomeController::class, 'getSubDepartments'])->middleware('permission:Home Page');
+    Route::post('export-reports', [HomeController::class, 'exportReports'])->middleware('permission:Home Page');
 
     // Permission Management
     // Routes for managing permission groups, permissions, and role assignments

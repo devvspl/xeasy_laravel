@@ -42,11 +42,13 @@
                                         <label class="form-check-label" for="filledDate">Filled Date</label>
                                     </div>
                                     <div class="form-check me-3 d-flex align-items-center">
-                                        <a class="text-primary" type="button" data-bs-toggle="offcanvas"
-                                            data-bs-target="#additionalFiltersCanvas"
+                                        <a class="text-primary position-relative d-flex align-items-center" type="button"
+                                            data-bs-toggle="offcanvas" data-bs-target="#additionalFiltersCanvas"
                                             aria-controls="additionalFiltersCanvas">
                                             <i class="ri-equalizer-line fs-16 me-2"></i>
                                             <span class="align-middle">More Filters</span>
+                                            <span id="activeFilterCount"
+                                                class="badge bg-danger-subtle text-danger ms-2">0</span>
                                         </a>
                                     </div>
                                 </div>
@@ -61,8 +63,6 @@
                                     </button>
                                 </div>
                             </div>
-
-                            <!-- Off-Canvas Panel for Additional Filters -->
                             <div class="offcanvas offcanvas-end" tabindex="-1" id="additionalFiltersCanvas"
                                 aria-labelledby="additionalFiltersCanvasLabel">
                                 <div class="offcanvas-header header-ligth">
@@ -73,7 +73,7 @@
                                 </div>
                                 <div class="offcanvas-body">
                                     <div class="row p-1">
-                                        @can('Function Filter')
+                                        @can('function_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="functionSelect" multiple>
                                                     @foreach ($functions as $function)
@@ -82,7 +82,7 @@
                                                 </select>
                                             </div>
                                         @endcan
-                                        @can('Vertical Filter')
+                                        @can('vertical_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="verticalSelect" multiple>
                                                     @foreach ($verticals as $vertical)
@@ -91,7 +91,7 @@
                                                 </select>
                                             </div>
                                         @endcan
-                                        @can('Department Filter')
+                                        @can('department_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="departmentSelect" multiple>
                                                     @foreach ($departments as $department)
@@ -101,7 +101,7 @@
                                                 </select>
                                             </div>
                                         @endcan
-                                        @can('Sub-Department Filter')
+                                        @can('sub_department_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="subDepartmentSelect" multiple>
                                                     @foreach ($sub_departments as $sub_department)
@@ -112,7 +112,7 @@
                                                 </select>
                                             </div>
                                         @endcan
-                                        @can('User Filter')
+                                        @can('user_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="userSelect" multiple>
                                                     @foreach ($employees as $employee)
@@ -126,7 +126,7 @@
                                                 </select>
                                             </div>
                                         @endcan
-                                        @can('Month Filter')
+                                        @can('month_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="monthSelect" multiple>
                                                     <option value="1">January</option>
@@ -144,7 +144,7 @@
                                                 </select>
                                             </div>
                                         @endcan
-                                        @can('Claim Type Filter')
+                                        @can('claim_type_filter')
                                             @php
                                                 $groupedClaimTypes = $claimTypes->groupBy('cgName');
                                                @endphp
@@ -160,7 +160,7 @@
                                                 </select>
                                             </div>
                                         @endcan
-                                        @can('Claim Status Filter')
+                                        @can('claim_status_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="claimStatusSelect" multiple>
                                                     <option value="Deactivate">Deactivate</option>
@@ -173,7 +173,7 @@
                                                 </select>
                                             </div>
                                         @endcan
-                                        @can('Policy Filter')
+                                        @can('policy_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="policySelect" multiple>
                                                     @foreach ($eligibility_policy as $policy)
@@ -182,7 +182,7 @@
                                                 </select>
                                             </div>
                                         @endcan
-                                        @can('Wheeler Type Filter')
+                                        @can('wheeler_type_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="wheelerTypeSelect" multiple>
                                                     <option value="2">2 Wheeler</option>
@@ -190,7 +190,7 @@
                                                 </select>
                                             </div>
                                         @endcan
-                                        @can('Vehicle Type Filter')
+                                        @can('vehicle_type_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="vehicleTypeSelect" multiple>
                                                     <option value="new">New</option>

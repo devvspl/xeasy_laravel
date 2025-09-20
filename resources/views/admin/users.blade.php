@@ -6,7 +6,7 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header align-items-center d-flex gap-2">
-                            <h4 class="card-title mb-0 flex-grow-1">User List</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">user_list</h4>
                             <div class="dropdown card-header-dropdown">
                                 <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
@@ -30,14 +30,14 @@
                             </div>
 
                             <div class="flex-shrink-0">
-                                @can('New User')
+                                @can('new_user')
                                     <button type="button" class="btn btn-info btn-label waves-effect waves-light rounded-pill"
                                         id="importEmployee">
                                         <i class="ri-download-2-fill label-icon align-middle rounded-pill fs-16 me-2"></i>
                                         Import
                                     </button>
                                 @endcan
-                                @can('New User')
+                                @can('new_user')
                                     <button type="button"
                                         class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
                                         data-bs-toggle="modal" data-bs-target="#userModal" id="addUserBtn">
@@ -62,7 +62,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @can('User List')
+                                    @can('user_list')
                                         @foreach ($users as $key => $user)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
@@ -84,16 +84,16 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    @can('Modify User')
+                                                    @can('modify_user')
                                                         <button type="button" data-bs-toggle="modal" data-bs-target="#userModal"
                                                             id="adduserBtn" class="btn btn-primary btn-sm edit-user"
                                                             data-id="{{ $user->id }}"><i class="ri-edit-2-fill"></i></button>
                                                     @endcan
-                                                    @can('Remove User')
+                                                    @can('remove_user')
                                                         <button type="button" class="btn btn-danger btn-sm delete-user"
                                                             data-id="{{ $user->id }}"><i class="ri-delete-bin-5-fill"></i></button>
                                                     @endcan
-                                                    @can('Manage Permissions')
+                                                    @can('manage_permissions')
                                                         {{-- <a href="user/{{ $user->id }}/permission"
                                                             class="btn btn-info btn-sm permission-access-user"><i
                                                                 class="ri-lock-line"></i></a> --}}

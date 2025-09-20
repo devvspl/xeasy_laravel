@@ -12,9 +12,17 @@ class RolesController extends Controller
 {
     public function index()
     {
-        $roles = Roles::where('id', '!=', 1)->get();
 
-        return view('admin.roles', compact('roles'));
+        $status = request('status', 'active');
+        $rolesQuery = Roles::query();
+        if ($status === 'active') {
+            $rolesQuery->where('status', 1);
+        } elseif ($status === 'inactive') {
+            $rolesQuery->where('status', 0);
+        }
+        $roles = $rolesQuery->where('id', '!=', 1)->get();
+
+        return view('admin.roles', compact('roles', 'status'));
     }
 
     public function create() {}

@@ -60,7 +60,7 @@
                                         <!-- General Tab -->
                                         <div class="tab-pane fade show active" id="general" role="tabpanel"
                                             aria-labelledby="general-tab">
-                                            <h6>General Settings</h6>
+                                            <h6>general_settings</h6>
                                             <form id="generalSettingsForm" enctype="multipart/form-data" method="POST"
                                                 action="">
                                                 @csrf

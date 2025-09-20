@@ -26,6 +26,7 @@ class PermissionController extends Controller
         $permissions = $query->orderBy('permissions.id', 'desc')->get();
         $roles = Roles::where('status', 1)->get();
         $group = PermissionGroup::all();
+
         return view('admin.permissions', compact('permissions', 'roles', 'group'));
     }
 
@@ -52,8 +53,8 @@ class PermissionController extends Controller
     {
         $permissionKey = Str::slug($request->permission_name, '_');
         $permission = Permission::create([
-            'name' => $request->permission_name,
-            'permission_key' => $permissionKey,
+            'name' => $permissionKey,
+            'permission_key' => $request->permission_name,
             'permission_group_id' => $request->group_id,
             'status' => $request->is_active,
             'guard_name' => 'web',
@@ -79,9 +80,9 @@ class PermissionController extends Controller
         $permissionKey = Str::slug($request->permission_name, '_');
         $permission = Permission::findOrFail($id);
         $permission->update([
-            'name' => $request->permission_name,
+            'name' => $permissionKey,
             'permission_group_id' => $request->group_id,
-            'permission_key' => $permissionKey,
+            'permission_key' => $request->permission_name,
             'status' => $request->is_active,
             'updated_by' => Auth::id(),
             'updated_at' => now(),
@@ -133,6 +134,7 @@ class PermissionController extends Controller
         }
 
         Cache::forget('spatie.permission.cache');
+
         return $this->jsonSuccess([], 'Permission updated successfully.');
     }
 
