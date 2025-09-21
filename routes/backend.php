@@ -30,74 +30,103 @@ Route::middleware('auth')->group(function () {
     Route::get('companies-list', [DatabaseSwitchController::class, 'getCompanies']);
     Route::get('clear-caches', [Controller::class, 'clearAllCaches']);
 
-    // Dashboard Routes
-    // Routes for dashboard data and employee trends
-    Route::get('home', [HomeController::class, 'index'])->middleware('permission:Home Page');
-    Route::get('home-data', [HomeController::class, 'getDashboardData'])->middleware('permission:Home Page');
-    Route::post('get-employee-trend', [HomeController::class, 'getEmployeeTrend'])->middleware('permission:Home Page');
-    Route::post('export/expense-month-wise', [HomeController::class, 'exportExpenseMonthWise'])->middleware('permission:Home Page');
-    Route::post('export/expense-department-wise', [HomeController::class, 'exportExpenseDepartmentWise'])->middleware('permission:Home Page');
-    Route::post('export/expense-claim-type-wise', [HomeController::class, 'exportExpenseClaimTypeWise'])->middleware('permission:Home Page');
-    Route::get('analytics/{page}', [HomeController::class, 'analytics'])->middleware('permission:Home Page');
-    Route::get('analytics-dashboard-data', [HomeController::class, 'analyticsDashboardData'])->middleware('permission:Home Page');
-    Route::post('get-sub-departments', [HomeController::class, 'getSubDepartments'])->middleware('permission:Home Page');
-    Route::post('export-reports', [HomeController::class, 'exportReports'])->middleware('permission:Home Page');
-
-    // Permission Management
-    // Routes for managing permission groups, permissions, and role assignments
-    Route::resource('permission-groups', PermissionGroupController::class);
-    Route::resource('permissions', PermissionController::class);
-    Route::get('permissions-old', [PermissionController::class, 'permissionOld']);
-    Route::post('permissions/assign', [PermissionController::class, 'assignPermissions']);
-    Route::get('permissions-list', [PermissionController::class, 'getAllPermissions']);
-
-    // Role Management
-    // Routes for managing roles
-    Route::resource('roles', RolesController::class);
-    Route::get('get-roles-list', [RolesController::class, 'getRoles']);
-
-    // User Management
-    // Routes for user management, including permissions and profiles
-    Route::resource('users', UsersController::class);
-    Route::get('/users/data', [UsersController::class, 'getUsersData']);
-    Route::get('user/{id}/permission', [UsersController::class, 'getPermissionView']);
-    Route::get('users/{id}/permissions', [PermissionController::class, 'getPermissions']);
-    Route::post('users/{id}/permissions/assign', [PermissionController::class, 'assignPermission']);
-    Route::post('users/{id}/permissions/revoke', [PermissionController::class, 'revokePermission']);
-    Route::post('/users/import', [UsersController::class, 'importEmployees'])->name('users.import');
-    Route::get('profile', [UsersController::class, 'profile']);
-
-    // Menu Management
-    // Routes for managing menus and their logs
-    Route::resource('menu', MenuController::class);
-    Route::get('menu-list', [MenuController::class, 'menuList']);
-    Route::get('menu/log/{id}', [MenuController::class, 'getLogs']);
-
     // Financial Year Management
     // Routes for managing financial years
     Route::resource('financial', FinancialYearController::class);
 
+    // Dashboard Routes
+    // Routes for dashboard data and employee trends
+    Route::middleware('permission:home_page')->group(function () {
+        Route::get('home', [HomeController::class, 'index']);
+        Route::get('home-data', [HomeController::class, 'getDashboardData']);
+        Route::post('get-employee-trend', [HomeController::class, 'getEmployeeTrend']);
+        Route::post('export/expense-month-wise', [HomeController::class, 'exportExpenseMonthWise']);
+        Route::post('export/expense-department-wise', [HomeController::class, 'exportExpenseDepartmentWise']);
+        Route::post('export/expense-claim-type-wise', [HomeController::class, 'exportExpenseClaimTypeWise']);
+        Route::get('analytics/{page}', [HomeController::class, 'analytics']);
+        Route::get('analytics-dashboard-data', [HomeController::class, 'analyticsDashboardData']);
+        Route::post('get-sub-departments', [HomeController::class, 'getSubDepartments']);
+        Route::post('export-reports', [HomeController::class, 'exportReports']);
+    });
+
+    // Permission Management
+    // Routes for managing permission groups, permissions, and role assignments
+    Route::middleware('permission:permission_management')->group(function () {
+        Route::resource('permission-groups', PermissionGroupController::class);
+        Route::resource('permissions', PermissionController::class);
+        Route::get('permissions-old', [PermissionController::class, 'permissionOld']);
+        Route::post('permissions/assign', [PermissionController::class, 'assignPermissions']);
+        Route::get('permissions-list', [PermissionController::class, 'getAllPermissions']);
+    });
+
+    // Role Management
+    // Routes for managing roles
+    Route::middleware('permission:role_management')->group(function () {
+        Route::resource('roles', RolesController::class);
+        Route::get('get-roles-list', [RolesController::class, 'getRoles']);
+    });
+
+    // User Management
+    // Routes for user management, including permissions and profiles
+    Route::middleware('permission:user_management')->group(function () {
+        Route::resource('users', UsersController::class);
+        Route::get('/users/data', [UsersController::class, 'getUsersData']);
+        Route::get('user/{id}/permission', [UsersController::class, 'getPermissionView']);
+        Route::get('users/{id}/permissions', [PermissionController::class, 'getPermissions']);
+        Route::post('users/{id}/permissions/assign', [PermissionController::class, 'assignPermission']);
+        Route::post('users/{id}/permissions/revoke', [PermissionController::class, 'revokePermission']);
+        Route::post('/users/import', [UsersController::class, 'importEmployees'])->name('users.import');
+        Route::get('profile', [UsersController::class, 'profile']);
+        Route::get('user-activity', [UsersController::class, 'userActivity']);
+        Route::get('user-activity/data', [UsersController::class, 'userActivityData']);
+    });
+
+    // Menu Management
+    // Routes for managing menus and their logs
+    Route::middleware('permission:menu_management')->group(function () {
+        Route::resource('menu', MenuController::class);
+        Route::get('menu-list', [MenuController::class, 'menuList']);
+        Route::get('menu/log/{id}', [MenuController::class, 'getLogs']);
+    });
+
     // Settings Management
     // Routes for general, company, and theme settings
-    Route::get('settings', [SettingController::class, 'index']);
-    Route::get('company', [SettingController::class, 'company']);
-    Route::get('company-config/{id}', [SettingController::class, 'getCompanyConfig']);
-    Route::post('save-config', [SettingController::class, 'saveCompanyConfig']);
-    Route::post('settings/theme', [SettingController::class, 'saveThemeSettings']);
-    Route::get('general', [SettingController::class, 'getGeneralSettings']);
-    Route::post('general', [SettingController::class, 'saveGeneralSettings']);
+    Route::middleware('permission:general_settings')->group(function () {
+        Route::get('settings', [SettingController::class, 'index']);
+        Route::get('company', [SettingController::class, 'company']);
+        Route::get('company-config/{id}', [SettingController::class, 'getCompanyConfig']);
+        Route::post('save-config', [SettingController::class, 'saveCompanyConfig']);
+        Route::post('settings/theme', [SettingController::class, 'saveThemeSettings']);
+        Route::get('general', [SettingController::class, 'getGeneralSettings']);
+        Route::post('general', [SettingController::class, 'saveGeneralSettings']);
+    });
 
     // Report Management
     // Routes for generating and exporting reports, including claims and daily activities
-    Route::get('claim-report', [ReportController::class, 'claimReport']);
-    Route::get('daily-activity', [ReportController::class, 'dailyActivity']);
-    Route::post('daily-activity/data', [ReportController::class, 'getDailyActivityData']);
-    Route::post('daily-activity/export', [ReportController::class, 'exportDailyActivity']);
-    Route::post('filter-claims', [ReportController::class, 'filterClaims']);
-    Route::post('expense-claims/export', [ReportController::class, 'export']);
-    Route::get('top-rating-employee', [ReportController::class, 'topRatingEmployee']);
-    Route::post('claims/return', [ReportController::class, 'returnClaim']);
-    Route::get('same_date', [ReportController::class, 'sameDayCkaimUpload']);
+    Route::middleware('permission:report_management')->group(function () {
+        Route::get('claim-report', [ReportController::class, 'claimReport']);
+        Route::get('daily-activity', [ReportController::class, 'dailyActivity']);
+        Route::post('daily-activity/data', [ReportController::class, 'getDailyActivityData']);
+        Route::post('daily-activity/export', [ReportController::class, 'exportDailyActivity']);
+        Route::post('filter-claims', [ReportController::class, 'filterClaims']);
+        Route::post('expense-claims/export', [ReportController::class, 'export']);
+        Route::get('top-rating-employee', [ReportController::class, 'topRatingEmployee']);
+        Route::post('claims/return', [ReportController::class, 'returnClaim']);
+        Route::get('same_date', [ReportController::class, 'sameDayClaimUpload']);
+    });
+
+    // Email Template Management
+    // Routes for managing email templates and their logs
+    Route::middleware('permission:email_template_management')->group(function () {
+        Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email_templates.index');
+        Route::post('email-template', [EmailTemplateController::class, 'store'])->name('email_template.store');
+        Route::get('email-template/{id}/edit', [EmailTemplateController::class, 'edit'])->name('email_template.edit');
+        Route::put('email-template/{template}', [EmailTemplateController::class, 'update'])->name('email_template.update');
+        Route::delete('email-template/{id}', [EmailTemplateController::class, 'destroy'])->name('email_template.destroy');
+        Route::get('email-template/log/{template}', [EmailTemplateController::class, 'getLogs'])->name('email_template.logs');
+        Route::get('email-template-list', [EmailTemplateController::class, 'templateList'])->name('email_template.list');
+        Route::get('email-template-variables', [EmailTemplateController::class, 'getVariables']);
+    });
 
     // Claim Details
     // Routes for viewing claim details and types
@@ -137,15 +166,6 @@ Route::middleware('auth')->group(function () {
     Route::get('core', [CoreAPIController::class, 'index'])->name('core');
     Route::get('core_api_sync', [CoreAPIController::class, 'sync'])->name('core_api_sync');
     Route::post('importAPISData', [CoreAPIController::class, 'importAPISData'])->name('importAPISData');
-
-    Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email_templates.index');
-    Route::post('email-template', [EmailTemplateController::class, 'store'])->name('email_template.store');
-    Route::get('email-template/{id}/edit', [EmailTemplateController::class, 'edit'])->name('email_template.edit');
-    Route::put('email-template/{template}', [EmailTemplateController::class, 'update'])->name('email_template.update');
-    Route::delete('email-template/{id}', [EmailTemplateController::class, 'destroy'])->name('email_template.destroy');
-    Route::get('email-template/log/{template}', [EmailTemplateController::class, 'getLogs'])->name('email_template.logs');
-    Route::get('email-template-list', [EmailTemplateController::class, 'templateList'])->name('email_template.list');
-    Route::get('/eml-template-variables', [EmailTemplateController::class, 'getVariables']);
 
     // Notification Management
     // Routes for sending notification emails

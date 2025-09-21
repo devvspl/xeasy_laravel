@@ -6,11 +6,11 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header align-items-center d-flex gap-2">
-                            <h4 class="card-title mb-0 flex-grow-1">user_list</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">User List</h4>
                             <div class="dropdown card-header-dropdown">
-                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false">
-                                    <span class="fw-semibold fs-12">Employee Status: </span>
+                                <a class="text-reset dropdown-btn d-flex align-items-center" href="#"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="fw-semibold fs-12 me-1">Employee Status:</span>
                                     <span class="text-muted">
                                         @if($status === 'active')
                                             Active
@@ -28,8 +28,13 @@
                                     <a class="dropdown-item" href="{{ url()->current() }}?status=inactive">Inactive</a>
                                 </div>
                             </div>
-
                             <div class="flex-shrink-0">
+                                <a data-bs-toggle="tooltip" data-bs-placement="bottom" title="User Login Activity" href="{{ url('user-activity') }}">
+                                    <i class="ri-bar-chart-fill me-1 align-middle"></i>
+
+                                </a>
+                            </div>
+                            <div class="flex-shrink-0 d-flex gap-2">
                                 @can('new_user')
                                     <button type="button" class="btn btn-info btn-label waves-effect waves-light rounded-pill"
                                         id="importEmployee">
@@ -94,9 +99,6 @@
                                                             data-id="{{ $user->id }}"><i class="ri-delete-bin-5-fill"></i></button>
                                                     @endcan
                                                     @can('manage_permissions')
-                                                        {{-- <a href="user/{{ $user->id }}/permission"
-                                                            class="btn btn-info btn-sm permission-access-user"><i
-                                                                class="ri-lock-line"></i></a> --}}
                                                         <button type="button" class="btn btn-info btn-sm permission-access-user"
                                                             data-bs-toggle="modal" data-bs-target="#permissionModal"
                                                             data-id="{{ $user->id }}"><i class="ri-lock-line"></i></button>

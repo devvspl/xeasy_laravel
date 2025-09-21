@@ -6,7 +6,7 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">menu_list</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">Menu List</h4>
                             <div class="dropdown card-header-dropdown">
                                 <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
@@ -46,7 +46,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>S No.</th>
-                                        <th>Menu</th>
+                                        <th style="text-align: left">Menu</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -56,7 +56,7 @@
                                         @foreach ($menus as $key => $menu)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
-                                                <td>{{ $menu->title }}</td>
+                                                <td style="text-align: left">{{ $menu->title }}</td>
                                                 <td>
                                                     @if ($menu->status == 1)
                                                         <span class="badge bg-success-subtle text-success badge-border">Active</span>

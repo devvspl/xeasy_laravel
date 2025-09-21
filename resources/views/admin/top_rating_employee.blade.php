@@ -20,8 +20,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Sn</th>
-                                        <th>Emp Code</th>
-                                        <th>Employee Name</th>
+                                        <th style="text-align: left">Employee Name</th>
                                         <th>Grade</th>
                                         <th>Vertical</th>
                                         <th>Department</th>
@@ -32,8 +31,7 @@
                                     @forelse ($data as $index => $item)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ $item->EmpCode }}</td>
-                                            <td>{{ $item->EmployeeName }}</td>
+                                            <td style="text-align: left">{{ $item->EmployeeName }} - {{ $item->EmpCode }}</td>
                                             <td>{{ $item->grade_name }}</td>
                                             <td>{{ $item->vertical_name }}</td>
                                             <td>{{ $item->department_name }}</td>

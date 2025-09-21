@@ -175,6 +175,7 @@ class PermissionController extends Controller
                 return [
                     'id' => $permission->id,
                     'name' => $permission->name,
+                    'permission_key' => $permission->permission_key,
                     'group' => $permission->group ? $permission->group->name : 'Other',
                     'category' => $permission->group ? $permission->group->category : 'Uncategorized',
                 ];
@@ -189,6 +190,7 @@ class PermissionController extends Controller
                                 return [
                                     'id' => $permission['id'],
                                     'name' => $permission['name'],
+                                    'permission_key' => $permission['permission_key'],
                                 ];
                             })
                             ->values()

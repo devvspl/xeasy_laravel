@@ -9,6 +9,7 @@ use App\Models\HRMEmployees;
 use App\Models\Permission;
 use App\Models\Roles;
 use App\Models\User;
+use App\Models\UserLog;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -39,6 +40,97 @@ class UsersController extends Controller
         return view('admin.users', compact('users', 'roles', 'status'));
     }
 
+    
+
+    public function userActivity(Request $request)
+    {
+        return view('reports.user_activity');
+    }
+
+    public function userActivityData(Request $request)
+    {
+        $baseQuery = UserLog::query();
+
+        
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            $dateFrom = $request->date_from.' 00:00:00';
+            $dateTo = $request->date_to.' 23:59:59';
+            $baseQuery->whereBetween('user_logs.timestamp', [$dateFrom, $dateTo]);
+        }
+
+        
+        if ($request->filled('user_ids')) {
+            $userIds = is_array($request->user_ids) ? $request->user_ids : explode(',', $request->user_ids);
+            $baseQuery->whereIn('user_logs.user_id', $userIds);
+        }
+
+        
+        if ($request->filled('login_method') && $request->login_method !== 'all') {
+            $baseQuery->where('user_logs.login_method', $request->login_method);
+        }
+
+        
+        if ($request->filled('filter_type') && $request->filter_type === 'multiple_ip') {
+            $multipleIPUsers = UserLog::select('user_id')
+                ->groupBy('user_id')
+                ->havingRaw('COUNT(DISTINCT ip_address) > 1')
+                ->pluck('user_id')
+                ->toArray();
+            $baseQuery->whereIn('user_logs.user_id', $multipleIPUsers);
+        }
+
+        
+        $activities = $baseQuery
+            ->leftJoin('users', 'user_logs.user_id', '=', 'users.employee_id') 
+            ->orderBy('user_logs.timestamp', 'desc')
+            ->get([
+                'user_logs.id',
+                'user_logs.user_id',
+                'user_logs.ip_address',
+                'user_logs.is_success',
+                'user_logs.user_agent',
+                'user_logs.timestamp',
+                'user_logs.status',
+                'user_logs.login_method',
+                'user_logs.created_at',
+                'user_logs.updated_at',
+                'users.name as user_name',
+                'users.email as user_email',
+                'users.employee_id as employee_id',
+            ]);
+
+        
+        $totalLogins = (clone $baseQuery)->count();
+        $uniqueUsers = (clone $baseQuery)->distinct('user_logs.user_id')->count('user_logs.user_id');
+        $tokenLogins = (clone $baseQuery)->where('user_logs.login_method', 'token')->count();
+        $uniqueIPs = (clone $baseQuery)->distinct('user_logs.ip_address')->count('user_logs.ip_address');
+
+        $peakHourQuery = (clone $baseQuery)->selectRaw('HOUR(user_logs.timestamp) as hour, COUNT(*) as login_count')
+            ->groupBy('hour')
+            ->orderByDesc('login_count')
+            ->first();
+        $peakHour = $peakHourQuery ? $peakHourQuery->hour : 0;
+
+        $multipleIPUsersCount = (clone $baseQuery)->select('user_logs.user_id')
+            ->groupBy('user_logs.user_id')
+            ->havingRaw('COUNT(DISTINCT user_logs.ip_address) > 1')
+            ->count();
+
+        $stats = [
+            'total_logins' => $totalLogins,
+            'unique_users' => $uniqueUsers,
+            'token_logins' => $tokenLogins,
+            'unique_ips' => $uniqueIPs,
+            'peak_hour' => $peakHour,
+            'multiple_ip_users' => $multipleIPUsersCount,
+        ];
+
+        return $this->jsonSuccess([
+            'activities' => $activities,
+            'stats' => $stats,
+        ], 'User activity data and statistics fetched successfully.');
+    }
+
     /**
      * Shows a form to create a new user.
      *
@@ -46,7 +138,7 @@ class UsersController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -123,7 +215,7 @@ class UsersController extends Controller
      */
     public function show(string $id)
     {
-        //
+        
     }
 
     /**
@@ -200,7 +292,7 @@ class UsersController extends Controller
         $roles = Roles::where('status', 1)->get();
         $user = User::findOrFail($id);
 
-        // User's direct permissions
+        
         $userPermissions = $user->getDirectPermissions()
             ->load('group')
             ->map(function ($permission) {
@@ -213,7 +305,7 @@ class UsersController extends Controller
             ->groupBy('group')
             ->toArray();
 
-        // All permissions grouped by group name
+        
         $allPermissions = Permission::with('group')
             ->get()
             ->map(function ($permission) {
@@ -228,6 +320,6 @@ class UsersController extends Controller
 
         $hasRoles = $user->roles()->pluck('id')->toArray();
 
-        return view('admin.set-permission', compact('roles', 'user', 'userPermissions', 'allPermissions', 'hasRoles'));
+        return view('admin.set_permission', compact('roles', 'user', 'userPermissions', 'allPermissions', 'hasRoles'));
     }
 }

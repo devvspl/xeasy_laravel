@@ -374,7 +374,7 @@ class ReportController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Could not export claims', 'details' => $e->getMessage(),], 500);
         }
     }
-    public function sameDayCkaimUpload()
+    public function sameDayClaimUpload()
     {
         return Excel::download(new SameDayUploadClaimExport('y7_expenseclaims'), 'SameDayUpload.xlsx');
     }

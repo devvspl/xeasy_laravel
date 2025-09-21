@@ -66,6 +66,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.7/viewer.min.js"></script>
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+      let viewer;
+      const gallery = document.getElementById('gallery');
+
+      // Re-init viewer only when modal is opened
+      const modalEl = document.getElementById('claimDetailModal');
+      modalEl.addEventListener('shown.bs.modal', function () {
+         if (viewer) {
+            viewer.destroy(); // destroy old instance
+         }
+         viewer = new Viewer(gallery, {
+            inline: true,
+            toolbar: true,
+            navbar: true,
+            title: false,
+         });
+      });
+   });
+</script>
 @stack('scripts')
 <script src="{{ URL::to('/') }}/assets/js/app.js"></script>
 </body>

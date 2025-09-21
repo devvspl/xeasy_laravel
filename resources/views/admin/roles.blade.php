@@ -46,7 +46,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>S No.</th>
-                                        <th>Role</th>
+                                        <th style="text-align: left;">Role</th>
                                         <th>Permissions</th>
                                         <th>Status</th>
                                         <th>Actions</th>
@@ -57,11 +57,11 @@
                                         @foreach ($roles as $key => $role)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
-                                                <td>{{ $role->name }}</td>
+                                                <td style="text-align: left;">{{ $role->name }}</td>
                                                 <td style="white-space: normal;width: 60%;">
                                                     @if ($role->permissions->isNotEmpty())
                                                         @foreach ($role->permissions as $permission)
-                                                            <span class="badge bg-secondary">{{ $permission->name }}</span>
+                                                            <span class="badge bg-secondary">{{ $permission->permission_key }}</span>
                                                         @endforeach
                                                     @else
                                                         <span class="text-muted">-</span>

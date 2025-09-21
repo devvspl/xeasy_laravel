@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmailTemplateRequest;
 use App\Http\Requests\UpdateEmailTemplateRequest;
 use App\Models\EmailTemplate;
-use App\Models\TemplateVariable;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -19,9 +18,16 @@ class EmailTemplateController extends Controller
      */
     public function index()
     {
-        $templates = EmailTemplate::all();
 
-        return view('admin.email_templates', compact('templates'));
+        $status = request('status', 'active');
+        $templatesQuery = EmailTemplate::query();
+        if ($status === 'active') {
+            $templatesQuery->where('is_active', 1);
+        } elseif ($status === 'inactive') {
+            $templatesQuery->where('is_active', 0);
+        }
+        $templates = $templatesQuery->get();
+        return view('admin.email_templates', compact('templates', 'status'));
     }
 
     /**
@@ -48,6 +54,7 @@ class EmailTemplateController extends Controller
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
         ]);
+
         return $this->jsonSuccess($template, 'Email template created successfully.');
     }
 
@@ -66,6 +73,7 @@ class EmailTemplateController extends Controller
     public function edit(string $id)
     {
         $template = EmailTemplate::findOrFail($id);
+
         return $this->jsonSuccess($template, 'Email template fetched successfully.');
     }
 
@@ -138,6 +146,7 @@ class EmailTemplateController extends Controller
     public function getVariables()
     {
         $variables = DB::table('eml_template_variables')->select('variable_name')->get();
+
         return response()->json($variables);
     }
 }

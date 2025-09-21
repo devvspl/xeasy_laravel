@@ -8,5 +8,6 @@ class DashboardController extends Controller
     {
         return view('employee.dashboard');
     }
+
 }
 

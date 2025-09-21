@@ -5,7 +5,6 @@
 @section('content')
     <div class="page-content">
         <div class="container-fluid">
-
             <div class="row">
                 <div class="col-xxl-12">
                     <div class="card">
@@ -47,6 +46,10 @@
                                         <a class="nav-link" id="analytics-tab" data-bs-toggle="pill" href="#analytics"
                                             role="tab" aria-controls="analytics" aria-selected="false">
                                             <i class="ri-line-chart-line d-block fs-20 mb-1"></i> Analytics
+                                        </a>
+                                        <a class="nav-link" id="userActivity-tab" data-bs-toggle="pill" href="#userActivity"
+                                            role="tab" aria-controls="userActivity" aria-selected="false">
+                                            <i class="ri-line-chart-line d-block fs-20 mb-1"></i> User Activity
                                         </a>
                                         <a class="nav-link" id="backup-tab" data-bs-toggle="pill" href="#backup" role="tab"
                                             aria-controls="backup" aria-selected="false">
@@ -1335,6 +1338,21 @@
                                                         name="analytics_key" placeholder="Enter analytics key">
                                                 </div>
                                                 <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </form>
+                                        </div>
+
+                                        <!-- User Activity Tab -->
+                                        <div class="tab-pane fade" id="userActivity" role="tabpanel"
+                                            aria-labelledby="userActivity-tab">
+                                            <h6>User Activity Settings</h6>
+                                            <form method="POST" action="">
+                                                @csrf
+                                                <div class="mb-3 form-check">
+                                                    <input type="checkbox" class="form-check-input" id="enableUserActivity"
+                                                        name="enable_user_activity">
+                                                    <label class="form-check-label" for="enableUserActivity">Enable User Activity
+                                                        Logging</label>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>

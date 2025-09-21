@@ -7,6 +7,27 @@
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">Email Template List</h4>
+                             <div class="dropdown card-header-dropdown">
+                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <span class="fw-semibold fs-12">Status: </span>
+                                    <span class="text-muted">
+                                        @if($status === 'active')
+                                            Active
+                                        @elseif($status === 'inactive')
+                                            Inactive
+                                        @else
+                                            All
+                                        @endif
+                                        <i class="mdi mdi-chevron-down ms-1"></i>
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="{{ url()->current() }}?status=all">All</a>
+                                    <a class="dropdown-item" href="{{ url()->current() }}?status=active">Active</a>
+                                    <a class="dropdown-item" href="{{ url()->current() }}?status=inactive">Inactive</a>
+                                </div>
+                            </div>
                             <div class="flex-shrink-0">
                                 @can('new_email_template')
                                     <button type="button"
@@ -24,9 +45,10 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>S No.</th>
-                                        <th>Name</th>
-                                        <th>Subject</th>
+                                        <th style="text-align: left">Template Name</th>
+                                        <th style="text-align: left">Subject</th>
                                         <th>Category</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -35,9 +57,16 @@
                                         @foreach ($templates as $key => $template)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
-                                                <td>{{ $template->name }}</td>
-                                                <td>{{ $template->subject }}</td>
+                                                <td style="text-align: left">{{ $template->name }}</td>
+                                                <td style="text-align: left">{{ $template->subject }}</td>
                                                 <td>{{ $template->category ?? 'N/A' }}</td>
+                                                <td>
+                                                    @if ($template->is_active == 1)
+                                                        <span class="badge bg-success-subtle text-success badge-border">Active</span>
+                                                    @else
+                                                        <span class="badge bg-danger-subtle text-danger badge-border">Inactive</span>
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     @can('modify_email_template')
                                                         <button type="button" data-bs-toggle="modal" data-bs-target="#templateModal"

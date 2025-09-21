@@ -196,9 +196,9 @@ $(document).ready(function () {
                 if (response.success) {
                     const permission = response.data;
                     $("#addPermissionLabel").text(
-                        "Edit Permission - " + permission.name
+                        "Edit Permission - " + permission.permission_key
                     );
-                    $("#permissionName").val(permission.name);
+                    $("#permissionName").val(permission.permission_key);
                     $("#groupDropdown").val(permission.permission_group_id);
                     $("#is_active").prop("checked", permission.status);
                     $("#savePermissionBtn").attr(

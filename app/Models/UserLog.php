@@ -23,4 +23,10 @@ class UserLog extends Model
     ];
 
     public $timestamps = true;
+
+    public function user()
+    {
+        // user_logs.user_id → users.id
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

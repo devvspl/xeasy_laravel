@@ -1,91 +1,335 @@
 @extends('layouts.app')
+
 @section('content')
-    <div class="page-content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Employee Status</h4>
-                            <div class="flex-shrink-0">
+<div class="page-content">
+   <div class="container-fluid">
+      <div class="row">
+         <div class="col-lg-12">
+            <div class="card">
+               <div class="card-header align-items-center d-flex">
+                  <h4 class="card-title mb-0 flex-grow-1">Employee Status</h4>
+                  <div class="flex-shrink-0">
+                     <button class="btn btn-primary btn-sm">Export Report</button>
+                  </div>
+               </div>
+               <div class="card-body">
+                  <div class="table-responsive">
+                     <table style="margin-top: 15px" id="claimReportTable"
+                        class="table nowrap dt-responsive align-middle table-hover table-bordered"
+                        style="width:100%">
+                        <thead class="table-light">
+                           {{-- First row (main headings) --}}
+                           <tr>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">Claim Month</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">Total Claims</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">Filling Status</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;" colspan="4">Pending For</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">View Home</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">Return Claim</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">View Details</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">Allow Submit</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">Month Status</th>
+                           </tr>
+                           {{-- Second row (sub-headings under “Pending For”) --}}
+                           <tr>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;">Claimant Approval</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;">Verify Approval</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;">Reporting Approval</th>
+                              <th style="vertical-align: middle;text-align: center;font-size: 12px;">Finance Approval</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           @php
+                           $claims = [
+                               [
+                                   'month' => 'Draft',
+                                   'total' => 0,
+                                   'filling' => 'Not Started',
+                                   'claimant' => 0,
+                                   'verify' => 0,
+                                   'reporting' => 0,
+                                   'finance' => 0,
+                                   'view' => false,
+                                   'return' => false,
+                                   'submit' => false,
+                                   'status' => 'Open'
+                               ],
+                               [
+                                   'month' => 'January-2025',
+                                   'total' => 12,
+                                   'filling' => 'In Progress',
+                                   'claimant' => 3,
+                                   'verify' => 2,
+                                   'reporting' => 1,
+                                   'finance' => 0,
+                                   'view' => true,
+                                   'return' => true,
+                                   'submit' => false,
+                                   'status' => 'Open'
+                               ],
+                               [
+                                   'month' => 'February-2025',
+                                   'total' => 15,
+                                   'filling' => 'Completed',
+                                   'claimant' => 0,
+                                   'verify' => 4,
+                                   'reporting' => 2,
+                                   'finance' => 1,
+                                   'view' => true,
+                                   'return' => false,
+                                   'submit' => true,
+                                   'status' => 'Closed'
+                               ],
+                               [
+                                   'month' => 'March-2025',
+                                   'total' => 18,
+                                   'filling' => 'In Progress',
+                                   'claimant' => 2,
+                                   'verify' => 0,
+                                   'reporting' => 0,
+                                   'finance' => 0,
+                                   'view' => true,
+                                   'return' => true,
+                                   'submit' => false,
+                                   'status' => 'Open'
+                               ],
+                               [
+                                   'month' => 'April-2025',
+                                   'total' => 22,
+                                   'filling' => 'Completed',
+                                   'claimant' => 1,
+                                   'verify' => 0,
+                                   'reporting' => 0,
+                                   'finance' => 3,
+                                   'view' => true,
+                                   'return' => true,
+                                   'submit' => true,
+                                   'status' => 'Closed'
+                               ],
+                               [
+                                   'month' => 'May-2025',
+                                   'total' => 20,
+                                   'filling' => 'In Progress',
+                                   'claimant' => 0,
+                                   'verify' => 0,
+                                   'reporting' => 2,
+                                   'finance' => 0,
+                                   'view' => true,
+                                   'return' => false,
+                                   'submit' => false,
+                                   'status' => 'Open'
+                               ],
+                               [
+                                   'month' => 'June-2025',
+                                   'total' => 16,
+                                   'filling' => 'Not Started',
+                                   'claimant' => 0,
+                                   'verify' => 0,
+                                   'reporting' => 0,
+                                   'finance' => 0,
+                                   'view' => true,
+                                   'return' => true,
+                                   'submit' => false,
+                                   'status' => 'Open'
+                               ],
+                               [
+                                   'month' => 'July-2025',
+                                   'total' => 14,
+                                   'filling' => 'In Progress',
+                                   'claimant' => 2,
+                                   'verify' => 3,
+                                   'reporting' => 0,
+                                   'finance' => 0,
+                                   'view' => true,
+                                   'return' => true,
+                                   'submit' => false,
+                                   'status' => 'Open'
+                               ],
+                               [
+                                   'month' => 'August-2025',
+                                   'total' => 19,
+                                   'filling' => 'Completed',
+                                   'claimant' => 0,
+                                   'verify' => 2,
+                                   'reporting' => 1,
+                                   'finance' => 2,
+                                   'view' => true,
+                                   'return' => false,
+                                   'submit' => true,
+                                   'status' => 'Closed'
+                               ],
+                               [
+                                   'month' => 'September-2025',
+                                   'total' => 25,
+                                   'filling' => 'In Progress',
+                                   'claimant' => 4,
+                                   'verify' => 3,
+                                   'reporting' => 0,
+                                   'finance' => 0,
+                                   'view' => true,
+                                   'return' => true,
+                                   'submit' => false,
+                                   'status' => 'Open'
+                               ],
+                               [
+                                   'month' => 'October-2025',
+                                   'total' => 13,
+                                   'filling' => 'Completed',
+                                   'claimant' => 0,
+                                   'verify' => 0,
+                                   'reporting' => 2,
+                                   'finance' => 0,
+                                   'view' => true,
+                                   'return' => false,
+                                   'submit' => true,
+                                   'status' => 'Closed'
+                               ],
+                               [
+                                   'month' => 'November-2025',
+                                   'total' => 10,
+                                   'filling' => 'In Progress',
+                                   'claimant' => 1,
+                                   'verify' => 1,
+                                   'reporting' => 0,
+                                   'finance' => 0,
+                                   'view' => true,
+                                   'return' => true,
+                                   'submit' => false,
+                                   'status' => 'Open'
+                               ],
+                               [
+                                   'month' => 'December-2025',
+                                   'total' => 8,
+                                   'filling' => 'Not Started',
+                                   'claimant' => 0,
+                                   'verify' => 0,
+                                   'reporting' => 0,
+                                   'finance' => 0,
+                                   'view' => true,
+                                   'return' => true,
+                                   'submit' => false,
+                                   'status' => 'Open'
+                               ],
+                           ];
 
-                            </div>
+                           // Calculate tally for totals
+                           $totalClaims = array_sum(array_column($claims, 'total'));
+                           $totalClaimant = array_sum(array_column($claims, 'claimant'));
+                           $totalVerify = array_sum(array_column($claims, 'verify'));
+                           $totalReporting = array_sum(array_column($claims, 'reporting'));
+                           $totalFinance = array_sum(array_column($claims, 'finance'));
+                           @endphp
+                           @foreach ($claims as $claim)
+                           <tr>
+                              <td>{{ $claim['month'] }}</td>
+                              <td>{{ $claim['total'] }}</td>
+                              <td>{{ $claim['filling'] }}</td>
+                              <td>
+                                 {!! $claim['claimant'] ? "<a href='#'><b>{$claim['claimant']}</b></a>" : '-' !!}
+                              </td>
+                              <td>
+                                 {!! $claim['verify'] ? "<a href='#'><b>{$claim['verify']}</b></a>" : '-' !!}
+                              </td>
+                              <td>
+                                 {!! $claim['reporting'] ? "<a href='#'><b>{$claim['reporting']}</b></a>" : '-' !!}
+                              </td>
+                              <td>
+                                 {!! $claim['finance'] ? "<a href='#'><b>{$claim['finance']}</b></a>" : '-' !!}
+                              </td>
+                              <td>
+                                 @if($claim['view'])
+                                 <a href="javascript:void(0)" class="badge bg-primary-subtle text-primary">
+                                    <i class="ri-home-4-line me-1"></i> E-Home
+                                 </a>
+                                 @else
+                                 -
+                                 @endif
+                              </td>
+                              <td>
+                                 @if($claim['return'])
+                                 <a href="javascript:void(0)" class="badge bg-danger-subtle text-danger">
+                                    <i class="ri-arrow-go-back-line me-1"></i> Return
+                                 </a>
+                                 @else
+                                 -
+                                 @endif
+                              </td>
+                              <td>
+                                 <a href="javascript:void(0)" class="badge bg-info-subtle text-info">
+                                    <i class="ri-eye-line me-1"></i> View
+                                 </a>
+                              </td>
+                              <td class="text-center">
+                                 <div class="form-check text-center">
+                                    <input class="form-check-input" type="checkbox" 
+                                           {{ $claim['submit'] ? 'checked' : '' }} disabled>
+                                 </div>
+                              </td>
+                              <td>
+                                 @if($claim['status'] === 'Open')
+                                 <span style="width: 50px" class="badge bg-primary">Open</span>
+                                 @elseif($claim['status'] === 'Closed')
+                                 <span style="width: 50px" class="badge bg-success">Closed</span>
+                                 @else
+                                 <span style="width: 50px" class="badge bg-dark">{{ $claim['status'] }}</span>
+                                 @endif
+                              </td>
+                           </tr>
+                           @endforeach
+                        </tbody>
+                        <tfoot>
+                           <tr>
+                              <th>Total</th>
+                              <th>{{ $totalClaims }}</th>
+                              <th>-</th>
+                              <th>{{ $totalClaimant }}</th>
+                              <th>{{ $totalVerify }}</th>
+                              <th>{{ $totalReporting }}</th>
+                              <th>{{ $totalFinance }}</th>
+                              <th>-</th>
+                              <th>-</th>
+                              <th>-</th>
+                              <th>-</th>
+                              <th>-</th>
+                           </tr>
+                        </tfoot>
+                     </table>
+                  </div>
+                 <div class="mt-1">
+                     <h5 class="fw-bold">Team Members:</h5>
+                     <div class="d-flex flex-wrap align-items-center gap-3">
+                        @php
+                        $team = [
+                        ['id' => '1008', 'name' => 'Shankar Honyal', 'role' => 'Claims Analyst', 'department' => 'Claims Processing', 'avatar' => 'https://vnrseeds.co.in/file-view/Employee_Image/1/1008.jpg'],
+                        ['id' => '1507', 'name' => 'Sunil Kumar Bhatt', 'role' => 'Senior Verifier', 'department' => 'Verification', 'avatar' => 'https://vnrseeds.co.in/file-view/Employee_Image/1/1507.jpg'],
+                        ['id' => '163', 'name' => 'Ashok Kumar Patel', 'role' => 'Finance Manager', 'department' => 'Finance', 'avatar' => 'https://vnrseeds.co.in/file-view/Employee_Image/1/163.jpg'],
+                        ['id' => '241', 'name' => 'Akhilesh Kumar Singh', 'role' => 'Reporting Lead', 'department' => 'Reporting', 'avatar' => 'https://vnrseeds.co.in/file-view/Employee_Image/1/241.jpg'],
+                        ['id' => '376', 'name' => 'Akhil Anand', 'role' => 'Claims Coordinator', 'department' => 'Claims Processing', 'avatar' => 'https://vnrseeds.co.in/file-view/Employee_Image/1/376.jpg'],
+                        ['id' => '431', 'name' => 'Murali Eruku', 'role' => 'Data Analyst', 'department' => 'Analytics', 'avatar' => 'https://vnrseeds.co.in/file-view/Employee_Image/1/431.jpg'],
+                        ['id' => '464', 'name' => 'Rajendra Singh Rana', 'role' => 'Compliance Officer', 'department' => 'Compliance', 'avatar' => 'https://vnrseeds.co.in/file-view/Employee_Image/1/464.jpg'],
+                        ['id' => '676', 'name' => 'Omkar Mahilang', 'role' => 'Finance Analyst', 'department' => 'Finance', 'avatar' => 'https://vnrseeds.co.in/file-view/Employee_Image/1/676.jpg'],
+                        ['id' => '853', 'name' => 'G Swapnil', 'role' => 'Claims Supervisor', 'department' => 'Claims Processing', 'avatar' => 'https://vnrseeds.co.in/file-view/Employee_Image/1/853.jpg']
+                        ];
+                        @endphp
+                        @foreach ($team as $index => $member)
+                        <div class="d-flex align-items-center"">
+                           <img style="margin-right: 5px" src="{{ $member['avatar'] }}" alt="{{ $member['name'] }}"
+                              class="avatar-xs rounded-circle">
+                           <div>
+                              <a href="#"><b>{{ $member['id'] }}-{{ $member['name'] }}</b></a>
+                           </div>
+                           @if($index < count($team) - 1)<span>,</span>@endif
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table style="margin-top: 15px" id="claimReportTable"
-                                    class="table nowrap dt-responsive align-middle table-hover table-bordered"
-                                    style="width:100%">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th rowspan="2">Claim Month</th>
-                                            <th rowspan="2">Total Claim</th>
-                                            <th>Filling</th>
-                                            <th>Claimant Approval</th>
-                                            <th>Verify Approval</th>
-                                            <th>Reporting Approval</th>
-                                            <th>Finance Approval</th>
-                                            {{-- <th colspan="5">Pending For</th> --}}
-                                            <th rowspan="2">View Home</th>
-                                            <th rowspan="2">Return Claim</th>
-                                            <th rowspan="2">Allow Submit</th>
-                                            <th rowspan="2">Backend Submission</th>
-                                            <th rowspan="2">Details</th>
-                                        </tr>
-                                        <tr>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php
-                                            $claims = [
-                                                ['month' => 'Draft', 'total' => '', 'claimant' => '', 'verify' => '', 'reporting' => '', 'finance' => '', 'view' => true, 'return' => false, 'submit' => false],
-                                                ['month' => 'Apr', 'total' => 22, 'claimant' => 1, 'verify' => '', 'reporting' => '', 'finance' => '', 'view' => true, 'return' => true, 'submit' => true],
-                                                ['month' => 'May', 'total' => 21, 'claimant' => '', 'verify' => '', 'reporting' => '', 'finance' => '', 'view' => true, 'return' => true, 'submit' => true],
-                                                ['month' => 'Jun', 'total' => 16, 'claimant' => '', 'verify' => '', 'reporting' => '', 'finance' => '', 'view' => true, 'return' => true, 'submit' => true],
-                                                ['month' => 'Jul', 'total' => 13, 'claimant' => 1, 'verify' => 12, 'reporting' => '', 'finance' => '', 'view' => true, 'return' => true, 'submit' => true],
-                                            ];
-                                           @endphp
-                                        @foreach ($claims as $claim)
-                                            <tr>
-                                                <td>{{ $claim['month'] }}</td>
-                                                <td>{{ $claim['total'] }}</td>
-                                                <td></td>
-                                                <td>{!! $claim['claimant'] ? "<a href='#'><b>{$claim['claimant']}</b></a>" : '' !!}
-                                                </td>
-                                                <td>{!! $claim['verify'] ? "<a href='#'><b>{$claim['verify']}</b></a>" : '' !!}
-                                                </td>
-                                                <td>{{ $claim['reporting'] }}</td>
-                                                <td>{{ $claim['finance'] }}</td>
-                                                <td>
-                                                    @if($claim['view'])
-                                                        <button class="btn btn-success btn-sm">E-Home</button>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($claim['return'])
-                                                        <button class="btn btn-warning btn-sm">Return</button>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($claim['submit'])
-                                                        <input type="checkbox" />
-                                                    @endif
-                                                </td>
-                                                <td></td>
-                                                <td><a href="#" class="btn btn-info btn-sm">View</a></td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            <p class="mt-3 fw-bold">Team : <a href="#"><b>1263</b>-Saurabh Nishad</a></p>
-                        </div>
-                    </div>
-                </div>
+                        @endforeach
+                     </div>
+               </div>
             </div>
-        </div>
-    </div>
+         </div>
+      </div>
+   </div>
+</div>
 @endsection
+
 @push('scripts')
+
 @endpush

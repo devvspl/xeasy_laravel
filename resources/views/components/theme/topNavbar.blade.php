@@ -54,33 +54,35 @@
                         <span></span>
                     </span>
                 </button>
-                <form class="app-search d-none d-md-block">
-                    <meta name="csrf-token" content="{{ csrf_token() }}">
-                    <div class="position-relative">
-                        <input type="text" class="form-control" placeholder="Search employee.. (Ctrl+E)"
-                            autocomplete="off" id="empSearchOptions" value="">
-                        <span class="mdi mdi-magnify search-widget-icon"></span>
-                        <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
-                            id="search-close-options"></span>
-                    </div>
-                    <div class="dropdown-menu dropdown-menu-lg" id="search-dropdown">
-                        <div data-simplebar style="max-height: 320px;">
-                            <div class="dropdown-header" style="display: flex; justify-content: space-between;">
-                                <h6 class="text-overflow text-muted mb-0">Employees</h6>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="statusFilter" checked>
-                                    <label class="form-check-label" for="statusFilter">Active Only</label>
+                @can('user_filter')
+                    <form class="app-search d-none d-md-block">
+                        <meta name="csrf-token" content="{{ csrf_token() }}">
+                        <div class="position-relative">
+                            <input type="text" class="form-control" placeholder="Search employee.. (Ctrl+E)"
+                                autocomplete="off" id="empSearchOptions" value="">
+                            <span class="mdi mdi-magnify search-widget-icon"></span>
+                            <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
+                                id="search-close-options"></span>
+                        </div>
+                        <div class="dropdown-menu dropdown-menu-lg" id="search-dropdown">
+                            <div data-simplebar style="max-height: 320px;">
+                                <div class="dropdown-header" style="display: flex; justify-content: space-between;">
+                                    <h6 class="text-overflow text-muted mb-0">Employees</h6>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="statusFilter" checked>
+                                        <label class="form-check-label" for="statusFilter">Active Only</label>
+                                    </div>
+                                </div>
+                                <div class="notification-list">
                                 </div>
                             </div>
-                            <div class="notification-list">
+                            <div class="text-center pt-3 pb-1">
+                                <a href="/admin/employees" class="btn btn-primary btn-sm">View All Employees <i
+                                        class="ri-arrow-right-line ms-1"></i></a>
                             </div>
                         </div>
-                        <div class="text-center pt-3 pb-1">
-                            <a href="/admin/employees" class="btn btn-primary btn-sm">View All Employees <i
-                                    class="ri-arrow-right-line ms-1"></i></a>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                @endcan
             </div>
             <div class="d-flex align-items-center">
                 <button type="button"
@@ -434,8 +436,8 @@
                                 class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span
                                 class="align-middle">Help</span></a>
                         <div class="dropdown-divider"></div>
-                        @can('View Setting')
-                            <a class="dropdown-item d-flex justify-content-between align-items-center" href="">
+                        @can('settings_overview')
+                            <a class="dropdown-item d-flex justify-content-between align-items-center" href="/settings">
                                 <div>
                                     <i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i>
                                     <span class="align-middle">Settings</span>

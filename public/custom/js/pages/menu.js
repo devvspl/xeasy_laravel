@@ -346,80 +346,64 @@ $(document).ready(function () {
             },
         });
     }
-    function selectPermission(feildId, modalFeildId, permissionName = null) {
+    function selectPermission(fieldId, modalFieldId, permissionName = null) {
         $.ajax({
             url: "permissions-list",
             type: "GET",
             dataType: "json",
-            delay: 250,
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
             },
             success: function (response) {
+                const selectElement = $(`#${fieldId}`);
                 if (
                     response.success &&
                     response.data &&
                     response.data.Navigation &&
-                    response.data.Navigation.Navigation
+                    response.data.Navigation["Navigation"]
                 ) {
-                    const selectElement = $(`#${feildId}`);
-
-                    // Only Navigation → Navigation list
                     const permissionsArray =
-                        response.data.Navigation.Navigation;
+                        response.data.Navigation["Navigation"];
 
-                    // Convert to Select2 format
-                    const permissionData = permissionsArray.map(function (
-                        item
-                    ) {
-                        return {
-                            id: item.name, // or item.id if you prefer
-                            text: item.name,
-                            group: "Navigation",
-                            name: item.name,
-                        };
-                    });
+                    const permissionData = permissionsArray.map((item) => ({
+                        id: item.permission_key,
+                        text: item.permission_key,
+                        group: "Navigation",
+                        name: item.name,
+                    }));
 
                     selectElement.empty().select2({
-                        dropdownParent: $(`#${modalFeildId}`),
+                        dropdownParent: $(`#${modalFieldId}`),
                         placeholder: "Select a Navigation permission",
                         allowClear: true,
                         data: permissionData,
                         templateResult: function (data) {
-                            if (!data.id) {
-                                return data.text;
-                            }
-                            return $(`<span>${data.name}</span>`);
+                            if (!data.id) return data.text;
+                            return $(`<span>${data.text}</span>`);
                         },
                         templateSelection: function (data) {
-                            if (!data.id) {
-                                return data.text;
-                            }
-                            return `${data.name}`;
+                            if (!data.id) return data.text;
+                            return data.text;
                         },
                     });
 
-                    // Preselect if permissionName passed
                     if (permissionName !== null) {
                         const permissionExists = permissionData.some(
                             (item) => item.id === permissionName
                         );
-                        if (permissionExists) {
-                            selectElement.val(permissionName).trigger("change");
-                        } else {
-                            selectElement.val(null).trigger("change");
-                        }
+                        selectElement
+                            .val(permissionExists ? permissionName : null)
+                            .trigger("change");
                     } else {
                         selectElement.val(null).trigger("change");
                     }
                 } else {
-                    console.error("No Navigation permissions found.");
-                    const selectElement = $(`#${feildId}`);
+                    console.error("No permissions found.");
                     selectElement
                         .empty()
                         .append(
                             new Option(
-                                "No Navigation permissions available",
+                                "No permissions available",
                                 "",
                                 true,
                                 true
@@ -429,8 +413,7 @@ $(document).ready(function () {
             },
             error: function (xhr, status, error) {
                 console.error("Error fetching permissions list:", error);
-                const selectElement = $(`#${feildId}`);
-                selectElement
+                $(`#${fieldId}`)
                     .empty()
                     .append(
                         new Option("Error loading permissions", "", true, true)

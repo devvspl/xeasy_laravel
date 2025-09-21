@@ -313,7 +313,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
 }
 
 .table > :not(caption) > * > * {
-    padding: 5px 2px !important;
+    padding: 5px 5px !important;
 }
 
 table.table-bordered.dataTable th,
@@ -544,8 +544,29 @@ table.table-bordered.dataTable td {
     gap: 5px;
 }
 
-
 #activeFilterCount {
-  font-size: 0.7rem; /* make badge smaller */
-  padding: 0.25em 0.4em;
+    font-size: 0.7rem; /* make badge smaller */
+    padding: 0.25em 0.4em;
+}
+
+.images img {
+    max-width: 100px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+.viewer-container {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* Force Viewer container to take full modal width */
+.viewer-container {
+    width: 100% !important;
+    height: 500px !important; /* adjust height */
+    max-width: 100% !important;
+}
+.viewer-canvas img {
+    max-width: 100% !important;
+    height: auto !important;
 }

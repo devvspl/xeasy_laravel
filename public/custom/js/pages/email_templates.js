@@ -32,7 +32,7 @@ $(document).ready(function () {
         tinymce.get("body_html").setContent("");
         $("#variableList").empty();
         $.ajax({
-            url: "/eml-template-variables", // Endpoint to fetch variables
+            url: "email-template-variables",
             type: "GET",
             success: function (response) {
                 response.forEach(function (variable) {
@@ -58,7 +58,7 @@ $(document).ready(function () {
         const button = event.currentTarget;
         const form = $("#templateForm")[0];
         const bodyHtml = tinymce.get("body_html").getContent();
-        const variables = bodyHtml.match(/\{\{[^{}]+}}/g) || []; // Extract variables from body_html
+        const variables = bodyHtml.match(/\{\{[^{}]+}}/g) || [];
 
         const formData = {
             name: $("#name").val(),
@@ -155,7 +155,7 @@ $(document).ready(function () {
 
                     $("#variableList").empty();
                     $.ajax({
-                        url: "/eml-template-variables",
+                        url: "email-template-variables",
                         type: "GET",
                         success: function (response) {
                             response.forEach(function (variable) {
@@ -190,7 +190,6 @@ $(document).ready(function () {
         });
     });
 
-    // Keep delete-template and view-logs functionality as is...
     $(document).on("click", ".delete-template", function (event) {
         event.preventDefault();
         const templateId = $(this).data("id");

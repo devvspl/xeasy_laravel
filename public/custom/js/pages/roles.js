@@ -245,7 +245,7 @@ $(document).ready(function () {
                                                 <div class="col-4 mb-2">
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <span>${
-                                                            permission.name
+                                                            permission.permission_key
                                                         }</span>
                                                         <div class="form-check form-switch" style="margin-top: 0px;">
                                                             <input class="form-check-input permission-toggle" 
@@ -419,7 +419,7 @@ $(document).ready(function () {
                                     groupHtml += `
                             <div class="col-4 mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span>${permission.name}</span>
+                                    <span>${permission.permission_key}</span>
                                     <div class="form-check form-switch" style="margin-top: 0px;">
                                         <input class="form-check-input permission-toggle" 
                                                type="checkbox" 

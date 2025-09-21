@@ -13,12 +13,21 @@
                     <option value="">Select Claim Type</option>
                 </select>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-3">
                 <div class="row">
                     <div class="col-md-4">
-                        <div id="viewerContainer" style="width: 100%; max-height: 600px; overflow: hidden;">
-                            <ul id="viewerImages" class="list-unstyled">
-                                <!-- Dynamically populated image/PDF thumbnails -->
+                        <div id="gallery" class="images">
+                            <ul class="list-unstyled d-flex flex-wrap d-none">
+                                <li><img src="https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/1863/Img_1863_040825083550_1.jpg"
+                                        alt="1"></li>
+                                <li><img src="https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/1720/Img_1720_040825205135_1.jpg"
+                                        alt="2"></li>
+                                <li><img src="https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/100073/Img_100073_040825113109_1.jpg"
+                                        alt="3"></li>
+                                <li><img src="https://thesoftwarepro.com/wp-content/uploads/2019/12/microsoft-office-pdf-document-600x645.jpg"
+                                        alt="pdf"></li>
+                                <li><img src="https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/1729/Document_200925_1729_S1.pdf"
+                                        alt="pdf"></li>
                             </ul>
                         </div>
                     </div>

@@ -40,18 +40,19 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>S No.</th>
-                                        <th>Permission</th>
+                                        <th style="text-align: left;">Permission</th>
+                                        <th style="text-align: left;">Permission Key</th>
                                         <th>Group</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-
                                     @foreach ($permissions as $key => $permission)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $permission->name }}</td>
+                                            <td style="text-align:left">{{ $permission->permission_key }}</td>
+                                            <td style="text-align:left">{{ $permission->name }}</td>
                                             <td><span
                                                     class="badge bg-dark-subtle text-body">{{ $permission->group_name ?? '-' }}</span>
                                             </td>
