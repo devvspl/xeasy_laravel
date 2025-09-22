@@ -134,10 +134,10 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
                 'policy' => $row->policy_name ?? '',
                 'vehicle_type' => $row->vehicle_type ?? '',
                 'month' => $monthMap[$row->ClaimMonth] ?? '',
-                'upload_date' => $row->CrDate ?? '',
-                'bill_date' => $row->BillDate ?? '',
+                'upload_date' => $row->CrDate ? (new \DateTime($row->CrDate))->format('d-m-Y') : '',
+                'bill_date' => $row->BillDate ? (new \DateTime($row->BillDate))->format('d-m-Y') : '',
                 'FilledAmt' => $row->FilledTAmt ?? '',
-                'FilledDate' => $row->FilledDate ?? '',
+                'FilledDate' => $row->FilledDate ? (new \DateTime($row->FilledDate))->format('d-m-Y') : '',
                 'odomtr_opening' => $row->odomtr_opening ?? '',
                 'odomtr_closing' => $row->odomtr_closing ?? '',
                 'TotKm' => $row->TotKm ?? 0,
@@ -145,13 +145,13 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
                 'RatePerKM' => $row->RatePerKM ?? 0,
                 'VerifyAmt' => $row->VerifyTAmt ?? 0,
                 'VerifyTRemark' => $row->VerifyTRemark ?? '',
-                'VerifyDate' => $row->VerifyDate ?? '',
+                'VerifyDate' => $row->VerifyDate ? (new \DateTime($row->VerifyDate))->format('d-m-Y') : '',
                 'ApprAmt' => $row->ApprTAmt ?? 0,
                 'ApprTRemark' => $row->ApprTRemark ?? '',
-                'ApprDate' => $row->ApprDate ?? '',
+                'ApprDate' => $row->ApprDate ? (new \DateTime($row->ApprDate))->format('d-m-Y') : '',
                 'FinancedTAmt' => $row->FinancedTAmt ?? 0,
                 'FinancedTRemark' => $row->FinancedTRemark ?? '',
-                'FinancedDate' => $row->FinancedDate ?? '',
+                'FinancedDate' => $row->FinancedDate ? (new \DateTime($row->FinancedDate))->format('d-m-Y') : '',
                 default => '',
             };
 
@@ -212,20 +212,30 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
         $lastColumn = Coordinate::stringFromColumnIndex(count($this->columns));
         $lastRow = $sheet->getHighestRow();
 
+        // Header styling
         $sheet->getStyle("A1:{$lastColumn}1")->applyFromArray([
             'font' => ['bold' => true, 'size' => 10, 'color' => ['argb' => 'FFFFFFFF']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => '1F4E78']],
             'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
         ]);
 
+        // Alternating row colors
         if ($lastRow > 1) {
-            $sheet->getStyle("A2:{$lastColumn}{$lastRow}")->applyFromArray([
-                'borders' => [
-                    'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FF000000']],
-                ],
-            ]);
+            for ($row = 2; $row <= $lastRow; $row++) {
+                $fillColor = ($row % 2 == 0) ? 'FFF5F5F5' : 'FFFFFFFF'; // Light gray for even rows, white for odd
+                $sheet->getStyle("A{$row}:{$lastColumn}{$row}")->applyFromArray([
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => $fillColor],
+                    ],
+                    'borders' => [
+                        'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FF000000']],
+                    ],
+                ]);
+            }
         }
 
+        // Auto-size columns
         foreach (range(1, count($this->columns)) as $colIndex) {
             $columnLetter = Coordinate::stringFromColumnIndex($colIndex);
             $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
@@ -245,8 +255,8 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
                 $lastColumn = Coordinate::stringFromColumnIndex(count($this->columns));
                 $totalRow = $lastRow + 1;
 
+                // Set total row values
                 $sheet->setCellValue("A{$totalRow}", 'Total');
-
                 foreach ($this->totals as $index => $total) {
                     if ($index < count($this->columns)) {
                         $columnLetter = Coordinate::stringFromColumnIndex($index + 1);
@@ -254,11 +264,20 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
                     }
                 }
 
+                // Style total row with light yellow background
                 $sheet->getStyle("A{$totalRow}:{$lastColumn}{$totalRow}")->applyFromArray([
                     'font' => ['bold' => true, 'color' => ['argb' => 'FF000000']],
                     'alignment' => ['horizontal' => 'right'],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => 'FFFFE082'], // Light yellow
+                    ],
+                    'borders' => [
+                        'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FF000000']],
+                    ],
                 ]);
 
+                // Protect sheet if enabled
                 if ($this->protectSheets) {
                     $sheet->getProtection()->setSheet(true);
                     $sheet->getProtection()->setPassword('xai2025');

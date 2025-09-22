@@ -403,7 +403,7 @@ $(document).ready(function () {
     function updateActiveFilterCount() {
         let filterCount = 0;
 
-        // List of filter selectors to check
+        
         const filterSelectors = [
             "#functionSelect",
             "#verticalSelect",
@@ -420,19 +420,19 @@ $(document).ready(function () {
             "#toDate",
         ];
 
-        // Count non-empty selections for each filter
+        
         filterSelectors.forEach((selector) => {
             const value = $(selector).val();
             if (value && value.length > 0 && value !== "") {
                 if (Array.isArray(value)) {
-                    filterCount += value.length; // For multi-selects, count each selected option
+                    filterCount += value.length; 
                 } else {
-                    filterCount += 1; // For single value inputs (e.g., date fields)
+                    filterCount += 1; 
                 }
             }
         });
 
-        // Update the badge with the total count
+        
         $("#activeFilterCount").text(filterCount);
     }
 
@@ -530,39 +530,59 @@ $(document).ready(function () {
                 });
             },
             success: function (data, status, xhr) {
-                if (
-                    xhr
-                        .getResponseHeader("content-type")
-                        .includes("application/json")
-                ) {
+                
+                const contentType = xhr.getResponseHeader("content-type") || "";
+                if (contentType.includes("application/json")) {
                     data.text().then((text) => {
                         const response = JSON.parse(text);
                         showAlert(
                             "danger",
                             "ri-error-warning-line",
-                            response.error || "Export failed."
+                            response.message || "Export failed."
                         );
                     });
                     return;
                 }
+
+                
+                const contentDisposition = xhr.getResponseHeader(
+                    "content-disposition"
+                );
+                let fileName = "download"; 
+                if (contentDisposition) {
+                    
+                    const fileNameRegex =
+                        /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    const matches = fileNameRegex.exec(contentDisposition);
+                    if (matches != null && matches[1]) {
+                        fileName = matches[1].replace(/['"]/g, "");
+                    }
+                }
+
+                
                 const url = window.URL.createObjectURL(data);
                 const a = $("<a>", {
                     href: url,
-                    download: `expense_claims_${new Date()
-                        .toISOString()
-                        .replace(/[:.]/g, "")}.xlsx`,
+                    download: fileName, 
                 }).appendTo("body");
                 a[0].click();
                 a.remove();
                 window.URL.revokeObjectURL(url);
                 $("#exportModal").modal("hide");
             },
-            error: function (xhr) {
-                console.error("Export error:", xhr.responseText);
+
+            error: function (xhr, status, error) {
+                
+                console.error("Export error:", {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    response: xhr.response,
+                });
                 showAlert(
                     "danger",
                     "ri-error-warning-line",
-                    "Failed to export data. Please try again or contact support"
+                    "Failed to export data: " + (xhr.responseText || error)
                 );
             },
             complete: function () {
@@ -624,7 +644,9 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on("change", "#functionSelect, #verticalSelect, #departmentSelect, #subDepartmentSelect, #userSelect, #monthSelect, #claimTypeSelect, #claimStatusSelect, #policySelect, #wheelerTypeSelect, #vehicleTypeSelect",
+    $(document).on(
+        "change",
+        "#functionSelect, #verticalSelect, #departmentSelect, #subDepartmentSelect, #userSelect, #monthSelect, #claimTypeSelect, #claimStatusSelect, #policySelect, #wheelerTypeSelect, #vehicleTypeSelect",
         function () {
             updateActiveFilterCount();
         }

@@ -57,6 +57,7 @@ class ReportController extends Controller
 
     private function buildClaimQuery(array $filters, string $table, bool $forCount = false, $columns = null)
     {
+
         $columns = is_array($columns) ? $columns : [];
         $query = DB::table("{$table}");
         if ($forCount) {
@@ -188,7 +189,7 @@ class ReportController extends Controller
             if (! empty($filters['department_ids'])) {
                 $query->whereIn('hrims.hrm_employee_general.DepartmentId', $filters['department_ids']);
             }
-            if ((isset($filters['sub_department_ids']) && ! empty($filters['sub_department_ids']))) {
+            if (! empty($filters['sub_department_ids'])) {
                 $query->whereIn('hrims.hrm_employee_general.SubDepartmentId', $filters['sub_department_ids'] ?? []);
             }
         }
@@ -316,30 +317,30 @@ class ReportController extends Controller
                 ->addColumn('action', function ($row) {
                     $dropdownId = 'dropdownMenuLink'.$row->ExpId;
                     $html = '
-        <div class="dropdown">
-            <a href="#" role="button" id="'.$dropdownId.'" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="ri-more-2-fill"></i>
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="'.$dropdownId.'">
-                <li>
-                    <a class="dropdown-item view-claim" href="#" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#claimDetailModal" 
-                    data-claim-id="'.$row->ClaimId.'" 
-                    data-expid="'.$row->ExpId.'">
-                    View
-                    </a>
-                </li>';
+                    <div class="dropdown">
+                        <a href="#" role="button" id="'.$dropdownId.'" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-2-fill"></i>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="'.$dropdownId.'">
+                            <li>
+                                <a class="dropdown-item view-claim" href="#" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#claimDetailModal" 
+                                data-claim-id="'.$row->ClaimId.'" 
+                                data-expid="'.$row->ExpId.'">
+                                View
+                                </a>
+                            </li>';
 
                     if (strtolower($row->ClaimStatus) === 'deactivate') {
                         $html .= '
-                <li>
-                    <a class="dropdown-item return-claim" href="#" 
-                    data-claim-id="'.$row->ClaimId.'" 
-                    data-expid="'.$row->ExpId.'">
-                    Return
-                    </a>
-                </li>';
+                            <li>
+                                <a class="dropdown-item return-claim" href="#" 
+                                data-claim-id="'.$row->ClaimId.'" 
+                                data-expid="'.$row->ExpId.'">
+                                Return
+                                </a>
+                            </li>';
                     }
 
                     $html .= '</ul></div>';
@@ -356,28 +357,56 @@ class ReportController extends Controller
 
     public function export(Request $request)
     {
-        ini_set('max_execution_time', 1000);
-        ini_set('memory_limit', '512M');
-        $filters = ['function_ids' => $request->input('function_ids', []), 'vertical_ids' => $request->input('vertical_ids', []), 'department_ids' => $request->input('department_ids', []), 'user_ids' => $request->input('user_ids', []), 'months' => $request->input('months', []), 'claim_type_ids' => $request->input('claim_type_ids', []), 'claim_statuses' => $request->input('claim_statuses', []), 'from_date' => $request->input('from_date'), 'to_date' => $request->input('to_date'), 'date_type' => $request->input('date_type', 'billDate'), 'policy_ids' => $request->input('policy_ids', []), 'vehicle_types' => $request->input('vehicle_types', []), 'wheeler_type' => $request->input('wheeler_type')];
+        ini_set('max_execution_time', 10000);
+        ini_set('memory_limit', '5120M');
+        $filters = [
+            'function_ids' => $request->input('function_ids', []),
+            'vertical_ids' => $request->input('vertical_ids', []),
+            'department_ids' => $request->input('department_ids', []),
+            'sub_department_ids' => $request->input('sub_department_ids', []),
+            'user_ids' => $request->input('user_ids', []),
+            'months' => $request->input('months', []),
+            'claim_type_ids' => $request->input('claim_type_ids', []),
+            'claim_statuses' => $request->input('claim_statuses', []),
+            'from_date' => $request->input('from_date'),
+            'to_date' => $request->input('to_date'),
+            'date_type' => $request->input('date_type', 'billDate'),
+            'policy_ids' => $request->input('policy_ids', []),
+            'vehicle_types' => $request->input('vehicle_types', []),
+            'wheeler_type' => $request->input('wheeler_type'),
+            'claim_filter_type' => $request->input('claim_filter_type'),
+        ];
+
         $columns = $request->input('columns', []);
         $reportType = $request->input('reportType', 'general');
         $protectSheets = $request->boolean('protectSheets', false);
         $table = ExpenseClaim::tableName();
+
         if (empty($columns)) {
             return response()->json(['status' => 'error', 'message' => 'Please select at least one column to export'], 422);
         }
+
         try {
             $query = $this->buildClaimQuery($filters, $table, false, $columns);
             if (! $query->exists()) {
                 return response()->json(['status' => 'error', 'message' => 'No claims found for the given filters'], 404);
             }
+
             $export = match ($reportType) {
                 'month_wise' => new MonthWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
                 'department_wise' => new DepartmentWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
                 'claim_type_wise' => new ClaimTypeWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
                 default => new ClaimReportExport($query, $filters, $columns, 'Claims', $protectSheets, $table),
             };
-            $fileName = 'expense_claims_'.date('Ymd_His').'.xlsx';
+
+            // Generate standardized file name based on report type
+            $reportName = match ($reportType) {
+                'month_wise' => 'MonthWise_Claims',
+                'department_wise' => 'DepartmentWise_Claims',
+                'claim_type_wise' => 'ClaimTypeWise_Claims',
+                default => 'General_Claims',
+            };
+            $fileName = sprintf('%s_%s.xlsx', $reportName, date('Ymd_His'));
 
             return Excel::download($export, $fileName);
         } catch (\Throwable $e) {

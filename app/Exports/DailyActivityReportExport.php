@@ -2,22 +2,25 @@
 
 namespace App\Exports;
 
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class DailyActivityReportExport implements FromArray, WithHeadings, WithStyles, WithEvents, WithTitle
+class DailyActivityReportExport implements FromArray, WithEvents, WithHeadings, WithStyles, WithTitle
 {
     protected $fromDate;
+
     protected $toDate;
+
     protected $data;
+
     protected $totals;
 
     public function __construct(string $fromDate, string $toDate)
@@ -154,7 +157,7 @@ class DailyActivityReportExport implements FromArray, WithHeadings, WithStyles, 
         $sheet->insertNewRowBefore(1, 7);
 
         // 1. Add Report Title (Row 1)
-        $title = "Daily Activity Report - " . date('M Y', strtotime($this->fromDate)) . " to " . date('M Y', strtotime($this->toDate));
+        $title = 'Daily Activity Report - '.date('M Y', strtotime($this->fromDate)).' to '.date('M Y', strtotime($this->toDate));
         $sheet->mergeCells("A1:{$lastColumn}1");
         $sheet->setCellValue('A1', $title);
         $sheet->getStyle("A1:{$lastColumn}1")->applyFromArray([
@@ -267,7 +270,7 @@ class DailyActivityReportExport implements FromArray, WithHeadings, WithStyles, 
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 $lastRow = $sheet->getHighestRow();
                 $lastColumn = 'F';
@@ -285,11 +288,11 @@ class DailyActivityReportExport implements FromArray, WithHeadings, WithStyles, 
                 $sheet->getStyle("A{$totalRow}:{$lastColumn}{$totalRow}")->applyFromArray([
                     'font' => [
                         'bold' => true,
-                        'color' => ['argb' => 'FF000000'],
+                        'color' => ['argb' => 'FFFFFFFF'],
                     ],
                     'fill' => [
                         'fillType' => 'solid',
-                        'startColor' => ['argb' => 'FFD3D3D3'],
+                        'startColor' => ['argb' => '1F4E78'],
                     ],
                     'alignment' => ['horizontal' => 'right'],
                     'borders' => [
