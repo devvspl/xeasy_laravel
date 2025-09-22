@@ -18,7 +18,6 @@
                         class="table nowrap dt-responsive align-middle table-hover table-bordered"
                         style="width:100%">
                         <thead class="table-light">
-                           {{-- First row (main headings) --}}
                            <tr>
                               <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">Claim Month</th>
                               <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">Total Claims</th>
@@ -30,7 +29,6 @@
                               <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">Allow Submit</th>
                               <th style="vertical-align: middle;text-align: center;font-size: 12px;" rowspan="2">Month Status</th>
                            </tr>
-                           {{-- Second row (sub-headings under “Pending For”) --}}
                            <tr>
                               <th style="vertical-align: middle;text-align: center;font-size: 12px;">Claimant Approval</th>
                               <th style="vertical-align: middle;text-align: center;font-size: 12px;">Verify Approval</th>
@@ -44,7 +42,7 @@
                                [
                                    'month' => 'Draft',
                                    'total' => 0,
-                                   'filling' => 'Not Started',
+                                   'filling' => '',
                                    'claimant' => 0,
                                    'verify' => 0,
                                    'reporting' => 0,
@@ -55,9 +53,9 @@
                                    'status' => 'Open'
                                ],
                                [
-                                   'month' => 'January-2025',
+                                   'month' => 'January',
                                    'total' => 12,
-                                   'filling' => 'In Progress',
+                                   'filling' => '',
                                    'claimant' => 3,
                                    'verify' => 2,
                                    'reporting' => 1,
@@ -68,9 +66,9 @@
                                    'status' => 'Open'
                                ],
                                [
-                                   'month' => 'February-2025',
+                                   'month' => 'February',
                                    'total' => 15,
-                                   'filling' => 'Completed',
+                                   'filling' => '',
                                    'claimant' => 0,
                                    'verify' => 4,
                                    'reporting' => 2,
@@ -81,9 +79,9 @@
                                    'status' => 'Closed'
                                ],
                                [
-                                   'month' => 'March-2025',
+                                   'month' => 'March',
                                    'total' => 18,
-                                   'filling' => 'In Progress',
+                                   'filling' => '',
                                    'claimant' => 2,
                                    'verify' => 0,
                                    'reporting' => 0,
@@ -94,9 +92,9 @@
                                    'status' => 'Open'
                                ],
                                [
-                                   'month' => 'April-2025',
+                                   'month' => 'April',
                                    'total' => 22,
-                                   'filling' => 'Completed',
+                                   'filling' => '',
                                    'claimant' => 1,
                                    'verify' => 0,
                                    'reporting' => 0,
@@ -107,9 +105,9 @@
                                    'status' => 'Closed'
                                ],
                                [
-                                   'month' => 'May-2025',
+                                   'month' => 'May',
                                    'total' => 20,
-                                   'filling' => 'In Progress',
+                                   'filling' => '',
                                    'claimant' => 0,
                                    'verify' => 0,
                                    'reporting' => 2,
@@ -120,9 +118,9 @@
                                    'status' => 'Open'
                                ],
                                [
-                                   'month' => 'June-2025',
+                                   'month' => 'June',
                                    'total' => 16,
-                                   'filling' => 'Not Started',
+                                   'filling' => '',
                                    'claimant' => 0,
                                    'verify' => 0,
                                    'reporting' => 0,
@@ -133,9 +131,9 @@
                                    'status' => 'Open'
                                ],
                                [
-                                   'month' => 'July-2025',
+                                   'month' => 'July',
                                    'total' => 14,
-                                   'filling' => 'In Progress',
+                                   'filling' => '',
                                    'claimant' => 2,
                                    'verify' => 3,
                                    'reporting' => 0,
@@ -146,9 +144,9 @@
                                    'status' => 'Open'
                                ],
                                [
-                                   'month' => 'August-2025',
+                                   'month' => 'August',
                                    'total' => 19,
-                                   'filling' => 'Completed',
+                                   'filling' => '',
                                    'claimant' => 0,
                                    'verify' => 2,
                                    'reporting' => 1,
@@ -159,9 +157,9 @@
                                    'status' => 'Closed'
                                ],
                                [
-                                   'month' => 'September-2025',
+                                   'month' => 'September',
                                    'total' => 25,
-                                   'filling' => 'In Progress',
+                                   'filling' => '',
                                    'claimant' => 4,
                                    'verify' => 3,
                                    'reporting' => 0,
@@ -172,9 +170,9 @@
                                    'status' => 'Open'
                                ],
                                [
-                                   'month' => 'October-2025',
+                                   'month' => 'October',
                                    'total' => 13,
-                                   'filling' => 'Completed',
+                                   'filling' => '',
                                    'claimant' => 0,
                                    'verify' => 0,
                                    'reporting' => 2,
@@ -185,9 +183,9 @@
                                    'status' => 'Closed'
                                ],
                                [
-                                   'month' => 'November-2025',
+                                   'month' => 'November',
                                    'total' => 10,
-                                   'filling' => 'In Progress',
+                                   'filling' => '',
                                    'claimant' => 1,
                                    'verify' => 1,
                                    'reporting' => 0,
@@ -198,9 +196,9 @@
                                    'status' => 'Open'
                                ],
                                [
-                                   'month' => 'December-2025',
+                                   'month' => 'December',
                                    'total' => 8,
-                                   'filling' => 'Not Started',
+                                   'filling' => '',
                                    'claimant' => 0,
                                    'verify' => 0,
                                    'reporting' => 0,
@@ -211,8 +209,6 @@
                                    'status' => 'Open'
                                ],
                            ];
-
-                           // Calculate tally for totals
                            $totalClaims = array_sum(array_column($claims, 'total'));
                            $totalClaimant = array_sum(array_column($claims, 'claimant'));
                            $totalVerify = array_sum(array_column($claims, 'verify'));
@@ -267,7 +263,7 @@
                               </td>
                               <td>
                                  @if($claim['status'] === 'Open')
-                                 <span style="width: 50px" class="badge bg-primary">Open</span>
+                                 <span style="width: 50px" class="badge bg-secondary">Open</span>
                                  @elseif($claim['status'] === 'Closed')
                                  <span style="width: 50px" class="badge bg-success">Closed</span>
                                  @else
