@@ -70,12 +70,12 @@ Route::middleware('auth')->group(function () {
     // Routes for user management, including permissions and profiles
     Route::middleware('permission:user_management')->group(function () {
         Route::resource('users', UsersController::class);
-        Route::get('/users/data', [UsersController::class, 'getUsersData']);
+        Route::get('users/data', [UsersController::class, 'getUsersData']);
         Route::get('user/{id}/permission', [UsersController::class, 'getPermissionView']);
         Route::get('users/{id}/permissions', [PermissionController::class, 'getPermissions']);
         Route::post('users/{id}/permissions/assign', [PermissionController::class, 'assignPermission']);
         Route::post('users/{id}/permissions/revoke', [PermissionController::class, 'revokePermission']);
-        Route::post('/users/import', [UsersController::class, 'importEmployees'])->name('users.import');
+        Route::post('users/import', [UsersController::class, 'importEmployees'])->name('users.import');
         Route::get('profile', [UsersController::class, 'profile']);
         Route::get('user-activity', [UsersController::class, 'userActivity']);
         Route::get('user-activity/data', [UsersController::class, 'userActivityData']);
@@ -99,6 +99,8 @@ Route::middleware('auth')->group(function () {
         Route::post('settings/theme', [SettingController::class, 'saveThemeSettings']);
         Route::get('general', [SettingController::class, 'getGeneralSettings']);
         Route::post('general', [SettingController::class, 'saveGeneralSettings']);
+        Route::get('odo-backdate-approval', [SettingController::class, 'odoBackdateApproval']);
+        Route::post('odo-backdate-setting/{department_id}', [SettingController::class, 'updateOdoBackdateSetting'])->name('odo-backdate-setting.update');
     });
 
     // Report Management

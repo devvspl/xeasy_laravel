@@ -35,7 +35,7 @@ class UpdateMenuRequest extends FormRequest
             'icon' => ['nullable', 'string', 'max:255'],
             'order' => ['nullable', 'integer', 'min:0'],
             'url' => ['required', 'string', 'max:255'],
-            'permission' => ['nullable', 'exists:permissions,name'],
+            'permission' => ['nullable', 'exists:permissions,permission_key'],
             'is_active' => ['required', 'boolean'],
         ];
     }

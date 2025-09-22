@@ -1,28 +1,28 @@
 <?php
+
 namespace App\Http\Controllers\admin;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\CoreFunctions;
-use App\Models\CoreVertical;
-use App\Models\CoreDepartments;
-use App\Models\CoreSubDepartment;
-use App\Models\HRMEmployees;
-use App\Models\EligibilityPolicy;
-use App\Models\ClaimType;
-use App\Models\ExpenseClaim;
+
 use App\Exports\ClaimReportExport;
 use App\Exports\ClaimTypeWiseClaimReportExport;
+use App\Exports\DailyActivityReportExport;
 use App\Exports\DepartmentWiseClaimReportExport;
 use App\Exports\MonthWiseClaimReportExport;
-use App\Exports\DailyActivityReportExport;
 use App\Exports\SameDayUploadClaimExport;
-use App\Notifications\ExportReadyNotification;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use App\Models\CoreDepartments;
+use App\Models\CoreFunctions;
+use App\Models\CoreSubDepartment;
+use App\Models\CoreVertical;
+use App\Models\EligibilityPolicy;
+use App\Models\ExpenseClaim;
+use App\Models\HRMEmployees;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Yajra\DataTables\Facades\DataTables;
+
 class ReportController extends Controller
 {
     public function claimReport()
@@ -34,8 +34,10 @@ class ReportController extends Controller
         $employees = HRMEmployees::select('hrims.hrm_employee.EmployeeID', 'hrims.hrm_employee.EmpCode', 'hrims.hrm_employee.Fname', 'hrims.hrm_employee.Sname', 'hrims.hrm_employee.Lname', 'hrims.hrm_employee.EmpStatus')->join('hrims.hrm_employee_general', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_general.EmployeeID')->get();
         $claimTypes = \DB::table('claimtype as ct')->leftJoin('claimgroup as cg', 'cg.cgId', '=', 'ct.cgId')->where('ct.ClaimStatus', 'A')->whereIn('ct.cgId', [1, 7])->orderBy('cg.cgName')->orderBy('ct.ClaimName')->get(['ct.ClaimId', 'ct.ClaimName', 'cg.cgName']);
         $eligibility_policy = EligibilityPolicy::where('CompanyId', session('company_id'))->get(['PolicyId', 'PolicyName']);
+
         return view('admin.claim_report', compact('functions', 'verticals', 'departments', 'sub_departments', 'employees', 'claimTypes', 'eligibility_policy'));
     }
+
     public function topRatingEmployee(Request $request)
     {
         $fromDate = $request->query('fromDate', date('Y-m-d'));
@@ -44,20 +46,22 @@ class ReportController extends Controller
         $data = DB::table("$table as ec")->leftJoin('hrims.hrm_employee_general as eg', 'ec.CrBy', '=', 'eg.EmployeeID')->leftJoin('hrims.hrm_employee as emp', 'ec.CrBy', '=', 'emp.EmployeeID')->leftJoin('hrims.core_verticals as cv', 'cv.id', '=', 'eg.EmpVertical')->leftJoin('hrims.core_departments as cd', 'cd.id', '=', 'eg.DepartmentId')->leftJoin('hrims.core_grades as cg', 'cg.id', '=', 'eg.GradeId')->select(DB::raw("CONCAT_WS(' ', emp.Fname, emp.Sname, emp.Lname) AS EmployeeName"), 'emp.EmpCode', 'cg.grade_name', 'cv.vertical_name', 'cd.department_name', DB::raw('COUNT(ec.ExpId) AS TotalClaimsUploaded'))->whereBetween(DB::raw('DATE(ec.CrDate)'), [$fromDate, $toDate])->whereIn('ec.CrBy', function ($query) use ($table) {
             $query->select('ec_inner.CrBy')->from("$table as ec_inner")->groupBy('ec_inner.CrBy')->havingRaw('SUM(CASE WHEN DATE(ec_inner.BillDate) = DATE(ec_inner.CrDate) THEN 1 ELSE 0 END) = COUNT(*)');
         })->groupBy('emp.EmployeeID', 'emp.Fname', 'emp.Sname', 'emp.Lname', 'emp.EmpCode', 'cg.grade_name', 'cv.vertical_name', 'cd.department_name')->orderByDesc('TotalClaimsUploaded')->orderBy('emp.EmpCode')->get();
+
         return view('admin.top_rating_employee', compact('data', 'fromDate', 'toDate'));
     }
+
     public function dailyActivity()
     {
-        return view(view:
-            'admin.daily_activity');
+        return view(view: 'admin.daily_activity');
     }
+
     private function buildClaimQuery(array $filters, string $table, bool $forCount = false, $columns = null)
     {
         $columns = is_array($columns) ? $columns : [];
         $query = DB::table("{$table}");
         if ($forCount) {
             $query->select("{$table}.ExpId");
-        } elseif (!empty($columns)) {
+        } elseif (! empty($columns)) {
             $selects = [];
             if (in_array('exp_id', $columns)) {
                 $selects[] = "{$table}.ExpId as ExpId";
@@ -66,7 +70,7 @@ class ReportController extends Controller
                 $selects[] = DB::raw("MAX({$table}.ClaimId) as ClaimId");
             }
             if (in_array('claim_type', $columns)) {
-                $selects[] = DB::raw("MAX(claimtype.ClaimName) as claim_type_name");
+                $selects[] = DB::raw('MAX(claimtype.ClaimName) as claim_type_name');
             }
             if (in_array('claim_status', $columns)) {
                 $selects[] = DB::raw("MAX({$table}.ClaimStatus) as ClaimStatus");
@@ -75,7 +79,7 @@ class ReportController extends Controller
                 $selects[] = DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name");
             }
             if (in_array('emp_code', $columns)) {
-                $selects[] = DB::raw("MAX(hrims.hrm_employee.EmpCode) as employee_code");
+                $selects[] = DB::raw('MAX(hrims.hrm_employee.EmpCode) as employee_code');
             }
             if (in_array('month', $columns)) {
                 $selects[] = DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth");
@@ -87,22 +91,22 @@ class ReportController extends Controller
                 $selects[] = DB::raw("MAX({$table}.BillDate) as BillDate");
             }
             if (in_array('function', $columns)) {
-                $selects[] = DB::raw("MAX(hrims.core_functions.function_name) as function_name");
+                $selects[] = DB::raw('MAX(hrims.core_functions.function_name) as function_name');
             }
             if (in_array('vertical', $columns)) {
-                $selects[] = DB::raw("MAX(hrims.core_verticals.vertical_name) as vertical_name");
+                $selects[] = DB::raw('MAX(hrims.core_verticals.vertical_name) as vertical_name');
             }
             if (in_array('department', $columns)) {
-                $selects[] = DB::raw("MAX(hrims.core_departments.department_name) as department_name");
+                $selects[] = DB::raw('MAX(hrims.core_departments.department_name) as department_name');
             }
             if (in_array('sub_department', $columns)) {
-                $selects[] = DB::raw("MAX(hrims.core_sub_department_master.sub_department_name) as sub_department_name");
+                $selects[] = DB::raw('MAX(hrims.core_sub_department_master.sub_department_name) as sub_department_name');
             }
             if (in_array('policy', $columns)) {
-                $selects[] = DB::raw("MAX(hrims.hrm_master_eligibility_policy.PolicyName) as policy_name");
+                $selects[] = DB::raw('MAX(hrims.hrm_master_eligibility_policy.PolicyName) as policy_name');
             }
             if (in_array('vehicle_type', $columns)) {
-                $selects[] = DB::raw("MAX(hrims.hrm_employee_eligibility.VehicleType) as vehicle_type");
+                $selects[] = DB::raw('MAX(hrims.hrm_employee_eligibility.VehicleType) as vehicle_type');
             }
             if (in_array('odomtr_opening', $columns)) {
                 $selects[] = DB::raw("MAX({$table}.odomtr_opening) as odomtr_opening");
@@ -157,88 +161,90 @@ class ReportController extends Controller
             }
             $query->select($selects);
         } else {
-            $query->select(["{$table}.ExpId as ExpId", DB::raw("MAX(claimtype.ClaimName) as claim_type_name"), DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name"), DB::raw("MAX(hrims.hrm_employee.EmpCode) as employee_code"), DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth"), DB::raw("MAX({$table}.CrDate) as CrDate"), DB::raw("MAX({$table}.BillDate) as BillDate"), DB::raw("MAX({$table}.FilledTAmt) as FilledTAmt"), DB::raw("MAX({$table}.ClaimAtStep) as ClaimAtStep"), DB::raw("MAX({$table}.ClaimStatus) as ClaimStatus"), DB::raw("MAX({$table}.ClaimId) as ClaimId"),]);
+            $query->select(["{$table}.ExpId as ExpId", DB::raw('MAX(claimtype.ClaimName) as claim_type_name'), DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name"), DB::raw('MAX(hrims.hrm_employee.EmpCode) as employee_code'), DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth"), DB::raw("MAX({$table}.CrDate) as CrDate"), DB::raw("MAX({$table}.BillDate) as BillDate"), DB::raw("MAX({$table}.FilledTAmt) as FilledTAmt"), DB::raw("MAX({$table}.ClaimAtStep) as ClaimAtStep"), DB::raw("MAX({$table}.ClaimStatus) as ClaimStatus"), DB::raw("MAX({$table}.ClaimId) as ClaimId")]);
         }
         $query->leftJoin('claimtype', "{$table}.ClaimId", '=', 'claimtype.ClaimId');
         $query->leftJoin('hrims.hrm_employee', "{$table}.CrBy", '=', 'hrims.hrm_employee.EmployeeID');
-        if (!empty($filters['function_ids']) || !empty($filters['vertical_ids']) || !empty($filters['department_ids']) || !empty($filters['sub_department_ids']) || in_array('function', $columns) || in_array('vertical', $columns) || in_array('department', $columns)) {
+        if (! empty($filters['function_ids']) || ! empty($filters['vertical_ids']) || ! empty($filters['department_ids']) || ! empty($filters['sub_department_ids']) || in_array('function', $columns) || in_array('vertical', $columns) || in_array('department', $columns)) {
             $query->leftJoin('hrims.hrm_employee_general', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_general.EmployeeID');
             if (in_array('function', $columns)) {
-                $query->leftJoin('hrims.core_functions', "hrims.core_functions.id", '=', 'hrims.hrm_employee_general.EmpFunction');
+                $query->leftJoin('hrims.core_functions', 'hrims.core_functions.id', '=', 'hrims.hrm_employee_general.EmpFunction');
             }
             if (in_array('vertical', $columns)) {
-                $query->leftJoin('hrims.core_verticals', "hrims.core_verticals.id", '=', 'hrims.hrm_employee_general.EmpVertical');
+                $query->leftJoin('hrims.core_verticals', 'hrims.core_verticals.id', '=', 'hrims.hrm_employee_general.EmpVertical');
             }
             if (in_array('department', $columns)) {
-                $query->leftJoin('hrims.core_departments', "hrims.core_departments.id", '=', 'hrims.hrm_employee_general.DepartmentId');
+                $query->leftJoin('hrims.core_departments', 'hrims.core_departments.id', '=', 'hrims.hrm_employee_general.DepartmentId');
             }
             if (in_array('sub_department', $columns)) {
-                $query->leftJoin('hrims.core_sub_department_master', "hrims.core_sub_department_master.id", '=', 'hrims.hrm_employee_general.SubDepartmentId');
+                $query->leftJoin('hrims.core_sub_department_master', 'hrims.core_sub_department_master.id', '=', 'hrims.hrm_employee_general.SubDepartmentId');
             }
-            if (!empty($filters['function_ids'])) {
+            if (! empty($filters['function_ids'])) {
                 $query->whereIn('hrims.hrm_employee_general.EmpFunction', $filters['function_ids']);
             }
-            if (!empty($filters['vertical_ids'])) {
+            if (! empty($filters['vertical_ids'])) {
                 $query->whereIn('hrims.hrm_employee_general.EmpVertical', $filters['vertical_ids']);
             }
-            if (!empty($filters['department_ids'])) {
+            if (! empty($filters['department_ids'])) {
                 $query->whereIn('hrims.hrm_employee_general.DepartmentId', $filters['department_ids']);
             }
-            if ((isset($filters['sub_department_ids']) && !empty($filters['sub_department_ids']))) {
+            if ((isset($filters['sub_department_ids']) && ! empty($filters['sub_department_ids']))) {
                 $query->whereIn('hrims.hrm_employee_general.SubDepartmentId', $filters['sub_department_ids'] ?? []);
             }
         }
-        if (!empty($filters['policy_ids']) || !empty($filters['vehicle_types']) || in_array('policy', $columns) || in_array('vehicle_type', $columns)) {
+        if (! empty($filters['policy_ids']) || ! empty($filters['vehicle_types']) || in_array('policy', $columns) || in_array('vehicle_type', $columns)) {
             $query->leftJoin('hrims.hrm_employee_eligibility', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_eligibility.EmployeeID');
             if (in_array('policy', $columns)) {
-                $query->leftJoin('hrims.hrm_master_eligibility_policy', "hrims.hrm_master_eligibility_policy.PolicyId", '=', 'hrims.hrm_employee_eligibility.VehiclePolicy');
+                $query->leftJoin('hrims.hrm_master_eligibility_policy', 'hrims.hrm_master_eligibility_policy.PolicyId', '=', 'hrims.hrm_employee_eligibility.VehiclePolicy');
             }
-            if (!empty($filters['policy_ids'])) {
+            if (! empty($filters['policy_ids'])) {
                 $query->whereIn('hrims.hrm_employee_eligibility.VehiclePolicy', $filters['policy_ids']);
             }
-            if (!empty($filters['vehicle_types'])) {
+            if (! empty($filters['vehicle_types'])) {
                 $query->whereIn('hrims.hrm_employee_eligibility.VehicleType', $filters['vehicle_types']);
             }
         }
-        if (!empty($filters['user_ids'])) {
+        if (! empty($filters['user_ids'])) {
             $query->whereIn('hrims.hrm_employee.EmpCode', $filters['user_ids']);
         }
-        if (!empty($filters['months'])) {
+        if (! empty($filters['months'])) {
             $query->whereIn("{$table}.ClaimMonth", $filters['months']);
         }
-        if (!empty($filters['claim_type_ids'])) {
+        if (! empty($filters['claim_type_ids'])) {
             if (in_array(7, $filters['claim_type_ids'])) {
                 $query->where("{$table}.ClaimId", 7);
-                if (!empty($filters['wheeler_type'])) {
+                if (! empty($filters['wheeler_type'])) {
                     $query->where("{$table}.WType", $filters['wheeler_type']);
                 }
             } else {
                 $query->whereIn("{$table}.ClaimId", $filters['claim_type_ids']);
             }
         }
-        if (!empty($filters['claim_statuses'])) {
+        if (! empty($filters['claim_statuses'])) {
             $query->whereIn("{$table}.ClaimStatus", $filters['claim_statuses']);
         }
-        if (!empty($filters['claim_filter_type']) && $filters['claim_filter_type'] == 'deactivate_after_filling') {
+        if (! empty($filters['claim_filter_type']) && $filters['claim_filter_type'] == 'deactivate_after_filling') {
             $query->where("{$table}.ClaimAtStep", 1)->where("{$table}.ClaimStatus", 'Deactivate')->where("{$table}.FilledDate", '!=', '0000-00-00')->where("{$table}.FilledBy", '>', 0)->where("{$table}.FilledTAmt", '>', 0)->where("{$table}.ClaimId", '!=', 0);
         }
-        if (!empty($filters['claim_filter_type']) && $filters['claim_filter_type'] == 'expense_sunday_holiday') {
+        if (! empty($filters['claim_filter_type']) && $filters['claim_filter_type'] == 'expense_sunday_holiday') {
             $query->leftJoin('hrims.hrm_employee_attendance as ho', function ($join) use ($table) {
-                $join->on('ho.AttDate', '=', "{$table}.BillDate")->where('ho.AttValue', '=', 'HO')->where('ho.Year', '=', date("Y"));
+                $join->on('ho.AttDate', '=', "{$table}.BillDate")->where('ho.AttValue', '=', 'HO')->where('ho.Year', '=', date('Y'));
             });
             $query->where(function ($q) use ($table) {
                 $q->whereRaw("DAYOFWEEK({$table}.BillDate) = 1")->orWhereNotNull('ho.AttDate');
             });
         }
-        if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+        if (! empty($filters['from_date']) && ! empty($filters['to_date'])) {
             $dateColumn = match ($filters['date_type']) {
                 'billDate' => 'BillDate', 'uploadDate' => 'CrDate', 'filledDate' => 'FilledDate',
                 default => 'BillDate',
             };
             $query->whereBetween("{$table}.{$dateColumn}", [$filters['from_date'], $filters['to_date']]);
         }
+
         return $query->groupBy("{$table}.ExpId")->orderBy("{$table}.ExpId", 'DESC');
     }
+
     public function filterClaims(Request $request)
     {
         try {
@@ -257,7 +263,7 @@ class ReportController extends Controller
                 'policy_ids' => $request->input('policy_ids', []),
                 'vehicle_types' => $request->input('vehicle_types', []),
                 'wheeler_type' => $request->input('wheeler_type'),
-                'claim_filter_type' => $request->input('claim_filter_type')
+                'claim_filter_type' => $request->input('claim_filter_type'),
             ];
 
             $table = ExpenseClaim::tableName();
@@ -296,7 +302,7 @@ class ReportController extends Controller
                             break;
                     }
 
-                    return '<span class="badge ' . $badgeClass . ' badge-border">' . $statusText . '</span>';
+                    return '<span class="badge '.$badgeClass.' badge-border">'.$statusText.'</span>';
                 })
                 ->editColumn('CrDate', function ($row) {
                     return $row->CrDate ? Carbon::parse($row->CrDate)->format('d-m-Y') : '';
@@ -308,19 +314,19 @@ class ReportController extends Controller
                     return $row->ClaimMonth ? Carbon::create()->month($row->ClaimMonth)->format('F') : '';
                 })
                 ->addColumn('action', function ($row) {
-                    $dropdownId = 'dropdownMenuLink' . $row->ExpId;
+                    $dropdownId = 'dropdownMenuLink'.$row->ExpId;
                     $html = '
         <div class="dropdown">
-            <a href="#" role="button" id="' . $dropdownId . '" data-bs-toggle="dropdown" aria-expanded="false">
+            <a href="#" role="button" id="'.$dropdownId.'" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="ri-more-2-fill"></i>
             </a>
-            <ul class="dropdown-menu" aria-labelledby="' . $dropdownId . '">
+            <ul class="dropdown-menu" aria-labelledby="'.$dropdownId.'">
                 <li>
                     <a class="dropdown-item view-claim" href="#" 
                     data-bs-toggle="modal" 
                     data-bs-target="#claimDetailModal" 
-                    data-claim-id="' . $row->ClaimId . '" 
-                    data-expid="' . $row->ExpId . '">
+                    data-claim-id="'.$row->ClaimId.'" 
+                    data-expid="'.$row->ExpId.'">
                     View
                     </a>
                 </li>';
@@ -329,21 +335,22 @@ class ReportController extends Controller
                         $html .= '
                 <li>
                     <a class="dropdown-item return-claim" href="#" 
-                    data-claim-id="' . $row->ClaimId . '" 
-                    data-expid="' . $row->ExpId . '">
+                    data-claim-id="'.$row->ClaimId.'" 
+                    data-expid="'.$row->ExpId.'">
                     Return
                     </a>
                 </li>';
                     }
 
                     $html .= '</ul></div>';
+
                     return $html;
                 })
                 ->rawColumns(['ClaimStatus', 'action'])
                 ->make(true);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Could not load claims: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Could not load claims: '.$e->getMessage()], 500);
         }
     }
 
@@ -351,33 +358,38 @@ class ReportController extends Controller
     {
         ini_set('max_execution_time', 1000);
         ini_set('memory_limit', '512M');
-        $filters = ['function_ids' => $request->input('function_ids', []), 'vertical_ids' => $request->input('vertical_ids', []), 'department_ids' => $request->input('department_ids', []), 'user_ids' => $request->input('user_ids', []), 'months' => $request->input('months', []), 'claim_type_ids' => $request->input('claim_type_ids', []), 'claim_statuses' => $request->input('claim_statuses', []), 'from_date' => $request->input('from_date'), 'to_date' => $request->input('to_date'), 'date_type' => $request->input('date_type', 'billDate'), 'policy_ids' => $request->input('policy_ids', []), 'vehicle_types' => $request->input('vehicle_types', []), 'wheeler_type' => $request->input('wheeler_type'),];
+        $filters = ['function_ids' => $request->input('function_ids', []), 'vertical_ids' => $request->input('vertical_ids', []), 'department_ids' => $request->input('department_ids', []), 'user_ids' => $request->input('user_ids', []), 'months' => $request->input('months', []), 'claim_type_ids' => $request->input('claim_type_ids', []), 'claim_statuses' => $request->input('claim_statuses', []), 'from_date' => $request->input('from_date'), 'to_date' => $request->input('to_date'), 'date_type' => $request->input('date_type', 'billDate'), 'policy_ids' => $request->input('policy_ids', []), 'vehicle_types' => $request->input('vehicle_types', []), 'wheeler_type' => $request->input('wheeler_type')];
         $columns = $request->input('columns', []);
         $reportType = $request->input('reportType', 'general');
         $protectSheets = $request->boolean('protectSheets', false);
         $table = ExpenseClaim::tableName();
         if (empty($columns)) {
-            return response()->json(['status' => 'error', 'message' => 'Please select at least one column to export',], 422);
+            return response()->json(['status' => 'error', 'message' => 'Please select at least one column to export'], 422);
         }
         try {
             $query = $this->buildClaimQuery($filters, $table, false, $columns);
-            if (!$query->exists()) {
-                return response()->json(['status' => 'error', 'message' => 'No claims found for the given filters',], 404);
+            if (! $query->exists()) {
+                return response()->json(['status' => 'error', 'message' => 'No claims found for the given filters'], 404);
             }
             $export = match ($reportType) {
-                'month_wise' => new MonthWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table), 'department_wise' => new DepartmentWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table), 'claim_type_wise' => new ClaimTypeWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
+                'month_wise' => new MonthWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
+                'department_wise' => new DepartmentWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
+                'claim_type_wise' => new ClaimTypeWiseClaimReportExport($query, $filters, $columns, $protectSheets, $table),
                 default => new ClaimReportExport($query, $filters, $columns, 'Claims', $protectSheets, $table),
             };
-            $fileName = 'expense_claims_' . date('Ymd_His') . '.xlsx';
+            $fileName = 'expense_claims_'.date('Ymd_His').'.xlsx';
+
             return Excel::download($export, $fileName);
         } catch (\Throwable $e) {
-            return response()->json(['status' => 'error', 'message' => 'Could not export claims', 'details' => $e->getMessage(),], 500);
+            return response()->json(['status' => 'error', 'message' => 'Could not export claims', 'details' => $e->getMessage()], 500);
         }
     }
+
     public function sameDayClaimUpload()
     {
         return Excel::download(new SameDayUploadClaimExport('y7_expenseclaims'), 'SameDayUpload.xlsx');
     }
+
     public function getDailyActivityData(Request $request)
     {
         $fromDate = $request->input('fromDate');
@@ -392,19 +404,23 @@ class ReportController extends Controller
         $unionQuery = $uploadQuery->unionAll($punchingQuery)->unionAll($verifiedQuery)->unionAll($approvedQuery)->unionAll($financedQuery);
         $finalQuery = DB::table(DB::raw("({$unionQuery->toSql()}) as sub"))->mergeBindings($unionQuery)->selectRaw('ActionDate, SUM(TotalUpload) AS TotalUpload, SUM(Punching) AS Punching, SUM(Verified) AS Verified, SUM(Approved) AS Approved, SUM(Financed) AS Financed')->groupBy('ActionDate')->orderBy('ActionDate')->get();
         $formattedData = $finalQuery->map(function ($row) {
-            return ['ActionDate' => $row->ActionDate, 'TotalUpload' => $row->TotalUpload, 'Punching' => $row->Punching, 'Verified' => $row->Verified, 'Approved' => $row->Approved, 'Financed' => $row->Financed,];
+            return ['ActionDate' => $row->ActionDate, 'TotalUpload' => $row->TotalUpload, 'Punching' => $row->Punching, 'Verified' => $row->Verified, 'Approved' => $row->Approved, 'Financed' => $row->Financed];
         })->toArray();
+
         return $this->jsonSuccess($formattedData, 'Daily activity data loaded successfully.');
     }
+
     public function exportDailyActivity(Request $request)
     {
         $fromDate = $request->input('fromDate');
         $toDate = $request->input('toDate');
-        return Excel::download(new DailyActivityReportExport($fromDate, $toDate), 'daily_activity_report_' . $fromDate . '_to_' . $toDate . '.xlsx');
+
+        return Excel::download(new DailyActivityReportExport($fromDate, $toDate), 'daily_activity_report_'.$fromDate.'_to_'.$toDate.'.xlsx');
     }
+
     public function returnClaim(Request $request)
     {
-        $request->validate(['expid' => 'required|integer', 'claim_id' => 'required|integer',]);
+        $request->validate(['expid' => 'required|integer', 'claim_id' => 'required|integer']);
         $table = ExpenseClaim::tableName();
         $updated = DB::table($table)->where('ExpId', $request->expid)->update(['ClaimStatus' => 'Submitted', 'ClaimAtStep' => 2, 'RtnBy' => Auth::id()]);
         if ($updated) {

@@ -2,7 +2,6 @@
 
 namespace App\Exports;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -16,7 +15,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ClaimReportExport implements FromQuery, ShouldQueue, WithChunkReading, WithEvents, WithHeadings, WithMapping, WithStyles, WithTitle
+class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     protected $query;
 

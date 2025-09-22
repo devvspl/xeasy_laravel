@@ -1,30 +1,37 @@
 <?php
+
 namespace App\Http\Controllers\admin;
+
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\CoreCompany;
-use App\Models\CompanyDbConfig;
-use App\Models\ThemeCustomizer;
-use App\Models\GeneralSettings;
 use App\Http\Requests\SaveConfigRequest;
+use App\Models\CompanyDbConfig;
+use App\Models\CoreCompany;
+use App\Models\CoreDepartments;
+use App\Models\GeneralSettings;
+use App\Models\OdoBackdateSetting;
+use App\Models\ThemeCustomizer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+
 class SettingController extends Controller
 {
     public function index()
     {
         return view('admin.settings');
     }
+
     public function company()
     {
         $company = CoreCompany::all();
+
         return $this->jsonSuccess($company, 'Company fetched successfully.');
     }
+
     public function saveCompanyConfig(SaveConfigRequest $request)
     {
         $validated = $request->validated();
-        $status = !empty($validated['is_active']) ? 1 : 0;
+        $status = ! empty($validated['is_active']) ? 1 : 0;
         $data = [
             'db_connection' => $validated['db_connection'],
             'db_host' => $validated['db_host'],
@@ -41,14 +48,17 @@ class SettingController extends Controller
             ->first();
         if ($existingConfig) {
             $existingConfig->update($data);
+
             return $this->jsonSuccess($existingConfig, 'Configuration updated successfully.');
         } else {
             $data['company_id'] = $validated['company_id'];
             $data['db_name'] = $validated['db_name'];
             $newConfig = CompanyDbConfig::create($data);
+
             return $this->jsonSuccess($newConfig, 'Configuration created successfully.');
         }
     }
+
     public function getCompanyConfig(Request $request, string $id)
     {
         $configs = CompanyDbConfig::where('company_id', $id)->get();
@@ -60,8 +70,10 @@ class SettingController extends Controller
                 $data['expense'] = $config;
             }
         }
+
         return $this->jsonSuccess($data, 'Company details fetched successfully.');
     }
+
     public function saveThemeSettings(Request $request)
     {
         $user = Auth::user();
@@ -84,8 +96,10 @@ class SettingController extends Controller
             'body_image' => 'in:none,img-1,img-2,img-3',
         ]);
         ThemeCustomizer::updateOrCreate(['user_id' => $user ? $user->id : null], $validated);
+
         return response()->json(['message' => 'Settings saved successfully']);
     }
+
     public function saveGeneralSettings(Request $request)
     {
         $request->validate([
@@ -114,7 +128,7 @@ class SettingController extends Controller
         if ($request->hasFile('logo')) {
             $timestamp = now()->format('YmdHis');
             $folder = "uploads/logos/{$timestamp}";
-            $fileName = Str::random(10) . '.' . $request->file('logo')->getClientOriginalExtension();
+            $fileName = Str::random(10).'.'.$request->file('logo')->getClientOriginalExtension();
             $path = $request->file('logo')->storeAs($folder, $fileName, 'public');
             $data['logo_path'] = $path;
         }
@@ -127,15 +141,37 @@ class SettingController extends Controller
             $data['created_at'] = now();
             GeneralSettings::create($data);
         }
-         return $this->jsonSuccess($data, 'Settings saved successfully.');
+
+        return $this->jsonSuccess($data, 'Settings saved successfully.');
     }
+
     public function getGeneralSettings()
     {
         $settings = GeneralSettings::first();
-        if (!$settings) {
+        if (! $settings) {
             return response()->json(['message' => 'No settings found'], 404);
         }
+
         return $this->jsonSuccess($settings, 'Settings fetched successfully.');
     }
 
+    public function odoBackdateApproval()
+    {
+        $departments = CoreDepartments::all();
+        $settings = OdoBackdateSetting::all()->keyBy('department_id');
+        return view('admin.odo_backdate_approval', compact('departments', 'settings'));
+    }
+
+    public function updateOdoBackdateSetting(Request $request, $department_id)
+    {
+        $data = $request->only(['is_active', 'approval_type']);
+        $filteredData = array_filter($data, function ($value) {
+            return $value !== null;
+        });
+        OdoBackdateSetting::updateOrCreate(
+            ['department_id' => $department_id],
+            $filteredData
+        );
+        return response()->json(['success' => true, 'message' => 'Setting updated successfully']);
+    }
 }
