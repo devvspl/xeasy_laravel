@@ -220,10 +220,7 @@ The MIT License is a permissive license that allows for:
 
 ## 📞 Contact
 
-- **Project Maintainer**: [Your Name](mailto:your.email@example.com)
-- **GitHub Issues**: [Report a Bug](https://github.com/your-username/Xeasy_laravel/issues)
-- **Documentation**: [Wiki](https://github.com/your-username/Xeasy_laravel/wiki)
-- **Support**: [Get Help](mailto:support@Xeasy-laravel.com)
+- **Project Maintainer**: [Dev](mailto:devendrakumar.vspl@gmail.com)
 
 ## 🙏 Acknowledgements
 
