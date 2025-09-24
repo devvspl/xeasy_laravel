@@ -19,6 +19,7 @@
                               <th style="text-align: left;">Department</th>
                               <th>Enable Check</th>
                               <th>Approval Required</th>
+                              <th>Effective Date</th>
                               <th>Action</th>
                            </tr>
                         </thead>
@@ -46,11 +47,17 @@
                                     BU Level
                                     </option>
                                     @endif
-                                    <option value="hod_approval"
-                                    {{ $setting && $setting->approval_type === 'hod_approval' ? 'selected' : '' }}>
-                                    HOD Approval
+                                    <option value="hod_level"
+                                    {{ $setting && $setting->approval_type === 'hod_level' ? 'selected' : '' }}>
+                                    HOD Level
                                     </option>
                                  </select>
+                              </td>
+                              <td>
+                                 <input type="date" class="form-control effective-date-input"
+                                  placeholder="Select Date"
+                                 data-department-id="{{ $department->id }}"
+                                 value="{{ $setting && $setting->effective_date ? $setting->effective_date->format('Y-m-d') : '' }}">
                               </td>
                               <td>
                                  <button class="btn btn-primary btn-sm save-btn" data-department-id="{{ $department->id }}"><i class="ri-save-3-line"></i></button>
@@ -94,6 +101,12 @@
    </div>
 </div>
 @endsection
+@push('styles')
+    <link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/classic.min.css" />
+    <link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/monolith.min.css" />
+    <link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/nano.min.css" />
+@endpush
 @push('scripts')
+ <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
 <script src="{{ asset('custom/js/pages/odo_backdate_approval.js') }}"></script>
 @endpush

@@ -1,4 +1,4 @@
-# 🏢 Xeasy Laravel - Expense Management System
+# 🏢 Xeasy Laravel - Enterprise Expense Management System
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
@@ -220,7 +220,10 @@ The MIT License is a permissive license that allows for:
 
 ## 📞 Contact
 
-- **Project Maintainer**: [Dev](mailto:devendrakumar.vspl@gmail.com)
+- **Project Maintainer**: [Your Name](mailto:your.email@example.com)
+- **GitHub Issues**: [Report a Bug](https://github.com/your-username/Xeasy_laravel/issues)
+- **Documentation**: [Wiki](https://github.com/your-username/Xeasy_laravel/wiki)
+- **Support**: [Get Help](mailto:support@Xeasy-laravel.com)
 
 ## 🙏 Acknowledgements
 

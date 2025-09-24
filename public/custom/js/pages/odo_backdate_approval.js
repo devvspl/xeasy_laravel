@@ -1,4 +1,11 @@
 $(document).ready(function () {
+    flatpickr(".effective-date-input", {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d-m-Y",
+        maxDate: "today",
+    });
+
     $(".is-active-switch, .approval-select").each(function () {
         $(this).data(
             "original-value",
@@ -12,15 +19,29 @@ $(document).ready(function () {
         var $checkbox = $row.find(".is-active-switch");
         var $select = $row.find(".approval-select");
         var isActive = $checkbox.is(":checked") ? 1 : 0;
+        var effectiveDate = $row.find(".effective-date-input").val();
         var approvalType = $select.val();
 
-        if (isActive && !approvalType) {
-            showAlert(
-                "danger",
-                "ri-error-warning-line",
-                "Approval type is required when Enable Check is selected."
-            );
-            return;
+        if (isActive) {
+            // check approval type
+            if (!approvalType) {
+                showAlert(
+                    "danger",
+                    "ri-error-warning-line",
+                    "Approval Type is required when Enable Check is selected."
+                );
+                return;
+            }
+
+            // check effective date
+            if (!effectiveDate) {
+                showAlert(
+                    "danger",
+                    "ri-error-warning-line",
+                    "Effective Date is required when Enable Check is selected."
+                );
+                return;
+            }
         }
 
         $("#confirmSaveModal").modal("show");
@@ -34,7 +55,8 @@ $(document).ready(function () {
                     approvalType,
                     $row,
                     $checkbox,
-                    $select
+                    $select,
+                    effectiveDate
                 );
                 $("#confirmSaveModal").modal("hide");
             });
@@ -58,11 +80,13 @@ $(document).ready(function () {
         approvalType,
         $row,
         $checkbox,
-        $select
+        $select,
+        effectiveDate
     ) {
         var data = {};
         if (isActive !== null) data.is_active = isActive;
         if (approvalType !== null) data.approval_type = approvalType;
+        if (effectiveDate !== null) data.effective_date = effectiveDate;
 
         $.ajax({
             url: "odo-backdate-setting/" + departmentId,

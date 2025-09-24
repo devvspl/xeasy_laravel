@@ -164,7 +164,7 @@ class SettingController extends Controller
 
     public function updateOdoBackdateSetting(Request $request, $department_id)
     {
-        $data = $request->only(['is_active', 'approval_type']);
+        $data = $request->only(['is_active', 'approval_type', 'effective_date']);
         $filteredData = array_filter($data, function ($value) {
             return $value !== null;
         });

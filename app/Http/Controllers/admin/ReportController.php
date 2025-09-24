@@ -42,7 +42,8 @@ class ReportController extends Controller
     {
         $fromDate = $request->query('fromDate', date('Y-m-d'));
         $toDate = $request->query('toDate', date('Y-m-d'));
-        $table = ExpenseClaim::tableName();
+        $year_id = session('year_id');
+        $table = ExpenseClaim::tableName($year_id);
         $data = DB::table("$table as ec")->leftJoin('hrims.hrm_employee_general as eg', 'ec.CrBy', '=', 'eg.EmployeeID')->leftJoin('hrims.hrm_employee as emp', 'ec.CrBy', '=', 'emp.EmployeeID')->leftJoin('hrims.core_verticals as cv', 'cv.id', '=', 'eg.EmpVertical')->leftJoin('hrims.core_departments as cd', 'cd.id', '=', 'eg.DepartmentId')->leftJoin('hrims.core_grades as cg', 'cg.id', '=', 'eg.GradeId')->select(DB::raw("CONCAT_WS(' ', emp.Fname, emp.Sname, emp.Lname) AS EmployeeName"), 'emp.EmpCode', 'cg.grade_name', 'cv.vertical_name', 'cd.department_name', DB::raw('COUNT(ec.ExpId) AS TotalClaimsUploaded'))->whereBetween(DB::raw('DATE(ec.CrDate)'), [$fromDate, $toDate])->whereIn('ec.CrBy', function ($query) use ($table) {
             $query->select('ec_inner.CrBy')->from("$table as ec_inner")->groupBy('ec_inner.CrBy')->havingRaw('SUM(CASE WHEN DATE(ec_inner.BillDate) = DATE(ec_inner.CrDate) THEN 1 ELSE 0 END) = COUNT(*)');
         })->groupBy('emp.EmployeeID', 'emp.Fname', 'emp.Sname', 'emp.Lname', 'emp.EmpCode', 'cg.grade_name', 'cv.vertical_name', 'cd.department_name')->orderByDesc('TotalClaimsUploaded')->orderBy('emp.EmpCode')->get();
@@ -266,8 +267,8 @@ class ReportController extends Controller
                 'wheeler_type' => $request->input('wheeler_type'),
                 'claim_filter_type' => $request->input('claim_filter_type'),
             ];
-
-            $table = ExpenseClaim::tableName();
+             $year_id = session('year_id');
+            $table = ExpenseClaim::tableName($year_id);
             $countQuery = $this->buildClaimQuery($filters, $table, true);
             $totalRecords = $countQuery->get()->count();
 
@@ -377,10 +378,11 @@ class ReportController extends Controller
             'claim_filter_type' => $request->input('claim_filter_type'),
         ];
 
+        $year_id = session('year_id');
         $columns = $request->input('columns', []);
         $reportType = $request->input('reportType', 'general');
         $protectSheets = $request->boolean('protectSheets', false);
-        $table = ExpenseClaim::tableName();
+        $table = ExpenseClaim::tableName($year_id);
 
         if (empty($columns)) {
             return response()->json(['status' => 'error', 'message' => 'Please select at least one column to export'], 422);
@@ -423,7 +425,8 @@ class ReportController extends Controller
     {
         $fromDate = $request->input('fromDate');
         $toDate = $request->input('toDate');
-        $table = ExpenseClaim::tableName();
+        $year_id = session('year_id');
+        $table = ExpenseClaim::tableName($year_id);
         $baseQuery = DB::table("{$table} as e")->where('e.ClaimStatus', '!=', 'Deactivate')->whereNotIn('e.ClaimId', [19, 20, 21]);
         $uploadQuery = (clone $baseQuery)->selectRaw('DATE(e.CrDate) AS ActionDate, COUNT(*) AS TotalUpload, 0 AS Punching, 0 AS Verified, 0 AS Approved, 0 AS Financed')->where('e.CrDate', '!=', '0000-00-00')->whereBetween(DB::raw('DATE(e.CrDate)'), [$fromDate, $toDate])->groupBy(DB::raw('DATE(e.CrDate)'));
         $punchingQuery = (clone $baseQuery)->selectRaw('DATE(e.FilledDate) AS ActionDate, 0 AS TotalUpload, COUNT(*) AS Punching, 0 AS Verified, 0 AS Approved, 0 AS Financed')->where('e.FilledDate', '!=', '0000-00-00')->whereBetween(DB::raw('DATE(e.FilledDate)'), [$fromDate, $toDate])->groupBy(DB::raw('DATE(e.FilledDate)'));
@@ -450,7 +453,8 @@ class ReportController extends Controller
     public function returnClaim(Request $request)
     {
         $request->validate(['expid' => 'required|integer', 'claim_id' => 'required|integer']);
-        $table = ExpenseClaim::tableName();
+        $year_id = session('year_id');
+        $table = ExpenseClaim::tableName($year_id);
         $updated = DB::table($table)->where('ExpId', $request->expid)->update(['ClaimStatus' => 'Submitted', 'ClaimAtStep' => 2, 'RtnBy' => Auth::id()]);
         if ($updated) {
             return $this->jsonSuccess([], 'Claim returned successfully.');

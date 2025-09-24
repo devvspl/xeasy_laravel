@@ -417,7 +417,7 @@ class HomeController extends Controller
         $yearId = (int) session('year_id', Carbon::parse($endDate)->year);
         $previousYearId = $yearId - 1;
 
-        $table = ExpenseClaim::tableName();
+        $table = ExpenseClaim::tableName($yearId);
         $previousYearTable = ExpenseClaim::tableName($previousYearId);
 
         if (!DB::getSchemaBuilder()->hasTable($previousYearTable)) {

@@ -7,8 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class ExpenseClaim extends Model
 {
     protected $connection = 'expense';
+
     protected $primaryKey = 'ExpId';
+
     public $timestamps = false;
+
     protected $table;
 
     protected $fillable = [
@@ -73,25 +76,14 @@ class ExpenseClaim extends Model
         'Pdf1_offline',
         'Pdf2_offline',
         'App_Odometer',
-        'temp_punch_id'
+        'Backdate_Odometer_Status',
+        'Backdate_Odometer_By',
+        'Backdate_Odometer_Date',
+        'temp_punch_id',
     ];
 
-
-    public function __construct(array $attributes = [])
+    public static function tableName(int $yearId): string
     {
-        parent::__construct($attributes);
-        $this->table = $this->tableName();
+        return 'y'.$yearId.'_expenseclaims';
     }
-
-    public static function tableName(?int $yearId = null): string
-    {
-        $yearId = $yearId ?? session('year_id');
-
-        if (!$yearId) {
-            throw new \Exception('Session year_id is not set.');
-        }
-
-        return 'y' . $yearId . '_expenseclaims';
-    }
-
 }

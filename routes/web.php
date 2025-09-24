@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\DashboardController;
+use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\FileController;
 
 // Public routes (accessible without login)
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
@@ -15,4 +17,7 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
+
+Route::get('/file-view/{path}', [FileController::class, 'viewFile'])->where('path', '.*');
+
 ?>
