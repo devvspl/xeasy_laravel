@@ -1,4 +1,4 @@
-# 🏢 Xeasy Laravel - Enterprise Expense Management System
+# 🏢 Xeasy Laravel - Expense Management System
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
