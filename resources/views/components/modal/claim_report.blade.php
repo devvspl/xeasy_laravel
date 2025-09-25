@@ -17,15 +17,29 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <select class="form-select" id="reportType" name="reportType" style="width: 100%;">
-                                    <option value="general" selected>General (Single Sheet)</option>
+                                    <option value="general"
+                                        data-html="<i class='ri-file-text-fill'></i> General (Single Sheet)">General
+                                        (Single Sheet)
+                                    </option>
+                                    <option value="head_wise"
+                                        data-html="<i class='ri-file-text-fill'></i> Head Wise (Single Sheet)">Head Wise
+                                        (Single Sheet)
+                                    </option>
                                     @can('Month Filter')
-                                        <option value="month_wise">Month Wise (Multiple Sheets)</option>
+                                        <option value="month_wise"
+                                            data-html="<i class='ri-stack-fill'></i> Month Wise (Multiple Sheet)">Month Wise
+                                            (Multiple Sheet)
+                                        </option>
                                     @endcan
                                     @can('Department Filter')
-                                        <option value="department_wise">Department Wise (Multiple Sheets)</option>
+                                        <option value="department_wise"
+                                            data-html="<i class='ri-stack-fill'></i> Department Wise (Multiple Sheet)">
+                                            Department Wise (Multiple Sheet)</option>
                                     @endcan
                                     @can('Claim Type Filter')
-                                        <option value="claim_type_wise">Claim Type Wise (Multiple Sheets)</option>
+                                        <option value="claim_type_wise"
+                                            data-html="<i class='ri-stack-fill'></i> Claim Type Wise (Multiple Sheet)">Claim
+                                            Type Wise (Multiple Sheet)</option>
                                     @endcan
                                 </select>
                             </div>

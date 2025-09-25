@@ -64,6 +64,7 @@ class OdometerBackdateController extends Controller
 
             return [
                 'approval_type' => $approvalType,
+                'month' => $firstItem->monthexpense_month ?? null,
                 'employee_name' => $firstItem->employee_name ?? null,
                 'EmpCode' => $firstItem->EmpCode ?? null,
                 'total_records' => $items->count(),

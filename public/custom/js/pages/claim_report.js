@@ -1,7 +1,18 @@
 $(document).ready(function () {
     $("#reportType").select2({
         dropdownParent: $("#exportModal"),
+        width: '100%',
+        templateResult: function (data) {
+            if (!data.id) return data.text; // placeholder
+            return $(data.element).data('html'); // icon + text for dropdown
+        },
+        templateSelection: function (data) {
+            if (!data.id) return data.text;
+            return $(data.element).data('html'); // icon + text for selected value
+        },
+        escapeMarkup: function (m) { return m; } // allow HTML
     });
+
 
 
     const today = new Date().toISOString().split('T')[0];
@@ -61,6 +72,8 @@ $(document).ready(function () {
             });
         }
     });
+
+
 
 
     $(document).on("change", "#functionSelect", function () {
