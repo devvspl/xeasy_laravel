@@ -77,7 +77,8 @@
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="functionSelect" multiple>
                                                     @foreach ($functions as $function)
-                                                        <option value="{{ $function->id }}">{{ $function->function_name }}</option>
+                                                        <option value="{{ $function->id }}">{{ $function->function_name }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -86,7 +87,8 @@
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="verticalSelect" multiple>
                                                     @foreach ($verticals as $vertical)
-                                                        <option value="{{ $vertical->id }}">{{ $vertical->vertical_name }}</option>
+                                                        <option value="{{ $vertical->id }}">{{ $vertical->vertical_name }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -147,13 +149,14 @@
                                         @can('claim_type_filter')
                                             @php
                                                 $groupedClaimTypes = $claimTypes->groupBy('cgName');
-                                               @endphp
+                                            @endphp
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="claimTypeSelect" multiple>
                                                     @foreach ($groupedClaimTypes as $groupName => $claims)
                                                         <optgroup label="{{ $groupName ?? 'Ungrouped' }}">
                                                             @foreach ($claims as $claim)
-                                                                <option value="{{ $claim->ClaimId }}">{{ $claim->ClaimName }}</option>
+                                                                <option value="{{ $claim->ClaimId }}">{{ $claim->ClaimName }}
+                                                                </option>
                                                             @endforeach
                                                         </optgroup>
                                                     @endforeach
@@ -163,8 +166,7 @@
                                         @can('claim_status_filter')
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="claimStatusSelect" multiple>
-                                                    <option value="Deactivate">Deactivate</option>
-                                                    <option value="Draft">Draft</option>
+                                                    <option value="">Select Claim Status</option>
                                                     <option value="Submitted">Submitted</option>
                                                     <option value="Filled">Filled</option>
                                                     <option value="Verified">Verified</option>
@@ -177,7 +179,8 @@
                                             <div class="col-md-6 mb-3">
                                                 <select class="form-select" id="policySelect" multiple>
                                                     @foreach ($eligibility_policy as $policy)
-                                                        <option value="{{ $policy->PolicyId }}">{{ $policy->PolicyName }}</option>
+                                                        <option value="{{ $policy->PolicyId }}">{{ $policy->PolicyName }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -217,7 +220,8 @@
                                     </div>
                                     <div class="row p-1">
                                         <div class="col-md-12">
-                                            <button type="button" class="btn btn-primary w-100" data-bs-dismiss="offcanvas">
+                                            <button type="button" class="btn btn-primary w-100"
+                                                data-bs-dismiss="offcanvas">
                                                 Apply Filters
                                             </button>
                                         </div>

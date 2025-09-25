@@ -3,10 +3,14 @@ $(document).ready(function () {
         dropdownParent: $("#exportModal"),
     });
 
+
+    const today = new Date().toISOString().split('T')[0];
+
     flatpickr("#fromDate", {
         dateFormat: "Y-m-d",
         enableYearSelection: true,
         maxDate: "today",
+        defaultDate: today,
         onReady: function () {
             this.isDisabled = false;
         },
@@ -16,10 +20,12 @@ $(document).ready(function () {
         dateFormat: "Y-m-d",
         enableYearSelection: true,
         maxDate: "today",
+        defaultDate: today,
         onReady: function () {
             this.isDisabled = false;
         },
     });
+
 
     const selectConfigs = {
         "#functionSelect": "Select Function",
@@ -36,12 +42,26 @@ $(document).ready(function () {
     };
 
     Object.entries(selectConfigs).forEach(([selector, placeholder]) => {
-        $(selector).select2({
-            width: "100%",
-            placeholder: placeholder,
-            allowClear: true,
-        });
+
+        if (selector === "#claimStatusSelect") {
+
+            $(selector).select2({
+                width: "100%",
+                placeholder: placeholder,
+                allowClear: false,
+                multiple: false,
+            });
+        } else {
+
+            $(selector).select2({
+                width: "100%",
+                placeholder: placeholder,
+                allowClear: true,
+                multiple: true,
+            });
+        }
     });
+
 
     $(document).on("change", "#functionSelect", function () {
         const selectedFunctions = $(this).val() || [];
@@ -226,9 +246,8 @@ $(document).ready(function () {
                     let userOptions =
                         '<option value="">Select options</option>';
                     response.data.forEach((employee) => {
-                        const fullName = `${employee.Fname} ${
-                            employee.Sname || ""
-                        } ${employee.Lname}`.trim();
+                        const fullName = `${employee.Fname} ${employee.Sname || ""
+                            } ${employee.Lname}`.trim();
                         const optionText = `${employee.EmpCode} - ${fullName}`;
                         const statusClass =
                             employee.EmpStatus === "D" ? "deactivated" : "";
@@ -281,9 +300,8 @@ $(document).ready(function () {
                     let userOptions =
                         '<option value="">Select options</option>';
                     response.data.forEach((employee) => {
-                        const fullName = `${employee.Fname} ${
-                            employee.Sname || ""
-                        } ${employee.Lname}`.trim();
+                        const fullName = `${employee.Fname} ${employee.Sname || ""
+                            } ${employee.Lname}`.trim();
                         const optionText = `${employee.EmpCode} - ${fullName}`;
                         const statusClass =
                             employee.EmpStatus === "D" ? "deactivated" : "";
@@ -403,7 +421,7 @@ $(document).ready(function () {
     function updateActiveFilterCount() {
         let filterCount = 0;
 
-        
+
         const filterSelectors = [
             "#functionSelect",
             "#verticalSelect",
@@ -420,19 +438,19 @@ $(document).ready(function () {
             "#toDate",
         ];
 
-        
+
         filterSelectors.forEach((selector) => {
             const value = $(selector).val();
             if (value && value.length > 0 && value !== "") {
                 if (Array.isArray(value)) {
-                    filterCount += value.length; 
+                    filterCount += value.length;
                 } else {
-                    filterCount += 1; 
+                    filterCount += 1;
                 }
             }
         });
 
-        
+
         $("#activeFilterCount").text(filterCount);
     }
 
@@ -530,7 +548,7 @@ $(document).ready(function () {
                 });
             },
             success: function (data, status, xhr) {
-                
+
                 const contentType = xhr.getResponseHeader("content-type") || "";
                 if (contentType.includes("application/json")) {
                     data.text().then((text) => {
@@ -544,13 +562,13 @@ $(document).ready(function () {
                     return;
                 }
 
-                
+
                 const contentDisposition = xhr.getResponseHeader(
                     "content-disposition"
                 );
-                let fileName = "download"; 
+                let fileName = "download";
                 if (contentDisposition) {
-                    
+
                     const fileNameRegex =
                         /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
                     const matches = fileNameRegex.exec(contentDisposition);
@@ -559,11 +577,11 @@ $(document).ready(function () {
                     }
                 }
 
-                
+
                 const url = window.URL.createObjectURL(data);
                 const a = $("<a>", {
                     href: url,
-                    download: fileName, 
+                    download: fileName,
                 }).appendTo("body");
                 a[0].click();
                 a.remove();
@@ -572,7 +590,7 @@ $(document).ready(function () {
             },
 
             error: function (xhr, status, error) {
-                
+
                 console.error("Export error:", {
                     status: xhr.status,
                     statusText: xhr.statusText,
@@ -637,7 +655,7 @@ $(document).ready(function () {
                         "success",
                         "ri-error-warning-line",
                         "An error occurred: " +
-                            (xhr.responseJSON?.message || "Please try again.")
+                        (xhr.responseJSON?.message || "Please try again.")
                     );
                 },
             });

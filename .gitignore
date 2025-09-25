@@ -29,3 +29,4 @@ Homestead.json
 .phpactor.json
 auth.json
 config/company_databases.php
+storage/logs/laravel.log
