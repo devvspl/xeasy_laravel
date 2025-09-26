@@ -3,16 +3,24 @@ $(document).ready(function () {
         dropdownParent: $("#exportModal"),
         width: '100%',
         templateResult: function (data) {
-            if (!data.id) return data.text; // placeholder
-            return $(data.element).data('html'); // icon + text for dropdown
+            if (!data.id) return data.text;
+            return $(data.element).data('html');
         },
         templateSelection: function (data) {
             if (!data.id) return data.text;
-            return $(data.element).data('html'); // icon + text for selected value
+            return $(data.element).data('html');
         },
-        escapeMarkup: function (m) { return m; } // allow HTML
+        escapeMarkup: function (m) { return m; }
     });
 
+    $("#reportType").change(function () {
+        var reportType = $(this).val();
+        if (reportType === 'head_wise') {
+            $("#colClaimId").prop("checked", true).prop("disabled", true);
+        } else {
+            $("#colClaimId").prop("checked", false).prop("disabled", false);
+        }
+    });
 
 
     const today = new Date().toISOString().split('T')[0];
@@ -72,9 +80,6 @@ $(document).ready(function () {
             });
         }
     });
-
-
-
 
     $(document).on("change", "#functionSelect", function () {
         const selectedFunctions = $(this).val() || [];

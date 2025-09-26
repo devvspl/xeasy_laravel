@@ -95,7 +95,6 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
         // Ensure expense_head is always included
         $headings = array_map(fn($column) => $headingsMap[$column] ?? $column, $this->columns);
         if (!in_array('Expense Head', $headings)) {
-            // Insert Expense Head after claim_type if present, else append
             $claimTypeIndex = array_search('Claim Type', $headings);
             if ($claimTypeIndex !== false) {
                 array_splice($headings, $claimTypeIndex + 1, 0, 'Expense Head');
@@ -126,22 +125,25 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
         static $wheelerMap = [2 => '2 Wheeler', 4 => '4 Wheeler'];
         $this->rowNumber++;
 
-        // Fetch detail records for this ExpId
-        $details = DB::table('y7_expenseclaimsdetails')
-            ->where('ExpId', $row->ExpId)
-            ->get();
+        // Define ClaimIds that require head-wise details
+        $headWiseClaimIds = [16, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42];
+
+        // Fetch detail records for this ExpId if ClaimId is in headWiseClaimIds
+        $details = in_array($row->ClaimId, $headWiseClaimIds)
+            ? DB::table('y7_expenseclaimsdetails')->where('ExpId', $row->ExpId)->get()
+            : collect([]); // Empty collection if not head-wise
 
         $rows = [];
         $headings = $this->headings();
         $expenseHeadIndex = array_search('Expense Head', $headings);
 
-        // Only generate rows if details exist
-        if ($details->isNotEmpty()) {
+        // If head-wise details are required and exist
+        if (in_array($row->ClaimId, $headWiseClaimIds) && $details->isNotEmpty()) {
             foreach ($details as $detail) {
                 $data = [];
                 $expenseHeadIncluded = false;
                 $currentIndex = 0;
-                $dataForTotals = []; // Temporary array to store data for correct totals indexing
+                $dataForTotals = [];
 
                 foreach ($this->columns as $column) {
                     $value = match ($column) {
@@ -185,7 +187,6 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
                         $expenseHeadIncluded = true;
                     }
 
-                    // Store value for totals at the current index
                     if (in_array($column, ['FilledAmt', 'TotKm', 'RatePerKM', 'VerifyAmt', 'ApprAmt', 'FinancedTAmt']) && is_numeric($value)) {
                         $dataForTotals[$currentIndex] = $value;
                     }
@@ -194,10 +195,8 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
                     $currentIndex++;
                 }
 
-                // Insert expense_head at the correct index if not included in columns
                 if (!$expenseHeadIncluded) {
                     array_splice($data, $expenseHeadIndex, 0, $detail->Title ?? '');
-                    // Update totals array to account for the inserted expense_head
                     $newDataForTotals = [];
                     foreach ($dataForTotals as $index => $value) {
                         if ($index < $expenseHeadIndex) {
@@ -207,17 +206,91 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
                         }
                     }
                     $dataForTotals = $newDataForTotals;
-                    // Initialize expense_head total as 0 (non-numeric)
                     $dataForTotals[$expenseHeadIndex] = 0;
                 }
 
-                // Update totals
                 foreach ($dataForTotals as $index => $value) {
                     $this->totals[$index] = ($this->totals[$index] ?? 0) + $value;
                 }
 
                 $rows[] = $data;
             }
+        } else {
+            // For non-head-wise ClaimIds, generate a single row with expense_head from main table
+            $data = [];
+            $expenseHeadIncluded = false;
+            $currentIndex = 0;
+            $dataForTotals = [];
+
+            foreach ($this->columns as $column) {
+                $value = match ($column) {
+                    'exp_id' => $row->ExpId ?? '',
+                    'claim_id' => $row->ClaimId ?? '',
+                    'claim_type' => $row->claim_type_name ?? '',
+                    'claim_status' => $row->ClaimStatus ?? '',
+                    'emp_name' => $row->employee_name ?? '',
+                    'emp_code' => $row->employee_code ?? '',
+                    'grade' => $row->grade ?? '',
+                    'function' => $row->function_name ?? '',
+                    'vertical' => $row->vertical_name ?? '',
+                    'department' => $row->department_name ?? '',
+                    'sub_department' => $row->sub_department_name ?? '',
+                    'policy' => $row->policy_name ?? '',
+                    'vehicle_type' => $row->vehicle_type ?? '',
+                    'month' => $monthMap[$row->ClaimMonth] ?? '',
+                    'upload_date' => $row->CrDate ? (new \DateTime($row->CrDate))->format('d-m-Y') : '',
+                    'bill_date' => $row->BillDate ? (new \DateTime($row->BillDate))->format('d-m-Y') : '',
+                    'FilledAmt' => $row->FilledTAmt ?? 0,
+                    'FilledDate' => $row->FilledDate ? (new \DateTime($row->FilledDate))->format('d-m-Y') : '',
+                    'odomtr_opening' => $row->odomtr_opening ?? '',
+                    'odomtr_closing' => $row->odomtr_closing ?? '',
+                    'TotKm' => $row->TotKm ?? 0,
+                    'WType' => $wheelerMap[$row->WType] ?? '',
+                    'RatePerKM' => $row->RatePerKM ?? 0,
+                    'VerifyAmt' => $row->VerifyTAmt ?? 0,
+                    'VerifyTRemark' => $row->VerifyTRemark ?? '',
+                    'VerifyDate' => $row->VerifyDate ? (new \DateTime($row->VerifyDate))->format('d-m-Y') : '',
+                    'ApprAmt' => $row->ApprTAmt ?? 0,
+                    'ApprTRemark' => $row->ApprTRemark ?? '',
+                    'ApprDate' => $row->ApprDate ? (new \DateTime($row->ApprDate))->format('d-m-Y') : '',
+                    'FinancedTAmt' => $row->FinancedTAmt ?? 0,
+                    'FinancedTRemark' => $row->FinancedTRemark ?? '',
+                    'FinancedDate' => $row->FinancedDate ? (new \DateTime($row->FinancedDate))->format('d-m-Y') : '',
+                    'expense_head' => $row->expense_head ?? '',
+                    default => '',
+                };
+
+                if ($column === 'expense_head') {
+                    $expenseHeadIncluded = true;
+                }
+
+                if (in_array($column, ['FilledAmt', 'TotKm', 'RatePerKM', 'VerifyAmt', 'ApprAmt', 'FinancedTAmt']) && is_numeric($value)) {
+                    $dataForTotals[$currentIndex] = $value;
+                }
+
+                $data[] = $value;
+                $currentIndex++;
+            }
+
+            if (!$expenseHeadIncluded) {
+                array_splice($data, $expenseHeadIndex, 0, $row->expense_head ?? '');
+                $newDataForTotals = [];
+                foreach ($dataForTotals as $index => $value) {
+                    if ($index < $expenseHeadIndex) {
+                        $newDataForTotals[$index] = $value;
+                    } else {
+                        $newDataForTotals[$index + 1] = $value;
+                    }
+                }
+                $dataForTotals = $newDataForTotals;
+                $dataForTotals[$expenseHeadIndex] = 0;
+            }
+
+            foreach ($dataForTotals as $index => $value) {
+                $this->totals[$index] = ($this->totals[$index] ?? 0) + $value;
+            }
+
+            $rows[] = $data;
         }
 
         return $rows;
@@ -261,13 +334,15 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
             'expense_head' => 'ecd.Title AS expense_head',
         ];
 
-        // Ensure expense_head is always included
         $selectedColumns = array_filter(
             array_map(fn($column) => $columnMap[$column] ?? null, $this->columns),
             fn($value) => !is_null($value)
         );
+
+        // Adjust expense_head selection based on ClaimId
+        $headWiseClaimIds = [16, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42];
         if (!in_array('ecd.Title AS expense_head', $selectedColumns)) {
-            $selectedColumns['expense_head'] = 'ecd.Title AS expense_head';
+            $selectedColumns['expense_head'] = DB::raw("CASE WHEN e.ClaimId IN (" . implode(',', $headWiseClaimIds) . ") THEN ecd.Title ELSE e.expense_head END AS expense_head");
         }
 
         return $selectedColumns;
@@ -285,28 +360,42 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
             'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
         ]);
 
-        // Apply white or highlight colors based on condition
+        // Define ClaimIds that require head-wise details and red highlighting
+        $headWiseClaimIds = [16, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42];
+
+        // Apply alternating colors based on ExpId and conditional red highlighting
         if ($lastRow > 1) {
             $rowIndex = 2;
-            $filledAmtIndex = array_search('FilledAmt', $this->columns); // Index of FilledAmt column
+            $currentExpId = null;
+            $colorIndex = 0;
+            $alternateColors = ['FFF5F5F5', 'FFFFFF']; // Light blue and white
             $query = $this->query->get();
 
             foreach ($query as $row) {
-                // Fetch detail records
-                $details = DB::table('y7_expenseclaimsdetails')
-                    ->where('ExpId', $row->ExpId)
-                    ->get();
+                // Check if ExpId has changed to alternate color
+                if ($currentExpId !== $row->ExpId) {
+                    $currentExpId = $row->ExpId;
+                    $colorIndex = ($colorIndex + 1) % 2; // Toggle between 0 and 1
+                }
 
-                // Calculate sum of detail amounts
-                $detailSum = $details->sum('Amount');
-                $filledAmt = $row->FilledTAmt ?? 0;
-                $shouldHighlight = is_numeric($filledAmt) && is_numeric($detailSum) && $filledAmt != $detailSum;
+                // Fetch detail records only for head-wise ClaimIds
+                $details = in_array($row->ClaimId, $headWiseClaimIds)
+                    ? DB::table('y7_expenseclaimsdetails')->where('ExpId', $row->ExpId)->get()
+                    : collect([]);
 
-                // Set color: light red for highlighted rows, white otherwise
-                $fillColor = $shouldHighlight ? 'FFCCCC' : 'FFFFFF'; // Light red or white
+                // Calculate sum of detail amounts for highlighting (only for head-wise ClaimIds)
+                $shouldHighlight = false;
+                if (in_array($row->ClaimId, $headWiseClaimIds) && $details->isNotEmpty()) {
+                    $detailSum = $details->sum('Amount');
+                    $filledAmt = $row->FilledTAmt ?? 0;
+                    $shouldHighlight = is_numeric($filledAmt) && is_numeric($detailSum) && $filledAmt != $detailSum;
+                }
 
-                // Style rows (only if details exist)
-                if ($details->isNotEmpty()) {
+                // Set color: light red for highlighted rows, otherwise alternate color
+                $fillColor = $shouldHighlight ? 'FFCCCC' : $alternateColors[$colorIndex]; // Light red or alternate color
+
+                // Style rows (head-wise or single row)
+                if (in_array($row->ClaimId, $headWiseClaimIds) && $details->isNotEmpty()) {
                     foreach ($details as $detail) {
                         $sheet->getStyle("A{$rowIndex}:{$lastColumn}{$rowIndex}")->applyFromArray([
                             'fill' => [
@@ -319,6 +408,18 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
                         ]);
                         $rowIndex++;
                     }
+                } else {
+                    // Style single row for non-head-wise ClaimIds
+                    $sheet->getStyle("A{$rowIndex}:{$lastColumn}{$rowIndex}")->applyFromArray([
+                        'fill' => [
+                            'fillType' => Fill::FILL_SOLID,
+                            'startColor' => ['argb' => $fillColor],
+                        ],
+                        'borders' => [
+                            'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'FF000000']],
+                        ],
+                    ]);
+                    $rowIndex++;
                 }
             }
         }
@@ -349,7 +450,6 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
                 foreach ($this->totals as $index => $total) {
                     if ($index < count($headings)) {
                         $columnName = array_key_exists($index, $headings) ? $headings[$index] : '';
-                        // Only set totals for numeric columns
                         if (in_array($columnName, ['Filled Amount', 'Total KM', 'Rate Per KM', 'Verified Amount', 'Approved Amount', 'Financed Amount'])) {
                             $columnLetter = Coordinate::stringFromColumnIndex($index + 1);
                             $sheet->setCellValue("{$columnLetter}{$totalRow}", $total);
