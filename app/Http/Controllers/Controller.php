@@ -38,6 +38,5 @@ class Controller extends BaseController
         Artisan::call('optimize:clear');
 
         return $this->jsonSuccess([], 'All caches cleared successfully.');
-
     }
 }

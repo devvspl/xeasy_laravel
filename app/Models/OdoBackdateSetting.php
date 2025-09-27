@@ -15,5 +15,5 @@ class OdoBackdateSetting extends Model
         'effective_date' => 'date', 
     ];
 
-    protected $fillable = ['department_id', 'is_active', 'approval_type', 'effective_date'];
+    protected $fillable = ['department_id', 'is_active', 'approval_type', 'effective_date', 'delayed_day'];
 }

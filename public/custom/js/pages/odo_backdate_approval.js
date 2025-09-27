@@ -6,7 +6,8 @@ $(document).ready(function () {
         maxDate: "today",
     });
 
-    $(".is-active-switch, .approval-select").each(function () {
+    // store original values for reset
+    $(".is-active-switch, .approval-select, .delayed-day-select").each(function () {
         $(this).data(
             "original-value",
             $(this).is(":checkbox") ? $(this).is(":checked") : $(this).val()
@@ -18,9 +19,11 @@ $(document).ready(function () {
         var $row = $('tr[data-department-id="' + departmentId + '"]');
         var $checkbox = $row.find(".is-active-switch");
         var $select = $row.find(".approval-select");
+        var $delayedDay = $row.find(".delayed-day-select");
         var isActive = $checkbox.is(":checked") ? 1 : 0;
         var effectiveDate = $row.find(".effective-date-input").val();
         var approvalType = $select.val();
+        var delayedDay = $delayedDay.val();
 
         if (isActive) {
             // check approval type
@@ -42,6 +45,16 @@ $(document).ready(function () {
                 );
                 return;
             }
+
+            // check delayed day
+            if (!delayedDay) {
+                showAlert(
+                    "danger",
+                    "ri-error-warning-line",
+                    "Delayed Day is required when Enable Check is selected."
+                );
+                return;
+            }
         }
 
         $("#confirmSaveModal").modal("show");
@@ -53,10 +66,12 @@ $(document).ready(function () {
                     departmentId,
                     isActive,
                     approvalType,
+                    delayedDay,
+                    effectiveDate,
                     $row,
                     $checkbox,
                     $select,
-                    effectiveDate
+                    $delayedDay
                 );
                 $("#confirmSaveModal").modal("hide");
             });
@@ -68,8 +83,10 @@ $(document).ready(function () {
             var $row = $('tr[data-department-id="' + departmentId + '"]');
             var $checkbox = $row.find(".is-active-switch");
             var $select = $row.find(".approval-select");
+            var $delayedDay = $row.find(".delayed-day-select");
             $checkbox.prop("checked", $checkbox.data("original-value"));
             $select.val($select.data("original-value"));
+            $delayedDay.val($delayedDay.data("original-value"));
         }
     });
 
@@ -78,15 +95,18 @@ $(document).ready(function () {
         departmentId,
         isActive,
         approvalType,
+        delayedDay,
+        effectiveDate,
         $row,
         $checkbox,
         $select,
-        effectiveDate
+        $delayedDay
     ) {
         var data = {};
         if (isActive !== null) data.is_active = isActive;
         if (approvalType !== null) data.approval_type = approvalType;
         if (effectiveDate !== null) data.effective_date = effectiveDate;
+        if (delayedDay !== null) data.delayed_day = delayedDay;
 
         $.ajax({
             url: "odo-backdate-setting/" + departmentId,
@@ -106,12 +126,14 @@ $(document).ready(function () {
                 );
                 $checkbox.data("original-value", isActive);
                 $select.data("original-value", approvalType);
+                $delayedDay.data("original-value", delayedDay);
             },
             error: function (xhr) {
                 var errorMsg = xhr.responseJSON.message || "An error occurred";
                 showAlert("danger", "ri-error-warning-line", errorMsg);
                 $checkbox.prop("checked", $checkbox.data("original-value"));
                 $select.val($select.data("original-value"));
+                $delayedDay.val($delayedDay.data("original-value"));
             },
             complete: function () {
                 endLoader({ currentTarget: buttonEl });
