@@ -17,9 +17,9 @@ class OdometerBackdateController extends Controller
         }
         $departmentId = $employee->DepartmentId;
         $buId = $employee->BUId;
-        if (!$departmentId || !$buId) {
-            return $this->jsonError('Employee not found or department/BU not assigned.');
-        }
+        // if (!$departmentId || !$buId) {
+        //     return $this->jsonError('Employee not found or department/BU not assigned.');
+        // }
         $backdateSetting = DB::connection('expense')->table('odo_backdate_settings')->where('department_id', $departmentId)->first();
         if (!$backdateSetting || !$backdateSetting->effective_date) {
             return $this->jsonError('Backdate setting not found for this department.');
@@ -88,9 +88,9 @@ class OdometerBackdateController extends Controller
         $departmentId = $employee->DepartmentId;
         $buId         = $employee->BUId;
 
-        if (!$departmentId || !$buId) {
-            return $this->jsonError('Employee not found or department/BU not assigned.');
-        }
+        // if (!$departmentId || !$buId) {
+        //     return $this->jsonError('Employee not found or department/BU not assigned.');
+        // }
 
         $backdateSetting = DB::connection('expense')
             ->table('odo_backdate_settings')
@@ -166,8 +166,7 @@ class OdometerBackdateController extends Controller
             'show_button'   => $buttonShow,
         ], 'Odometer backdate pending count retrieved successfully.');
     }
-
-    public function odoBackdateApprove($yearId, $expenseId, $employeeId)
+    public function odoBackdateApprove($yearId, $employeeId, $expenseId)
     {
         $model = new ExpenseClaim;
         $model->setTable(ExpenseClaim::tableName($yearId));
@@ -187,7 +186,7 @@ class OdometerBackdateController extends Controller
         $record->save();
         return $this->jsonSuccess($record, 'Odometer backdate approved successfully.');
     }
-    public function odoBackdateReject($yearId, $expenseId, $employeeId)
+    public function odoBackdateReject($yearId, $employeeId, $expenseId)
     {
         $model = new ExpenseClaim;
         $model->setTable(ExpenseClaim::tableName($yearId));
