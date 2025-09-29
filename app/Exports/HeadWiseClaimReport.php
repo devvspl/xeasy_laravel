@@ -41,6 +41,7 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
 
     public function query()
     {
+     
         return $this->query;
     }
 

@@ -52,6 +52,255 @@ class ReportController extends Controller
     {
         return view(view: 'admin.daily_activity');
     }
+    // private function buildClaimQuery(array $filters, string $table, bool $forCount = false, $columns = null)
+    // {
+    //     $columns = is_array($columns) ? $columns : [];
+    //     $query = DB::table("{$table}");
+    //     if ($forCount) {
+    //         $query->select("{$table}.ExpId");
+    //     } elseif (!empty($columns)) {
+    //         $selects = [];
+    //         if (in_array('exp_id', $columns)) {
+    //             $selects[] = "{$table}.ExpId as ExpId";
+    //         }
+    //         if (in_array('claim_id', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.ClaimId) as ClaimId");
+    //         }
+    //         if (in_array('claim_type', $columns)) {
+    //             $selects[] = DB::raw('MAX(claimtype.ClaimName) as claim_type_name');
+    //         }
+    //         if (in_array('claim_status', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.ClaimStatus) as ClaimStatus");
+    //         }
+    //         if (in_array('emp_name', $columns)) {
+    //             $selects[] = DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name");
+    //         }
+    //         if (in_array('emp_code', $columns)) {
+    //             $selects[] = DB::raw('MAX(hrims.hrm_employee.EmpCode) as employee_code');
+    //         }
+    //         if (in_array('month', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth");
+    //         }
+    //         if (in_array('upload_date', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.CrDate) as CrDate");
+    //         }
+    //         if (in_array('bill_date', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.BillDate) as BillDate");
+    //         }
+    //         if (in_array('function', $columns)) {
+    //             $selects[] = DB::raw('MAX(hrims.core_functions.function_name) as function_name');
+    //         }
+    //         if (in_array('vertical', $columns)) {
+    //             $selects[] = DB::raw('MAX(hrims.core_verticals.vertical_name) as vertical_name');
+    //         }
+    //         if (in_array('department', $columns)) {
+    //             $selects[] = DB::raw('MAX(hrims.core_departments.department_name) as department_name');
+    //         }
+    //         if (in_array('sub_department', $columns)) {
+    //             $selects[] = DB::raw('MAX(hrims.core_sub_department_master.sub_department_name) as sub_department_name');
+    //         }
+    //         if (in_array('grade', $columns)) {
+    //             $selects[] = DB::raw('MAX(hrims.core_grades.grade_name) as grade');
+    //         }
+    //         if (in_array('policy', $columns)) {
+    //             $selects[] = DB::raw('MAX(hrims.hrm_master_eligibility_policy.PolicyName) as policy_name');
+    //         }
+    //         if (in_array('vehicle_type', $columns)) {
+    //             $selects[] = DB::raw('MAX(hrims.hrm_employee_eligibility.VehicleType) as vehicle_type');
+    //         }
+    //         if (in_array('odomtr_opening', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.odomtr_opening) as odomtr_opening");
+    //         }
+    //         if (in_array('odomtr_closing', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.odomtr_closing) as odomtr_closing");
+    //         }
+    //         if (in_array('TotKm', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.TotKm) as TotKm");
+    //         }
+    //         if (in_array('WType', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.WType) as WType");
+    //         }
+    //         if (in_array('RatePerKM', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.RatePerKM) as RatePerKM");
+    //         }
+    //         if (in_array('FilledAmt', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.FilledTAmt) as FilledTAmt");
+    //         }
+    //         if (in_array('FilledDate', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.FilledDate) as FilledDate");
+    //         }
+    //         if (in_array('VerifyAmt', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.VerifyTAmt) as VerifyTAmt");
+    //         }
+    //         if (in_array('VerifyTRemark', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.VerifyTRemark) as VerifyTRemark");
+    //         }
+    //         if (in_array('VerifyDate', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.VerifyDate) as VerifyDate");
+    //         }
+    //         if (in_array('ApprAmt', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.ApprTAmt) as ApprTAmt");
+    //         }
+    //         if (in_array('ApprTRemark', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.ApprTRemark) as ApprTRemark");
+    //         }
+    //         if (in_array('ApprDate', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.ApprDate) as ApprDate");
+    //         }
+    //         if (in_array('FinancedTAmt', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.FinancedTAmt) as FinancedTAmt");
+    //         }
+    //         if (in_array('FinancedTRemark', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.FinancedTRemark) as FinancedTRemark");
+    //         }
+    //         if (in_array('FinancedDate', $columns)) {
+    //             $selects[] = DB::raw("MAX({$table}.FinancedDate) as FinancedDate");
+    //         }
+    //         if (in_array('activity_type', $columns)) {
+    //             $selects[] = DB::raw("MAX(adv_activity_categories.category_name) as category_name");
+    //         }
+    //         if (in_array('activity_type', $columns)) {
+    //             $selects[] = DB::raw("MAX(adv_activity_types.type_name) as type_name");
+    //         }
+    //         if (in_array('traill_no', $columns)) {
+    //             $selects[] = DB::raw("MAX{$table}.traill_no) as traill_no");
+    //         }
+    //         if (empty($selects)) {
+    //             $selects[] = "{$table}.ExpId as ExpId";
+    //         }
+    //         $query->select($selects);
+    //     } else {
+    //         $query->select(["{$table}.ExpId as ExpId", DB::raw('MAX(claimtype.ClaimName) as claim_type_name'), DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name"), DB::raw('MAX(hrims.hrm_employee.EmpCode) as employee_code'), DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth"), DB::raw("MAX({$table}.CrDate) as CrDate"), DB::raw("MAX({$table}.BillDate) as BillDate"), DB::raw("MAX({$table}.FilledTAmt) as FilledTAmt"), DB::raw("MAX({$table}.ClaimAtStep) as ClaimAtStep"), DB::raw("MAX({$table}.ClaimStatus) as ClaimStatus"), DB::raw("MAX({$table}.ClaimId) as ClaimId")]);
+    //     }
+    //     $query->leftJoin('claimtype', "{$table}.ClaimId", '=', 'claimtype.ClaimId');
+    //     $query->leftJoin('hrims.hrm_employee', "{$table}.CrBy", '=', 'hrims.hrm_employee.EmployeeID');
+    //     if (!empty($filters['function_ids']) || !empty($filters['vertical_ids']) || !empty($filters['department_ids']) || !empty($filters['sub_department_ids']) || in_array('function', $columns) || in_array('grade', $columns) || in_array('vertical', $columns) || in_array('department', $columns)) {
+    //         $query->leftJoin('hrims.hrm_employee_general', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_general.EmployeeID');
+    //         if (in_array('function', $columns)) {
+    //             $query->leftJoin('hrims.core_functions', 'hrims.core_functions.id', '=', 'hrims.hrm_employee_general.EmpFunction');
+    //         }
+    //         if (in_array('vertical', $columns)) {
+    //             $query->leftJoin('hrims.core_verticals', 'hrims.core_verticals.id', '=', 'hrims.hrm_employee_general.EmpVertical');
+    //         }
+    //         if (in_array('department', $columns)) {
+    //             $query->leftJoin('hrims.core_departments', 'hrims.core_departments.id', '=', 'hrims.hrm_employee_general.DepartmentId');
+    //         }
+    //         if (in_array('sub_department', $columns)) {
+    //             $query->leftJoin('hrims.core_sub_department_master', 'hrims.core_sub_department_master.id', '=', 'hrims.hrm_employee_general.SubDepartmentId');
+    //         }
+    //         if (in_array('grade', $columns)) {
+    //             $query->leftJoin('hrims.core_grades', 'hrims.core_grades.id', '=', 'hrims.hrm_employee_general.GradeId');
+    //         }
+    //         if (!empty($filters['function_ids'])) {
+    //             $query->whereIn('hrims.hrm_employee_general.EmpFunction', $filters['function_ids']);
+    //         }
+    //         if (!empty($filters['vertical_ids'])) {
+    //             $query->whereIn('hrims.hrm_employee_general.EmpVertical', $filters['vertical_ids']);
+    //         }
+    //         if (!empty($filters['department_ids'])) {
+    //             $query->whereIn('hrims.hrm_employee_general.DepartmentId', $filters['department_ids']);
+    //         }
+    //         if (!empty($filters['sub_department_ids'])) {
+    //             $query->whereIn('hrims.hrm_employee_general.SubDepartmentId', $filters['sub_department_ids'] ?? []);
+    //         }
+    //     }
+    //     if (!empty($filters['policy_ids']) || !empty($filters['vehicle_types']) || in_array('policy', $columns) || in_array('vehicle_type', $columns)) {
+    //         $query->leftJoin('hrims.hrm_employee_eligibility', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_eligibility.EmployeeID');
+    //         if (in_array('policy', $columns)) {
+    //             $query->leftJoin('hrims.hrm_master_eligibility_policy', 'hrims.hrm_master_eligibility_policy.PolicyId', '=', 'hrims.hrm_employee_eligibility.VehiclePolicy');
+    //         }
+    //         if (!empty($filters['policy_ids'])) {
+    //             $query->whereIn('hrims.hrm_employee_eligibility.VehiclePolicy', $filters['policy_ids']);
+    //         }
+    //         if (!empty($filters['vehicle_types'])) {
+    //             $query->whereIn('hrims.hrm_employee_eligibility.VehicleType', $filters['vehicle_types']);
+    //         }
+    //     }
+    //     if (!empty($filters['user_ids'])) {
+    //         $query->whereIn('hrims.hrm_employee.EmpCode', $filters['user_ids']);
+    //     }
+    //     if (!empty($filters['months'])) {
+    //         $query->whereIn("{$table}.ClaimMonth", $filters['months']);
+    //     }
+    //     if (!empty($filters['claim_type_ids'])) {
+    //         if (in_array(7, $filters['claim_type_ids'])) {
+    //             $query->where("{$table}.ClaimId", 7);
+    //             if (!empty($filters['wheeler_type'])) {
+    //                 $query->where("{$table}.WType", $filters['wheeler_type']);
+    //             }
+    //         } else {
+    //             $query->whereIn("{$table}.ClaimId", $filters['claim_type_ids']);
+    //         }
+    //     }
+    //     if (!empty($filters['claim_statuses'])) {
+    //         $status = $filters['claim_statuses'];
+    //         $isType7 = (!empty($filters['claim_type_ids']) && in_array(7, $filters['claim_type_ids']));
+    //         $query->where(function ($q) use ($status, $isType7, $table) {
+    //             if ($status === 'Submitted') {
+    //                 $q->whereIn("{$table}.ClaimStatus", ['Submitted', 'Filled', 'Verified', 'Approved', 'Financed']);
+    //             } elseif ($status === 'Filled') {
+    //                 if ($isType7) {
+    //                     $q->whereIn("{$table}.ClaimStatus", ['Filled', 'Verified', 'Approved', 'Financed'])->where("{$table}.v_verify", 'Y')->where("{$table}.c_verify", 'Y');
+    //                 } else {
+    //                     $q->whereIn("{$table}.ClaimStatus", ['Filled', 'Verified', 'Approved', 'Financed']);
+    //                 }
+    //             } elseif ($status === 'Verified') {
+    //                 if ($isType7) {
+    //                     $q->whereIn("{$table}.ClaimStatus", ['Verified', 'Approved', 'Financed'])->where("{$table}.v_verify", 'Y')->where("{$table}.c_verify", 'Y');
+    //                 } else {
+    //                     $q->whereIn("{$table}.ClaimStatus", ['Verified', 'Approved', 'Financed']);
+    //                 }
+    //             } elseif ($status === 'Approved') {
+    //                 if ($isType7) {
+    //                     $q->whereIn("{$table}.ClaimStatus", ['Approved', 'Financed'])->where("{$table}.v_verify", 'Y')->where("{$table}.c_verify", 'Y');
+    //                 } else {
+    //                     $q->whereIn("{$table}.ClaimStatus", ['Approved', 'Financed']);
+    //                 }
+    //             } elseif ($status === 'Financed') {
+    //                 $q->where("{$table}.ClaimStatus", 'Financed');
+    //             } else {
+    //                 if ($isType7) {
+    //                     $q->where("{$table}.v_verify", 'Y')->where("{$table}.c_verify", 'Y');
+    //                 } else {
+    //                     $q->whereRaw('1=1');
+    //                 }
+    //             }
+    //         });
+    //     } else {
+    //         if (!empty($filters['claim_type_ids']) && in_array(7, $filters['claim_type_ids'])) {
+    //             $query->where("{$table}.v_verify", 'Y')->where("{$table}.c_verify", 'Y');
+    //         }
+    //     }
+    //     if (!empty($filters['claim_filter_type']) && $filters['claim_filter_type'] == 'deactivate_after_filling') {
+    //         $query->where("{$table}.ClaimAtStep", 1)->where("{$table}.ClaimStatus", 'Deactivate')->where("{$table}.FilledDate", '!=', '0000-00-00')->where("{$table}.FilledBy", '>', 0)->where("{$table}.FilledTAmt", '>', 0)->where("{$table}.ClaimId", '!=', 0);
+    //     }
+    //     if (!empty($filters['claim_filter_type']) && $filters['claim_filter_type'] == 'expense_sunday_holiday') {
+    //         $query->leftJoin('hrims.hrm_employee_attendance as ho', function ($join) use ($table) {
+    //             $join->on('ho.AttDate', '=', "{$table}.BillDate")->where('ho.AttValue', '=', 'HO')->where('ho.Year', '=', date('Y'));
+    //         });
+    //         $query->where(function ($q) use ($table) {
+    //             $q->whereRaw("DAYOFWEEK({$table}.BillDate) = 1")->orWhereNotNull('ho.AttDate');
+    //         });
+    //     }
+    //     if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+    //         $dateColumn = match ($filters['date_type']) {
+    //             'billDate' => 'BillDate',
+    //             'uploadDate' => 'CrDate',
+    //             'filledDate' => 'FilledDate',
+    //             default => 'BillDate',
+    //         };
+    //         $query->whereBetween("{$table}.{$dateColumn}", [$filters['from_date'], $filters['to_date']]);
+    //     }
+    //     if (in_array('activity_category', $columns)) {
+    //         $query->leftJoin('adv_activity_names', 'adv_activity_names.activity_name', '=', "{$table}.ClaimId");
+    //         $query->leftJoin('adv_activity_categories', 'adv_activity_categories.id', '=', 'adv_activity_names.category_id');
+    //     }
+    //     if (in_array('activity_type', $columns)) {
+    //         $query->leftJoin('adv_activity_types', 'adv_activity_types.id', '=', "{$table}.activity_type");
+    //     }
+    //     return $query->whereNotIn("{$table}.ClaimStatus", ['Draft', 'Deactivate'])->groupBy("{$table}.ExpId")->orderBy("{$table}.ExpId", 'DESC');
+    // }
+
     private function buildClaimQuery(array $filters, string $table, bool $forCount = false, $columns = null)
     {
         $columns = is_array($columns) ? $columns : [];
@@ -156,15 +405,44 @@ class ReportController extends Controller
             if (in_array('FinancedDate', $columns)) {
                 $selects[] = DB::raw("MAX({$table}.FinancedDate) as FinancedDate");
             }
+            if (in_array('activity_category', $columns)) {
+                $selects[] = DB::raw("MAX(adv_activity_categories.category_name) as activity_category");
+            }
+            if (in_array('activity_type', $columns)) {
+                $selects[] = DB::raw("MAX(adv_activity_types.type_name) as activity_type");
+            }
+            if (in_array('traill_no', $columns)) {
+                $selects[] = DB::raw("MAX({$table}.traill_no) as traill_no");
+            }
+            if (in_array('crop', $columns)) {
+                $selects[] = DB::raw('GROUP_CONCAT(DISTINCT core_crops.crop_name) as crop');
+            }
+            if (in_array('variety', $columns)) {
+                $selects[] = DB::raw('GROUP_CONCAT(DISTINCT core_varieties.variety_name) as variety');
+            }
             if (empty($selects)) {
                 $selects[] = "{$table}.ExpId as ExpId";
             }
             $query->select($selects);
         } else {
-            $query->select(["{$table}.ExpId as ExpId", DB::raw('MAX(claimtype.ClaimName) as claim_type_name'), DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name"), DB::raw('MAX(hrims.hrm_employee.EmpCode) as employee_code'), DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth"), DB::raw("MAX({$table}.CrDate) as CrDate"), DB::raw("MAX({$table}.BillDate) as BillDate"), DB::raw("MAX({$table}.FilledTAmt) as FilledTAmt"), DB::raw("MAX({$table}.ClaimAtStep) as ClaimAtStep"), DB::raw("MAX({$table}.ClaimStatus) as ClaimStatus"), DB::raw("MAX({$table}.ClaimId) as ClaimId")]);
+            $query->select([
+                "{$table}.ExpId as ExpId",
+                DB::raw('MAX(claimtype.ClaimName) as claim_type_name'),
+                DB::raw("MAX(CONCAT(hrims.hrm_employee.EmpCode, ' - ', hrims.hrm_employee.Fname, ' ', COALESCE(hrims.hrm_employee.Sname, ''), ' ', hrims.hrm_employee.Lname)) as employee_name"),
+                DB::raw('MAX(hrims.hrm_employee.EmpCode) as employee_code'),
+                DB::raw("MAX({$table}.ClaimMonth) as ClaimMonth"),
+                DB::raw("MAX({$table}.CrDate) as CrDate"),
+                DB::raw("MAX({$table}.BillDate) as BillDate"),
+                DB::raw("MAX({$table}.FilledTAmt) as FilledTAmt"),
+                DB::raw("MAX({$table}.ClaimAtStep) as ClaimAtStep"),
+                DB::raw("MAX({$table}.ClaimStatus) as ClaimStatus"),
+                DB::raw("MAX({$table}.ClaimId) as ClaimId")
+            ]);
         }
+
         $query->leftJoin('claimtype', "{$table}.ClaimId", '=', 'claimtype.ClaimId');
         $query->leftJoin('hrims.hrm_employee', "{$table}.CrBy", '=', 'hrims.hrm_employee.EmployeeID');
+
         if (!empty($filters['function_ids']) || !empty($filters['vertical_ids']) || !empty($filters['department_ids']) || !empty($filters['sub_department_ids']) || in_array('function', $columns) || in_array('grade', $columns) || in_array('vertical', $columns) || in_array('department', $columns)) {
             $query->leftJoin('hrims.hrm_employee_general', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_general.EmployeeID');
             if (in_array('function', $columns)) {
@@ -195,6 +473,7 @@ class ReportController extends Controller
                 $query->whereIn('hrims.hrm_employee_general.SubDepartmentId', $filters['sub_department_ids'] ?? []);
             }
         }
+
         if (!empty($filters['policy_ids']) || !empty($filters['vehicle_types']) || in_array('policy', $columns) || in_array('vehicle_type', $columns)) {
             $query->leftJoin('hrims.hrm_employee_eligibility', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_eligibility.EmployeeID');
             if (in_array('policy', $columns)) {
@@ -207,6 +486,7 @@ class ReportController extends Controller
                 $query->whereIn('hrims.hrm_employee_eligibility.VehicleType', $filters['vehicle_types']);
             }
         }
+
         if (!empty($filters['user_ids'])) {
             $query->whereIn('hrims.hrm_employee.EmpCode', $filters['user_ids']);
         }
@@ -281,6 +561,27 @@ class ReportController extends Controller
                 default => 'BillDate',
             };
             $query->whereBetween("{$table}.{$dateColumn}", [$filters['from_date'], $filters['to_date']]);
+        }
+        if (in_array('activity_category', $columns)) {
+            $query->leftJoin('adv_activity_names', 'adv_activity_names.activity_name', '=', "{$table}.ClaimId");
+            $query->leftJoin('adv_activity_categories', 'adv_activity_categories.id', '=', 'adv_activity_names.category_id');
+        }
+        if (in_array('activity_type', $columns)) {
+            $query->leftJoin('adv_activity_types', 'adv_activity_types.id', '=', "{$table}.activity_type");
+        }
+        if (in_array('crop', $columns) || in_array('variety', $columns)) {
+            $year_id = session('year_id');
+            $query->leftJoin("y{$year_id}_g7_expensefilldata", "y{$year_id}_g7_expensefilldata.ExpId", '=', "{$table}.ExpId");
+            if (in_array('crop', $columns)) {
+                $query->leftJoin('hrims.core_crops', function ($join) use ($year_id) {
+                    $join->on(DB::raw("FIND_IN_SET(core_crops.id, y{$year_id}_g7_expensefilldata.crop_list)"), '>', DB::raw('0'));
+                });
+            }
+            if (in_array('variety', $columns)) {
+                $query->leftJoin('hrims.core_varieties', function ($join) use ($year_id) {
+                    $join->on(DB::raw("FIND_IN_SET(core_varieties.id, y{$year_id}_g7_expensefilldata.variety_list)"), '>', DB::raw('0'));
+                });
+            }
         }
         return $query->whereNotIn("{$table}.ClaimStatus", ['Draft', 'Deactivate'])->groupBy("{$table}.ExpId")->orderBy("{$table}.ExpId", 'DESC');
     }

@@ -200,14 +200,16 @@
                                         <div class="form-check">
                                             <input class="form-check-input column-checkbox" type="checkbox"
                                                 value="odomtr_opening" id="colOdoOpening">
-                                            <label class="form-check-label" for="colOdoOpening">Odomtr Opening</label>
+                                            <label class="form-check-label" for="colOdoOpening">Odomter
+                                                Opening</label>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-check">
                                             <input class="form-check-input column-checkbox" type="checkbox"
                                                 value="odomtr_closing" id="colOdoClosing">
-                                            <label class="form-check-label" for="colOdoClosing">Odomtr Closing</label>
+                                            <label class="form-check-label" for="colOdoClosing">Odomter
+                                                Closing</label>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -231,6 +233,43 @@
                                             <input class="form-check-input column-checkbox" type="checkbox"
                                                 value="RatePerKM" id="colRatePerKM">
                                             <label class="form-check-label" for="colRatePerKM">Rate Per KM</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input column-checkbox" type="checkbox"
+                                                value="activity_category" id="colActivityCategory">
+                                            <label class="form-check-label" for="colActivityCategory">Activity
+                                                Category</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input column-checkbox" type="checkbox"
+                                                value="activity_type" id="colActivityType">
+                                            <label class="form-check-label" for="colActivityType">Activity
+                                                Type</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input column-checkbox" type="checkbox"
+                                                value="traill_no" id="colTrialNo">
+                                            <label class="form-check-label" for="colTrialNo">Trial No.</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input column-checkbox" type="checkbox"
+                                                value="crop" id="colCrop">
+                                            <label class="form-check-label" for="colCrop">Crop</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input column-checkbox" type="checkbox"
+                                                value="variety" id="colVariety">
+                                            <label class="form-check-label" for="colVariety">Variety</label>
                                         </div>
                                     </div>
                                 </div>

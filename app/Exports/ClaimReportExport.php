@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Illuminate\Support\Facades\Log;
 
 class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, WithHeadings, WithMapping, WithStyles, WithTitle
 {
@@ -47,6 +48,8 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
 
     public function query()
     {
+        // \Log::info('Export Query: ' . $this->query->toSql()); // prints SQL string
+        // \Log::info('Query Bindings: ', $this->query->getBindings()); // prints bindings
         return $this->query;
     }
 
@@ -86,6 +89,11 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
             'TotKm' => 'Total KM',
             'WType' => 'Wheeler Type',
             'RatePerKM' => 'Rate Per KM',
+            'activity_category' => 'Activity Category',
+            'activity_type' => 'Activity Type',
+            'traill_no' => 'Trial No.',
+            'crop' => 'Crop',
+            'variety' => 'Variety',
             'VerifyAmt' => 'Verified Amount',
             'VerifyTRemark' => 'Verify Remark',
             'VerifyDate' => 'Verify Date',
@@ -97,7 +105,7 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
             'FinancedDate' => 'Finance Date',
         ];
 
-        return array_map(fn ($column) => $headingsMap[$column] ?? $column, $this->columns);
+        return array_map(fn($column) => $headingsMap[$column] ?? $column, $this->columns);
     }
 
     public function map($row): array
@@ -145,6 +153,11 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
                 'TotKm' => $row->TotKm ?? 0,
                 'WType' => $wheelerMap[$row->WType] ?? '',
                 'RatePerKM' => $row->RatePerKM ?? 0,
+                'activity_category' => $row->activity_category ?? '',
+                'activity_type' => $row->activity_type ?? '',
+                'traill_no' => $row->traill_no ?? '',
+                'crop' =>  $row->crop ?? '',
+                'variety' =>  $row->variety ?? '',
                 'VerifyAmt' => $row->VerifyTAmt ?? 0,
                 'VerifyTRemark' => $row->VerifyTRemark ?? '',
                 'VerifyDate' => $row->VerifyDate ? (new \DateTime($row->VerifyDate))->format('d-m-Y') : '',
@@ -193,6 +206,11 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
             'TotKm' => 'e.TotKm',
             'WType' => 'e.WType',
             'RatePerKM' => 'e.RatePerKM',
+            'activity_category' => 'adv_activity_categories.activity_category',
+            'activity_type' => 'adv_activity_types.activity_type',
+            'traill_no' => 'e.traill_no',
+            'crop' => 'c.crop',
+            'variety' => 'vr.variety',
             'VerifyAmt' => 'e.VerifyTAmt',
             'VerifyTRemark' => 'e.VerifyTRemark',
             'VerifyDate' => 'e.VerifyDate',
@@ -205,8 +223,8 @@ class ClaimReportExport implements FromQuery, WithChunkReading, WithEvents, With
         ];
 
         return array_filter(
-            array_map(fn ($column) => $columnMap[$column] ?? null, $this->columns),
-            fn ($value) => ! is_null($value)
+            array_map(fn($column) => $columnMap[$column] ?? null, $this->columns),
+            fn($value) => ! is_null($value)
         );
     }
 
