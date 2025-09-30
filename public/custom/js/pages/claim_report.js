@@ -45,6 +45,67 @@ $(document).ready(function () {
         },
     });
 
+    $("#claimTypeSelect").select2({
+        width: "100%",
+        placeholder: "Select Claim Type",
+        allowClear: true,
+        multiple: true,
+        templateResult: function (data) {
+            
+            if (data.children && data.text) {
+                let groupName = data.text;
+                return $(
+                    `<div class="d-flex justify-content-between align-items-center">
+                    <span>${groupName}</span>
+                    <a href="#" class="select-group-all ms-2 text-primary" data-group="${groupName}" style="font-size: 12px;">All</a>
+                </div>`
+                );
+            }
+            return data.text;
+        }
+    });
+
+    
+    $(document).on("click", ".select-group-all", function (e) {
+        e.preventDefault();
+        const groupName = $(this).data("group");
+        const $select = $("#claimTypeSelect");
+
+        let groupOptions = [];
+        $select.find(`option[data-group='${groupName}']`).each(function () {
+            groupOptions.push($(this).val());
+        });
+
+        
+        let newValues = [...new Set([...($select.val() || []), ...groupOptions])];
+        $select.val(newValues).trigger("change.select2");
+    });
+
+    
+    $("#claimTypeSelect").on("select2:open", function () {
+        if (!$(".select2-global-all").length) {
+            $(".select2-dropdown").prepend(
+                `<div class="px-2 py-1 border-bottom">
+                <a href="#" class="select2-global-all text-primary">Select All</a>
+            </div>`
+            );
+        }
+    });
+
+    
+    $(document).on("click", ".select2-global-all", function (e) {
+        e.preventDefault();
+        const $select = $("#claimTypeSelect");
+
+        let allOptions = [];
+        $select.find("option").each(function () {
+            allOptions.push($(this).val());
+        });
+
+        $select.val(allOptions).trigger("change.select2");
+    });
+
+
 
     const selectConfigs = {
         "#functionSelect": "Select Function",
@@ -53,7 +114,6 @@ $(document).ready(function () {
         "#subDepartmentSelect": "Select Sub-Department",
         "#userSelect": "Select Employee",
         "#monthSelect": "Select Month",
-        "#claimTypeSelect": "Select Claim Type",
         "#claimStatusSelect": "Select Claim Status",
         "#policySelect": "Select Policy",
         "#wheelerTypeSelect": "Select Wheeler Type",

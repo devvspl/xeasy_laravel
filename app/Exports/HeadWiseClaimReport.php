@@ -41,7 +41,6 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
 
     public function query()
     {
-     
         return $this->query;
     }
 
@@ -85,6 +84,11 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
             'TotKm' => 'Total KM',
             'WType' => 'Wheeler Type',
             'RatePerKM' => 'Rate Per KM',
+            'activity_category' => 'Activity Category',
+            'activity_type' => 'Activity Type',
+            'traill_no' => 'Trial No.',
+            'crop' => 'Crop',
+            'variety' => 'Variety',
             'VerifyTRemark' => 'Verify Remark',
             'VerifyDate' => 'Verify Date',
             'ApprTRemark' => 'Approval Remark',
@@ -171,6 +175,11 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
                         'TotKm' => $row->TotKm ?? 0,
                         'WType' => $wheelerMap[$row->WType] ?? '',
                         'RatePerKM' => $row->RatePerKM ?? 0,
+                        'activity_category' => $row->activity_category ?? '',
+                        'activity_type' => $row->activity_type ?? '',
+                        'traill_no' => $row->traill_no ?? '',
+                        'crop' => $row->crop ?? '',
+                        'variety' => $row->variety ?? '',
                         'VerifyAmt' => $detail->VerifierEditAmount ?? 0,
                         'VerifyTRemark' => $row->VerifyTRemark ?? '',
                         'VerifyDate' => $row->VerifyDate ? (new \DateTime($row->VerifyDate))->format('d-m-Y') : '',
@@ -248,6 +257,11 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
                     'TotKm' => $row->TotKm ?? 0,
                     'WType' => $wheelerMap[$row->WType] ?? '',
                     'RatePerKM' => $row->RatePerKM ?? 0,
+                    'activity_category' => $row->activity_category ?? '',
+                    'activity_type' => $row->activity_type ?? '',
+                    'traill_no' => $row->traill_no ?? '',
+                    'crop' => $row->crop ?? '',
+                    'variety' => $row->variety ?? '',
                     'VerifyAmt' => $row->VerifyTAmt ?? 0,
                     'VerifyTRemark' => $row->VerifyTRemark ?? '',
                     'VerifyDate' => $row->VerifyDate ? (new \DateTime($row->VerifyDate))->format('d-m-Y') : '',
@@ -323,6 +337,11 @@ class HeadWiseClaimReport implements FromQuery, WithChunkReading, WithEvents, Wi
             'TotKm' => 'e.TotKm',
             'WType' => 'e.WType',
             'RatePerKM' => 'e.RatePerKM',
+            'activity_category' => 'adv_activity_categories.activity_category',
+            'activity_type' => 'adv_activity_types.activity_type',
+            'traill_no' => 'e.traill_no',
+            'crop' => 'c.crop',
+            'variety' => 'vr.variety',
             'VerifyAmt' => 'e.VerifyTAmt',
             'VerifyTRemark' => 'e.VerifyTRemark',
             'VerifyDate' => 'e.VerifyDate',

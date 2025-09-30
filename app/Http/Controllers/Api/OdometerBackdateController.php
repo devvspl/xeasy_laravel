@@ -183,6 +183,9 @@ class OdometerBackdateController extends Controller
         $record->Backdate_Odometer_By = $employeeId;
         $record->Backdate_Odometer_Date = date('Y-m-d');
         $record->Backdate_Odometer_Status = 'A';
+        $record->ClaimStatus = 'Filled';
+        $record->ClaimAtStep = '1';
+        $record->Backdate_Odometer_Status = 'A';
         $record->save();
         return $this->jsonSuccess($record, 'Odometer backdate approved successfully.');
     }
@@ -210,7 +213,7 @@ class OdometerBackdateController extends Controller
     {
         $model = new ExpenseClaim;
         $model->setTable(ExpenseClaim::tableName($yearId));
-        $updatedCount = $model->where('ClaimId', 7)->where('Backdate_Odometer_Status', 'P')->update(['Backdate_Odometer_Status' => 'A', 'Backdate_Odometer_By' => $employeeId, 'Backdate_Odometer_Date' => date('Y-m-d'),]);
+        $updatedCount = $model->where('ClaimId', 7)->where('Backdate_Odometer_Status', 'P')->update(['Backdate_Odometer_Status' => 'A', 'ClaimStatus' => 'Filled', 'ClaimAtStep' => 1, 'Backdate_Odometer_By' => $employeeId, 'Backdate_Odometer_Date' => date('Y-m-d'),]);
         return $this->jsonSuccess(['updated_count' => $updatedCount], 'Bulk odometer backdate approval completed successfully.');
     }
     public function odoBackdateBulkRejection($yearId, $employeeId)

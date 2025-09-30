@@ -155,7 +155,9 @@
                                                     @foreach ($groupedClaimTypes as $groupName => $claims)
                                                         <optgroup label="{{ $groupName ?? 'Ungrouped' }}">
                                                             @foreach ($claims as $claim)
-                                                                <option value="{{ $claim->ClaimId }}">{{ $claim->ClaimName }}
+                                                                <option value="{{ $claim->ClaimId }}"
+                                                                    data-group="{{ $groupName ?? 'Ungrouped' }}">
+                                                                    {{ $claim->ClaimName }}
                                                                 </option>
                                                             @endforeach
                                                         </optgroup>
