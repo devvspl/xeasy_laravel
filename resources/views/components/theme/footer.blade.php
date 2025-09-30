@@ -89,6 +89,176 @@
 </script>
 @stack('scripts')
 <script src="{{ URL::to('/') }}/assets/js/app.js"></script>
+    <script>
+        $(document).ready(function () {
+            const defaultFiles = [
+                {
+                    url: 'https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/2006/Img_2006_240925141433_1.jpg',
+                    name: 'Expense_Receipt_2006.jpg',
+                    type: 'image/jpeg'
+                },
+                {
+                    url: 'https://gate2024.iisc.ac.in/wp-content/uploads/2023/07/cs.pdf',
+                    name: 'GATE_CS_Syllabus.pdf',
+                    type: 'application/pdf'
+                }
+            ];
+
+            let currentFileIndex = 0;
+
+            $('#claimDetailModal').on('shown.bs.modal', function () {
+                loadDefaultFiles();
+            });
+
+            function loadDefaultFiles() {
+                displayThumbnails();
+                showFile(0);
+            }
+
+            function displayThumbnails() {
+                const thumbnailList = $('#thumbnailList');
+                thumbnailList.empty();
+
+                defaultFiles.forEach((file, index) => {
+                    const thumbnail = $('<div>');
+
+                    if (file.type.startsWith('image/')) {
+                        const img = $('<img>')
+                            .addClass('thumbnail-item')
+                            .attr('data-index', index)
+                            .attr('src', file.url)
+                            .attr('alt', file.name);
+
+                        thumbnail.append(img);
+                    } else if (file.type === 'application/pdf') {
+                        const pdfThumb = $('<div>')
+                            .addClass('thumbnail-item pdf-thumbnail')
+                            .attr('data-index', index)
+                            .html('<i class="ri-file-pdf-line"></i>');
+
+                        thumbnail.append(pdfThumb);
+                    }
+
+                    thumbnailList.append(thumbnail);
+                });
+
+                thumbnailList.find('[data-index="0"]').addClass('active');
+            }
+
+            $(document).on('click', '.thumbnail-item', function () {
+                const index = parseInt($(this).attr('data-index'));
+                showFile(index);
+                updateActiveState(index);
+            });
+
+            function updateActiveState(index) {
+                $('.thumbnail-item').removeClass('active');
+                $(`.thumbnail-item[data-index="${index}"]`).addClass('active');
+                currentFileIndex = index;
+                updateNavigationButtons();
+            }
+
+            function showFile(index) {
+                if (index >= defaultFiles.length || index < 0) return;
+
+                const file = defaultFiles[index];
+                const mainViewer = $('#mainViewer');
+
+                mainViewer.html(`
+                    <div class="loading-spinner">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                `);
+
+                updateFileInfo(file, index);
+                loadFileInIframe(file, mainViewer);
+            }
+
+            function loadFileInIframe(file, container) {
+                container.html(`
+                    <div style="width:100%;height:100%;padding:0px;">
+                        <iframe src="${file.url}" border="0" class="${file.type.startsWith('image/') ? 'image-viewer' : 'pdf-viewer'}"></iframe>
+                    </div>
+                    <div class="external-controls">
+                        <button class="external-btn" data-url="${file.url}" title="Open in New Tab">
+                            <i class="ri-external-link-line"></i>
+                        </button>
+                    </div>
+                `);
+            }
+
+            $(document).on('click', '.external-btn', function () {
+                const url = $(this).data('url');
+                window.open(url, '_blank');
+            });
+
+            $('#prevBtn').on('click', function () {
+                if (currentFileIndex > 0) {
+                    showFile(currentFileIndex - 1);
+                    updateActiveState(currentFileIndex - 1);
+                }
+            });
+
+            $('#nextBtn').on('click', function () {
+                if (currentFileIndex < defaultFiles.length - 1) {
+                    showFile(currentFileIndex + 1);
+                    updateActiveState(currentFileIndex + 1);
+                }
+            });
+
+            function updateNavigationButtons() {
+                $('#prevBtn').prop('disabled', currentFileIndex === 0);
+                $('#nextBtn').prop('disabled', currentFileIndex === defaultFiles.length - 1);
+            }
+
+            function updateFileInfo(file, index) {
+                $('#fileName').text(file.name);
+                $('#fileType').text(file.type);
+                $('#fileIndex').text(`${index + 1} of ${defaultFiles.length}`);
+            }
+
+            $(document).on('keydown', function (e) {
+                if ($('#claimDetailModal').hasClass('show')) {
+                    if (e.key === 'ArrowLeft') {
+                        $('#prevBtn').click();
+                    } else if (e.key === 'ArrowRight') {
+                        $('#nextBtn').click();
+                    }
+                }
+            });
+
+            $('#saveBtn').on('click', function () {
+                const formData = {
+                    currentFile: defaultFiles[currentFileIndex].name,
+                    currentFileIndex: currentFileIndex + 1,
+                    title: $('#documentTitle').val(),
+                    date: $('#documentDate').val(),
+                    category: $('#category').val(),
+                    priority: $('#priority').val(),
+                    description: $('#description').val(),
+                    author: $('#author').val(),
+                    department: $('#department').val(),
+                    amount: $('#amount').val(),
+                    reference: $('#reference').val(),
+                    tags: $('#tags').val(),
+                    confidential: $('#confidential').is(':checked'),
+                    requiresApproval: $('#requiresApproval').is(':checked'),
+                    notes: $('#notes').val()
+                };
+
+                console.log('Form data:', formData);
+                alert('Document saved successfully!\nCheck console for form data.');
+                $('#claimDetailModal').modal('hide');
+            });
+
+            $('#claimDetailModal').on('hidden.bs.modal', function () {
+                $('#dataEntryForm')[0].reset();
+                currentFileIndex = 0;
+            });
+        });
+    </script>
 </body>
 
 </html>

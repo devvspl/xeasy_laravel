@@ -1,129 +1,175 @@
-<div class="modal fade" id="claimDetailModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="claimDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="progress-container" style="display: none">
-                <div class="progres" style="height: 5px;">
-                    <div class="indeterminate" style="background-color: var(--vz-primary);"></div>
+    <div class="modal fade" id="claimDetailModal" tabindex="-1" aria-labelledby="claimDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="claimDetailModalLabel">
+                        <i class="ri-file-text-line me-2"></i>Document Viewer & Data Entry
+                    </h5>
+                    <select name="" style="width: 250px;" class="form-control" id="">
+                        <option value="">Select Document Type</option>
+                        <option value="invoices">2/4 Wheeler</option>
+                        <option value="reports">Meals</option>
+                        <option value="contracts">Lodging</option>
+                        <option value="academic">Air Fire</option>
+                        <option value="others">Bus Fire</option>
+                    </select>
                 </div>
-            </div>
-            <div class="modal-header">
-                <h5 class="modal-title">Claim Detail</h5>
-                <select id="claimTypeSelect" class="form-select" style="width: 200px">
-                    <option value="">Select Claim Type</option>
-                </select>
-            </div>
-            <div class="modal-body p-3">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div id="gallery" class="images">
-                            <ul class="list-unstyled d-flex flex-wrap d-none">
-                                <li><img src="https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/1863/Img_1863_040825083550_1.jpg"
-                                        alt="1"></li>
-                                <li><img src="https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/1720/Img_1720_040825205135_1.jpg"
-                                        alt="2"></li>
-                                <li><img src="https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/100073/Img_100073_040825113109_1.jpg"
-                                        alt="3"></li>
-                                <li><img src="https://thesoftwarepro.com/wp-content/uploads/2019/12/microsoft-office-pdf-document-600x645.jpg"
-                                        alt="pdf"></li>
-                                <li><img src="https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/1729/Document_200925_1729_S1.pdf"
-                                        alt="pdf"></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div id="claimDetailContent">
-                            <div class="card">
-                                <div class="card-header bg-primary text-white">
-                                    <div class="row">
-                                        <div class="col-6">Expense Type: <strong>Postage Courier</strong></div>
-                                        <div class="col-6 text-end">Year: <strong>2025-2026</strong></div>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row mb-3">
-                                        <div class="col-6">
-                                            <label class="form-label">Sender Name</label>
-                                            <input type="text" class="form-control" value="Raja S" readonly="">
-                                        </div>
-                                        <div class="col-6">
-                                            <label class="form-label">Sender Address</label>
-                                            <input type="text" class="form-control" value="" readonly="">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-6">
-                                            <label class="form-label">Provider Name</label>
-                                            <input type="text" class="form-control" value="The Professional Couriers"
-                                                readonly="">
-                                        </div>
-                                        <div class="col-6">
-                                            <label class="form-label">Weight Charged</label>
-                                            <input type="text" class="form-control" value="0.500 Kgs" readonly="">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-6">
-                                            <label class="form-label">Docket No.</label>
-                                            <input type="text" class="form-control" value="DDG565515" readonly="">
-                                        </div>
-                                        <div class="col-6">
-                                            <label class="form-label">Booked Date</label>
-                                            <input type="text" class="form-control" value="" readonly="">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-6">
-                                            <label class="form-label">Receiver Name</label>
-                                            <input type="text" class="form-control" value="Selvam Bakery" readonly="">
-                                        </div>
-                                        <div class="col-6">
-                                            <label class="form-label">Receiver Address</label>
-                                            <input type="text" class="form-control" value="Pettavaithalai, Trichy"
-                                                readonly="">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-6">
-                                            <label class="form-label">Source City</label>
-                                            <input type="text" class="form-control" value="Dindigul" readonly="">
-                                        </div>
-                                        <div class="col-6">
-                                            <label class="form-label">Destination City</label>
-                                            <input type="text" class="form-control" value="Trichy" readonly="">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-6">
-                                            <label class="form-label">Total Amount</label>
-                                            <input type="text" class="form-control" value="90 Rs" readonly="">
-                                        </div>
-                                        <div class="col-6">
-                                            <label class="form-label">Remark</label>
-                                            <input type="text" class="form-control" value="Postage Courier" readonly="">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <button type="button" class="btn btn-success float-end">Submit</button>
-                                            <button type="button" class="btn btn-info me-2 float-end">Save as
-                                                Draft</button>
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-5 viewer-section p-2">
+                            <div class="file-info small d-flex justify-content-between flex-wrap">
+                                <span><strong>File:</strong> <span id="fileName">Loading...</span></span>
+                                <span><strong>Type:</strong> <span id="fileType">-</span></span>
+                                <span><strong>#</strong> <span id="fileIndex">1/2</span></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <small><label class="form-label small fw-bold">Documents:</label></small>
+                                <div class="thumbnail-list" id="thumbnailList">
+                                    <div class="loading-spinner">
+                                        <div class="spinner-border spinner-border-sm" role="status">
+                                            <span class="visually-hidden">Loading...</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-footer">
-                                    <strong>Remarks:</strong><br>
-                                    <p>Raja S - Last month unclaimed bill kindly update - 04-08-2025</p>
+                            </div>
+
+                            <div class="main-viewer" id="mainViewer">
+                                <div class="loading-spinner">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-md-7 form-section p-3">
+                            <h6 class="mb-3">
+                                <i class="ri-edit-line me-2"></i>Data Entry Form
+                            </h6>
+
+                            <form id="dataEntryForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="documentTitle" class="form-label">Document Title</label>
+                                        <input type="text" class="form-control" id="documentTitle"
+                                            placeholder="Enter title">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="documentDate" class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="documentDate">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="category" class="form-label">Category</label>
+                                        <select class="form-select" id="category">
+                                            <option value="">Select category</option>
+                                            <option value="expense">Expense Report</option>
+                                            <option value="invoice">Invoice</option>
+                                            <option value="contract">Contract</option>
+                                            <option value="report">Report</option>
+                                            <option value="academic">Academic Document</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="priority" class="form-label">Priority</label>
+                                        <select class="form-select" id="priority">
+                                            <option value="">Select priority</option>
+                                            <option value="high">High</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="low">Low</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" id="description" rows="4"
+                                        placeholder="Enter description"></textarea>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="author" class="form-label">Author</label>
+                                        <input type="text" class="form-control" id="author"
+                                            placeholder="Enter author name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="department" class="form-label">Department</label>
+                                        <input type="text" class="form-control" id="department"
+                                            placeholder="Enter department">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="amount" class="form-label">Amount (if applicable)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="number" class="form-control" id="amount" placeholder="0.00"
+                                                step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="reference" class="form-label">Reference Number</label>
+                                        <input type="text" class="form-control" id="reference"
+                                            placeholder="Enter reference">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="tags" class="form-label">Tags</label>
+                                    <input type="text" class="form-control" id="tags"
+                                        placeholder="Enter tags separated by commas">
+                                    <div class="form-text">e.g., finance, urgent, review</div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="confidential">
+                                            <label class="form-check-label" for="confidential">
+                                                Mark as Confidential
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="requiresApproval">
+                                            <label class="form-check-label" for="requiresApproval">
+                                                Requires Approval
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="notes" class="form-label">Additional Notes</label>
+                                    <textarea class="form-control" id="notes" rows="3"
+                                        placeholder="Any additional notes or comments"></textarea>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-2"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" id="prevBtn">
+                        <i class="ri-arrow-left-line me-2"></i>Previous
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextBtn">
+                        Next<i class="ri-arrow-right-line ms-2"></i>
+                    </button>
+                    <button type="button" class="btn btn-success" id="saveBtn">
+                        <i class="ri-save-line me-2"></i>Save Document
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
