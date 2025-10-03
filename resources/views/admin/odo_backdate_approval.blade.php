@@ -15,16 +15,17 @@
                                     style="width:100%">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Sr No.</th>
-                                            <th style="text-align: left;">Department</th>
-                                            <th>Enable Check</th>
-                                            <th>Approval Required</th>
-                                            <th>Delayed Day</th>
-                                            <th style="white-space: normal;width: 25%;">Vertical</th>
-                                            <th>Effective Date</th>
-                                            <th>Action</th>
+                                            <th style="width:5%;">Sr No.</th>
+                                            <th style="width:15%; text-align:left;">Department</th>
+                                            <th style="width:10%;">Enable Check</th>
+                                            <th style="width:15%;">Approval Required</th>
+                                            <th style="width:10%;">Delayed Day</th>
+                                            <th style="width:25%;">Vertical</th>
+                                            <th style="width:15%;">Effective Date</th>
+                                            <th style="width:5%;">Action</th>
                                         </tr>
                                     </thead>
+
                                     <tbody>
                                         @foreach ($departments as $department)
                                             @php
@@ -69,19 +70,14 @@
                                                 <td style="white-space: normal;width: 25%;">
                                                     @if (isset($mappedVerticalDetails[$department->id]) && $mappedVerticalDetails[$department->id]->isNotEmpty())
                                                         @php
-                                                            $savedVerticals =
-                                                                $setting && $setting->verticals
-                                                                    ? explode(',', $setting->verticals)
-                                                                    : [];
-
-                                                            // Remove duplicates by vertical ID
+                                                            $savedVerticals = $setting && $setting->verticals ? explode(',', $setting->verticals) : [];
                                                             $uniqueVerticals = $mappedVerticalDetails[
                                                                 $department->id
                                                             ]->unique('id');
                                                         @endphp
-
                                                         @foreach ($uniqueVerticals as $v)
-                                                            <div class="form-check form-check-inline">
+                                                            <div class="form-check form-check-inline"
+                                                                style="margin-right: 5px;">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="vertical_{{ $department->id }}_{{ $v->id }}"
                                                                     name="verticals[{{ $department->id }}][]"
@@ -94,11 +90,9 @@
                                                             </div>
                                                         @endforeach
                                                     @else
-                                                        <span>No verticals mapped</span>
+                                                        <span>-</span>
                                                     @endif
                                                 </td>
-
-
                                                 <td>
                                                     <input type="date" class="form-control effective-date-input"
                                                         data-department-id="{{ $department->id }}" placeholder="DD-MM-YYYY"
