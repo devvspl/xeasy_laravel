@@ -11,4 +11,9 @@ class ClaimType extends Model
     protected $primaryKey = 'ClaimId';
     public $timestamps = false;
     protected $fillable = ['ClaimId', 'cgId', 'ClaimName', 'ClaimCode', 'ClaimStatus', 'ClaimCrBy'];
+
+    public function group()
+    {
+        return $this->belongsTo(ClaimGroup::class, 'cgId', 'cgId');
+    }
 }

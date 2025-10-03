@@ -64,7 +64,7 @@ class AuthController extends Controller
                 'employeeid' => $token ? 'nullable|string' : 'required|string',
                 'password' => $token ? 'nullable|string' : 'required|string',
                 'company' => $token ? 'nullable|in:1' : 'required|in:1',
-                'financial_year' => $token ? 'nullable|in:7' : 'required|in:7',
+                'financial_year' => $token ? 'nullable' : 'required',
             ]);
             $status_messages[] = 'Input validation completed';
         } catch (ValidationException $e) {

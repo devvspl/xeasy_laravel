@@ -1,15 +1,18 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\DashboardController;
-use Illuminate\Support\Facades\Response;
-use App\Http\Controllers\FileController;
+use Illuminate\Support\Facades\Route;
 
 // Public routes (accessible without login)
-Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
-Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('login', [AuthController::class, 'login']);
+
+// Use / for both GET (show form) and POST (login)
+Route::match(['get', 'post'], '/', [AuthController::class, 'login'])->name('login');
+
+// Optional: keep /login as alias for GET form
+Route::get('login', [AuthController::class, 'showLoginForm'])->name('login.form');
+
+// Extra routes
 Route::get('xeasy_login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -17,7 +20,3 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
-
-Route::get('/file-view/{path}', [FileController::class, 'viewFile'])->where('path', '.*');
-
-?>

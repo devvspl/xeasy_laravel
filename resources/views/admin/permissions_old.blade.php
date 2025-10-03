@@ -13,7 +13,7 @@
                                     <span class="fw-semibold fs-12">Filter by Group: </span>
                                     <span class="text-muted">
                                         {{ request('group_id') ? $group->firstWhere('id', request('group_id'))->name ?? 'All Groups' : 'All Groups' }}
-                                        <i class="mdi mdi-chevron-down ms-1"></i>
+                                        <i class="mdi mdi-chevron-down"></i>
                                     </span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">

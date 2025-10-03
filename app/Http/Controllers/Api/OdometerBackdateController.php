@@ -13,7 +13,7 @@ class OdometerBackdateController extends Controller
     {
         $employee = DB::connection('hrims')->table('hrm_employee_general')->where('EmployeeID', $employeeId)->select('DepartmentId', 'BUId')->first();
         if (!$employee) {
-            return $this->jsonError('Employee not found.');
+            return $this->jsonError('This employee doesn’t have a department or business unit assigned.');
         }
         $departmentId = $employee->DepartmentId;
         $buId = $employee->BUId;
@@ -22,10 +22,10 @@ class OdometerBackdateController extends Controller
         // }
         $backdateSetting = DB::connection('expense')->table('odo_backdate_settings')->where('department_id', $departmentId)->first();
         if (!$backdateSetting || !$backdateSetting->effective_date) {
-            return $this->jsonError('Backdate setting not found for this department.');
+            return $this->jsonError('No odometer backdate settings are configured for this department.');
         }
         if ($backdateSetting->is_active != 1) {
-            return $this->jsonError('Backdate setting is not active for this department.');
+            return $this->jsonError('Odometer backdate settings are currently inactive for this department.');
         }
         $effectiveDate = $backdateSetting->effective_date;
         $approvalType = $backdateSetting->approval_type;
@@ -42,10 +42,10 @@ class OdometerBackdateController extends Controller
             }
             $employeeIds = DB::connection('hrims')->table('hrm_employee_general')->where('DepartmentId', $departmentId)->pluck('EmployeeID')->toArray();
         } else {
-            return $this->jsonError('Invalid approval type.');
+            return $this->jsonError('The approval type is not valid. Please contact your administrator.');
         }
         if (empty($employeeIds)) {
-            return $this->jsonError('No employees found in this BU or department.');
+            return $this->jsonError('No employees were found under this department or business unit.');
         }
         $model = new ExpenseClaim;
         $model->setTable(ExpenseClaim::tableName($yearId));
@@ -82,7 +82,7 @@ class OdometerBackdateController extends Controller
             ->first();
 
         if (!$employee) {
-            return $this->jsonError('Employee not found.');
+            return $this->jsonError('This employee doesn’t have a department or business unit assigned.');
         }
 
         $departmentId = $employee->DepartmentId;
@@ -98,11 +98,11 @@ class OdometerBackdateController extends Controller
             ->first();
 
         if (!$backdateSetting || !$backdateSetting->effective_date) {
-            return $this->jsonError('Backdate setting not found for this department.');
+            return $this->jsonError('No odometer backdate settings are configured for this department.');
         }
 
         if ($backdateSetting->is_active != 1) {
-            return $this->jsonError('Backdate setting is not active for this department.');
+            return $this->jsonError('Odometer backdate settings are currently inactive for this department.');
         }
 
         $effectiveDate      = $backdateSetting->effective_date;
@@ -129,11 +129,11 @@ class OdometerBackdateController extends Controller
                 ->pluck('EmployeeID')
                 ->toArray();
         } else {
-            return $this->jsonError('Invalid approval type.');
+            return $this->jsonError('The approval type is not valid. Please contact your administrator.');
         }
 
         if (empty($employeeIds)) {
-            return $this->jsonError('No employees found in this BU or department.');
+            return $this->jsonError('No employees were found under this department or business unit.');
         }
 
 
@@ -172,13 +172,13 @@ class OdometerBackdateController extends Controller
         $model->setTable(ExpenseClaim::tableName($yearId));
         $record = $model->where('ExpId', $expenseId)->first();
         if (!$record) {
-            return $this->jsonError('Expense claim not found.');
+            return $this->jsonError('The expense claim could not be found. Please check the claim details.');
         }
         if ($record->Backdate_Odometer_Status === 'A') {
-            return $this->jsonError('Expense claim is already approved.');
+            return $this->jsonError('This expense claim has already been approved.');
         }
         if ($record->Backdate_Odometer_Status === 'R') {
-            return $this->jsonError('Expense claim is already rejected and cannot be approved.');
+            return $this->jsonError('This expense claim has already been rejected and cannot be approved.');
         }
         $record->Backdate_Odometer_By = $employeeId;
         $record->Backdate_Odometer_Date = date('Y-m-d');
@@ -187,7 +187,7 @@ class OdometerBackdateController extends Controller
         $record->ClaimAtStep = '1';
         $record->Backdate_Odometer_Status = 'A';
         $record->save();
-        return $this->jsonSuccess($record, 'Odometer backdate approved successfully.');
+        return $this->jsonSuccess($record, 'The odometer backdate has been approved successfully.');
     }
     public function odoBackdateReject($yearId, $employeeId, $expenseId)
     {
@@ -195,33 +195,39 @@ class OdometerBackdateController extends Controller
         $model->setTable(ExpenseClaim::tableName($yearId));
         $record = $model->where('ExpId', $expenseId)->first();
         if (!$record) {
-            return $this->jsonError('Expense claim not found.');
+            return $this->jsonError('The expense claim could not be found. Please check the claim details.');
         }
         if ($record->Backdate_Odometer_Status === 'R') {
-            return $this->jsonError('Expense claim is already rejected.');
+            return $this->jsonError('This expense claim has already been rejected.');
         }
         if ($record->Backdate_Odometer_Status === 'A') {
-            return $this->jsonError('Expense claim is already approved and cannot be rejected.');
+            return $this->jsonError('This expense claim has already been approved and cannot be rejected.');
         }
         $record->Backdate_Odometer_Status = 'R';
         $record->Backdate_Odometer_By = $employeeId;
         $record->Backdate_Odometer_Date = date('Y-m-d');
         $record->save();
-        return $this->jsonSuccess($record, 'Odometer backdate rejected successfully.');
+        return $this->jsonSuccess($record, 'The odometer backdate has been rejected successfully.');
     }
     public function odoBackdateBulkApproval($yearId, $employeeId)
     {
         $model = new ExpenseClaim;
         $model->setTable(ExpenseClaim::tableName($yearId));
         $updatedCount = $model->where('ClaimId', 7)->where('Backdate_Odometer_Status', 'P')->update(['Backdate_Odometer_Status' => 'A', 'ClaimStatus' => 'Filled', 'ClaimAtStep' => 1, 'Backdate_Odometer_By' => $employeeId, 'Backdate_Odometer_Date' => date('Y-m-d'),]);
-        return $this->jsonSuccess(['updated_count' => $updatedCount], 'Bulk odometer backdate approval completed successfully.');
+        return $this->jsonSuccess(
+            ['updated_count' => $updatedCount],
+            $updatedCount > 0 ? "{$updatedCount} odometer backdate have been approved successfully." : "No pending odometer backdate were found for approval."
+        );
     }
     public function odoBackdateBulkRejection($yearId, $employeeId)
     {
         $model = new ExpenseClaim;
         $model->setTable(ExpenseClaim::tableName($yearId));
         $updatedCount = $model->where('ClaimId', 7)->where('Backdate_Odometer_Status', 'P')->update(['Backdate_Odometer_Status' => 'R', 'Backdate_Odometer_By' => $employeeId, 'Backdate_Odometer_Date' => date('Y-m-d'),]);
-        return $this->jsonSuccess(['updated_count' => $updatedCount], 'Bulk odometer backdate rejection completed successfully.');
+        return $this->jsonSuccess(
+            ['updated_count' => $updatedCount],
+            $updatedCount > 0 ? "{$updatedCount} odometer backdate have been rejected successfully." : "No pending odometer backdate were found for rejection."
+        );
     }
     private function isBuGeneralManager($employeeId, $buId)
     {

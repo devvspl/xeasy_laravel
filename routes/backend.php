@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\APIManagerController;
+use App\Http\Controllers\admin\ClaimTypeController;
 use App\Http\Controllers\admin\ClaimViewController;
 use App\Http\Controllers\admin\CoreAPIController;
 use App\Http\Controllers\admin\EmailTemplateController;
@@ -64,6 +65,13 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:role_management')->group(function () {
         Route::resource('roles', RolesController::class);
         Route::get('get-roles-list', [RolesController::class, 'getRoles']);
+    });
+
+
+    // Assuming this is in routes/web.php or similar
+    Route::middleware('permission:claim_type_management')->group(function () {
+        Route::resource('claim-types', ClaimTypeController::class);
+        Route::get('claim-type/groups', [ClaimTypeController::class, 'getGroups']);
     });
 
     // User Management
@@ -130,6 +138,10 @@ Route::middleware('auth')->group(function () {
         Route::get('email-template-variables', [EmailTemplateController::class, 'getVariables']);
     });
 
+    //Claim Type Managment
+    Route::middleware('permission:claim_type_management')->group(function () {
+        Route::get('claim-type', [ClaimTypeController::class, 'index'])->name('claim_type.index');
+    });
     // Claim Details
     // Routes for viewing claim details and types
     Route::get('claim-detail', [ClaimViewController::class, 'getClaimDetailView']);
@@ -174,5 +186,4 @@ Route::middleware('auth')->group(function () {
     Route::get('submission-reminder', [NotificationController::class, 'submissionReminder']);
     Route::get('get-submission-reminder', [NotificationController::class, 'getSubmissionReminderEmails']);
     Route::post('admin/notifications/non-submitted/dynamic', [NotificationController::class, 'sendDynamicNonSubmittedEmails']);
-
 });

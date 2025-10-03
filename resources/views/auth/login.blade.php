@@ -25,7 +25,8 @@
                         <div class="text-center">
                             <div>
                                 <a href="index.html" class="d-inline-block auth-logo">
-                                    <img src="{{ URL::to('/') }}/custom/xeasy_logo_ligth.png" alt="" height="100">
+                                    <img src="{{ URL::to('/') }}/custom/xeasy_logo_ligth.png" alt=""
+                                        height="100">
                                 </a>
                             </div>
                         </div>
@@ -52,7 +53,8 @@
                                             <label for="company" class="form-label">Company</label>
                                             <select name="company" id="company"
                                                 class="form-control @error('company') is-invalid @enderror" required>
-                                                <option value="1" {{ old('company') == '1' ? 'selected' : '' }}>VNR Seeds
+                                                <option value="1" {{ old('company') == '1' ? 'selected' : '' }}>VNR
+                                                    Seeds
                                                     Pvt Ltd</option>
                                             </select>
                                             @error('company')
@@ -67,15 +69,23 @@
                                             <select name="financial_year" id="financial_year"
                                                 class="form-control @error('financial_year') is-invalid @enderror"
                                                 required>
-                                                <option value="7" {{ old('financial_year') == '7' ? 'selected' : '' }}>
-                                                    2025-2026</option>
+                                                <option value="7"
+                                                    {{ old('financial_year') == '7' ? 'selected' : '' }}>
+                                                    2025-2026
+                                                </option>
+                                                <option value="6"
+                                                    {{ old('financial_year') == '6' ? 'selected' : '' }}>
+                                                    2024-2025
+                                                </option>
                                             </select>
+
                                             @error('financial_year')
                                                 <span class="invalid-feedback d-block" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
                                             @enderror
                                         </div>
+
 
                                         <div class="mb-3">
                                             <label for="employeeid" class="form-label">Employee ID</label>

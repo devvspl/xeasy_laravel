@@ -19,7 +19,7 @@
                                         @else
                                             All
                                         @endif
-                                        <i class="mdi mdi-chevron-down ms-1"></i>
+                                        <i class="mdi mdi-chevron-down"></i>
                                     </span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
