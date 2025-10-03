@@ -12,8 +12,8 @@ class OdoBackdateSetting extends Model
     protected $table = 'odo_backdate_settings';
 
     protected $casts = [
-        'effective_date' => 'date', 
+        'effective_date' => 'date',
     ];
 
-    protected $fillable = ['department_id', 'is_active', 'approval_type', 'effective_date', 'delayed_day'];
+    protected $fillable = ['department_id', 'is_active', 'approval_type', 'effective_date', 'delayed_day', 'verticals'];
 }

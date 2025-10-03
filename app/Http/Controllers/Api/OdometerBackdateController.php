@@ -29,6 +29,12 @@ class OdometerBackdateController extends Controller
         }
         $effectiveDate = $backdateSetting->effective_date;
         $approvalType = $backdateSetting->approval_type;
+        $verticals = $backdateSetting->verticals
+            ? explode(',', $backdateSetting->verticals)
+            : [];
+        if (empty($verticals)) {
+            return $this->jsonError('No verticals are configured for this department.');
+        }
         $delayedDayAllowed = $backdateSetting->delayed_day ?? 0;
         $employeeIds = [];
         if ($approvalType === 'bu_level') {
@@ -53,7 +59,7 @@ class OdometerBackdateController extends Controller
         $monthExpenseTable = "y{$yearId}_monthexpensefinal";
         $query = DB::table("{$tableName} as e")->join('hrims.hrm_employee as emp', 'emp.EmployeeID', '=', 'e.CrBy')->join('hrims.hrm_employee_general as gen', 'gen.EmployeeID', '=', 'e.CrBy')->leftJoin('hrims.core_departments as dep', 'gen.DepartmentId', '=', 'dep.id')->join("{$monthExpenseTable} as mef", function ($join) {
             $join->on('mef.EmployeeID', '=', 'e.CrBy')->on('mef.Month', '=', 'e.ClaimMonth')->where('mef.Status', '=', 'Open');
-        })->select('e.CrBy', 'e.ExpId', 'e.ClaimYearId', 'e.BillDate', 'e.CrDate', 'e.opening_filepath', 'e.closing_filepath', 'e.odomtr_opening', 'e.odomtr_closing', 'e.TotKm', 'e.RatePerKM', 'e.ClaimStatus', 'e.Backdate_Odometer_Status', DB::raw('DATEDIFF(e.CrDate, e.BillDate) AS days_difference'), DB::raw("CONCAT(emp.Fname, ' ', emp.Sname, ' ', emp.Lname) AS employee_name"), 'emp.EmpCode', 'mef.Status as monthexpense_status', 'mef.Month as monthexpense_month')->where('e.ClaimId', 7)->whereColumn('e.BillDate', '!=', 'e.CrDate')->whereDate('e.BillDate', '>=', $effectiveDate)->whereIn('e.CrBy', $employeeIds)->whereNotNull('e.BillDate')->whereNotIn('e.ClaimStatus', ['Deactivate']);
+        })->select('e.CrBy', 'e.ExpId', 'e.ClaimYearId', 'e.BillDate', 'e.CrDate', 'e.opening_filepath', 'e.closing_filepath', 'e.odomtr_opening', 'e.odomtr_closing', 'e.TotKm', 'e.RatePerKM', 'e.ClaimStatus', 'e.Backdate_Odometer_Status', DB::raw('DATEDIFF(e.CrDate, e.BillDate) AS days_difference'), DB::raw("CONCAT(emp.Fname, ' ', emp.Sname, ' ', emp.Lname) AS employee_name"), 'emp.EmpCode', 'mef.Status as monthexpense_status', 'mef.Month as monthexpense_month')->where('e.ClaimId', 7)->whereColumn('e.BillDate', '!=', 'e.CrDate')->whereDate('e.BillDate', '>=', $effectiveDate)->whereIn('e.CrBy', $employeeIds)->whereNotNull('e.BillDate')->whereIn('gen.EmpVertical', $verticals)->whereNotIn('e.ClaimStatus', ['Deactivate']);
         if ($delayedDayAllowed > 0) {
             $query->whereRaw('DATEDIFF(e.CrDate, e.BillDate) > ?', [$delayedDayAllowed]);
         }
@@ -109,6 +115,10 @@ class OdometerBackdateController extends Controller
         $approvalType       = $backdateSetting->approval_type;
         $delayedDayAllowed  = $backdateSetting->delayed_day ?? 0;
 
+        $verticals = $backdateSetting->verticals
+            ? explode(',', $backdateSetting->verticals)
+            : [];
+
 
         if ($approvalType === 'bu_level') {
             if (!$this->isBuGeneralManager($employeeId, $buId)) {
@@ -142,6 +152,7 @@ class OdometerBackdateController extends Controller
 
 
         $query = DB::table("{$tableName} as e")
+            ->join('hrims.hrm_employee_general as gen', 'gen.EmployeeID', '=', 'e.CrBy')
             ->join("{$monthExpenseTable} as mef", function ($join) {
                 $join->on('mef.EmployeeID', '=', 'e.CrBy')
                     ->on('mef.Month', '=', 'e.ClaimMonth')
@@ -151,8 +162,10 @@ class OdometerBackdateController extends Controller
             ->whereDate('e.BillDate', '>=', $effectiveDate)
             ->whereIn('e.CrBy', $employeeIds)
             ->whereNotNull('e.BillDate')
+            ->whereIn('gen.EmpVertical', $verticals)
             ->where('e.Backdate_Odometer_Status', '=', 'P')
             ->whereNotIn('e.ClaimStatus', ['Deactivate']);
+
 
         if ($delayedDayAllowed > 0) {
             $query->whereRaw('DATEDIFF(e.CrDate, e.BillDate) > ?', [$delayedDayAllowed]);

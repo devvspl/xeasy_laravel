@@ -20,6 +20,7 @@
                                             <th>Enable Check</th>
                                             <th>Approval Required</th>
                                             <th>Delayed Day</th>
+                                            <th style="white-space: normal;width: 25%;">Vertical</th>
                                             <th>Effective Date</th>
                                             <th>Action</th>
                                         </tr>
@@ -65,10 +66,42 @@
                                                         @endfor
                                                     </select>
                                                 </td>
+                                                <td style="white-space: normal;width: 25%;">
+                                                    @if (isset($mappedVerticalDetails[$department->id]) && $mappedVerticalDetails[$department->id]->isNotEmpty())
+                                                        @php
+                                                            $savedVerticals =
+                                                                $setting && $setting->verticals
+                                                                    ? explode(',', $setting->verticals)
+                                                                    : [];
+
+                                                            // Remove duplicates by vertical ID
+                                                            $uniqueVerticals = $mappedVerticalDetails[
+                                                                $department->id
+                                                            ]->unique('id');
+                                                        @endphp
+
+                                                        @foreach ($uniqueVerticals as $v)
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="vertical_{{ $department->id }}_{{ $v->id }}"
+                                                                    name="verticals[{{ $department->id }}][]"
+                                                                    value="{{ $v->id }}"
+                                                                    {{ in_array($v->id, $savedVerticals) ? 'checked' : '' }}>
+                                                                <label class="form-check-label"
+                                                                    for="vertical_{{ $department->id }}_{{ $v->id }}">
+                                                                    {{ $v->vertical_code }}
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <span>No verticals mapped</span>
+                                                    @endif
+                                                </td>
+
+
                                                 <td>
                                                     <input type="date" class="form-control effective-date-input"
-                                                        placeholder="Select Date"
-                                                        data-department-id="{{ $department->id }}"
+                                                        data-department-id="{{ $department->id }}" placeholder="DD-MM-YYYY"
                                                         value="{{ $setting && $setting->effective_date ? $setting->effective_date->format('Y-m-d') : '' }}">
                                                 </td>
                                                 <td>
