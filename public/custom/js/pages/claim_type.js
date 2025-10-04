@@ -82,7 +82,7 @@ $(document).ready(function () {
         });
     });
 
-    $(".delete-claim-type").click(function (event) {
+    $(document).on("click", ".delete-claim-type", function (event) {
         event.preventDefault();
         const claimTypeId = $(this).data("id");
         const confirmation = confirm("Are you sure you want to delete this claim type?");
@@ -115,7 +115,7 @@ $(document).ready(function () {
         }
     });
 
-    $(".edit-claim-type").click(function (event) {
+    $(document).on("click", ".edit-claim-type", function (event) {
         event.preventDefault();
         const claimTypeId = $(this).data("id");
         const button = event.currentTarget;
@@ -165,7 +165,6 @@ $(document).ready(function () {
         populateGroups($("#cg_id"));
     });
 
-    
     $('#claimTypeModal').on('show.bs.modal', function (event) {
         populateGroups($("#cg_id"));
     });

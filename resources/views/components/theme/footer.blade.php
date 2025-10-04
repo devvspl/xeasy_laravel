@@ -1,53 +1,52 @@
 <x-modal.view_claim_detail />
 <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
-   <i class="ri-arrow-up-line"></i>
+    <i class="ri-arrow-up-line"></i>
 </button>
 <div id="preloader">
-   <div id="status">
-      <div class="spinner-border text-white avatar-sm" role="status">
-         <span class="visually-hidden"></span>
-      </div>
-      <span class="text-white mt-2">Loading...</span>
-   </div>
+    <div id="status">
+        <div class="spinner-border text-white avatar-sm" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+        <span class="text-white mt-2">Loading...</span>
+    </div>
 </div>
 <div class="modal fade" id="companyModal" tabindex="-1" aria-labelledby="companyModalLabel" aria-hidden="true">
-   <div class="modal-dialog">
-      <div class="modal-content">
-         <div class="modal-header justify-content-between">
-            <h5 class="modal-title" id="companyModalLabel">
-               Current - <span>{{ session('company_name') }}</span>
-               <span>({{ session('year_value') }})</span>
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-         </div>
-
-         <div class="modal-body">
-            <form id="companyForm">
-               <div class="mb-3">
-                  <label for="companySelect" class="form-label">Company</label>
-                  <select class="form-select" id="companySelect" required>
-                     <option value="" disabled selected>Select a company</option>
-                  </select>
-               </div>
-               <div class="mb-3">
-                  <label for="fySelect" class="form-label">Financial Year</label>
-                  <select class="form-select" id="fySelect" disabled required>
-                     <option value="" disabled selected>Select a financial year</option>
-                  </select>
-               </div>
-            </form>
-         </div>
-         <div class="modal-footer">
-            <button type="button" class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
-               id="submitSelection">
-               <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 me-2">
-                  <span class="loader" style="display: none;"></span>
-               </i>
-               Switch
-            </button>
-         </div>
-      </div>
-   </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h5 class="modal-title" id="companyModalLabel">
+                    Current - <span>{{ session('company_name') }}</span>
+                    <span>({{ session('year_value') }})</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="companyForm">
+                    <div class="mb-3">
+                        <label for="companySelect" class="form-label">Company</label>
+                        <select class="form-select" id="companySelect" required>
+                            <option value="" disabled selected>Select a company</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fySelect" class="form-label">Financial Year</label>
+                        <select class="form-select" id="fySelect" disabled required>
+                            <option value="" disabled selected>Select a financial year</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
+                    id="submitSelection">
+                    <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 me-2">
+                        <span class="loader" style="display: none;"></span>
+                    </i>
+                    Switch
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="{{ URL::to('/') }}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -66,105 +65,118 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.7/viewer.min.js"></script>
-<script>
-   document.addEventListener("DOMContentLoaded", function () {
-      let viewer;
-      const gallery = document.getElementById('gallery');
-
-      // Re-init viewer only when modal is opened
-      const modalEl = document.getElementById('claimDetailModal');
-      modalEl.addEventListener('shown.bs.modal', function () {
-         if (viewer) {
-            viewer.destroy(); // destroy old instance
-         }
-         viewer = new Viewer(gallery, {
-            inline: true,
-            toolbar: true,
-            navbar: true,
-            title: false,
-         });
-      });
-   });
-</script>
 @stack('scripts')
 <script src="{{ URL::to('/') }}/assets/js/app.js"></script>
-    <script>
-        $(document).ready(function () {
-            const defaultFiles = [
-                {
-                    url: 'https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/2006/Img_2006_240925141433_1.jpg',
-                    name: 'Expense_Receipt_2006.jpg',
-                    type: 'image/jpeg'
+<script>
+    $(document).ready(function() {
+        const defaultFiles = [{
+                url: 'https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/2006/Img_2006_240925141433_1.jpg',
+                name: 'Expense_Receipt_2006.jpg',
+                type: 'image/jpeg'
+            },
+            {
+                url: 'https://gate2024.iisc.ac.in/wp-content/uploads/2023/07/cs.pdf',
+                name: 'GATE_CS_Syllabus.pdf',
+                type: 'application/pdf'
+            }
+        ];
+
+        let currentFileIndex = 0;
+
+        function loadDefaultFiles() {
+            displayThumbnails();
+            showFile(0);
+        }
+
+        function claimTypeList(id = null) {
+            $.ajax({
+                url: "get-claim-types",
+                method: "GET",
+                contentType: "application/json",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
                 },
-                {
-                    url: 'https://gate2024.iisc.ac.in/wp-content/uploads/2023/07/cs.pdf',
-                    name: 'GATE_CS_Syllabus.pdf',
-                    type: 'application/pdf'
-                }
-            ];
+                success: function(response) {
+                    if (response.success && response.data) {
+                        let $select = $("#sltClaimTypeList");
+                        $select.empty();
 
-            let currentFileIndex = 0;
+                        $select.select2({
+                            dropdownParent: $("#claimDetailModal"),
+                            width: "250px",
+                            placeholder: "Select Document Type",
+                            allowClear: true,
+                            data: response.data
+                        });
 
-            $('#claimDetailModal').on('shown.bs.modal', function () {
-                loadDefaultFiles();
-            });
-
-            function loadDefaultFiles() {
-                displayThumbnails();
-                showFile(0);
-            }
-
-            function displayThumbnails() {
-                const thumbnailList = $('#thumbnailList');
-                thumbnailList.empty();
-
-                defaultFiles.forEach((file, index) => {
-                    const thumbnail = $('<div>');
-
-                    if (file.type.startsWith('image/')) {
-                        const img = $('<img>')
-                            .addClass('thumbnail-item')
-                            .attr('data-index', index)
-                            .attr('src', file.url)
-                            .attr('alt', file.name);
-
-                        thumbnail.append(img);
-                    } else if (file.type === 'application/pdf') {
-                        const pdfThumb = $('<div>')
-                            .addClass('thumbnail-item pdf-thumbnail')
-                            .attr('data-index', index)
-                            .html('<i class="ri-file-pdf-line"></i>');
-
-                        thumbnail.append(pdfThumb);
+                        if (id) {
+                            $select.val(id).trigger("change");
+                        }
+                    } else {
+                        showAlert("warning", "ri-alert-line", response.message ||
+                            "No claim types found.");
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Fetch error:", {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        responseText: xhr.responseText,
+                        response: xhr.response,
+                    });
+                    showAlert(
+                        "danger",
+                        "ri-error-warning-line",
+                        "Failed to fetch claim types: " + (xhr.responseText || error)
+                    );
+                },
+            });
+        }
 
-                    thumbnailList.append(thumbnail);
-                });
+        function displayThumbnails() {
+            const thumbnailList = $('#thumbnailList');
+            thumbnailList.empty();
 
-                thumbnailList.find('[data-index="0"]').addClass('active');
-            }
+            defaultFiles.forEach((file, index) => {
+                const thumbnail = $('<div>');
 
-            $(document).on('click', '.thumbnail-item', function () {
-                const index = parseInt($(this).attr('data-index'));
-                showFile(index);
-                updateActiveState(index);
+                if (file.type.startsWith('image/')) {
+                    const img = $('<img>')
+                        .addClass('thumbnail-item')
+                        .attr('data-index', index)
+                        .attr('src', file.url)
+                        .attr('alt', file.name);
+
+                    thumbnail.append(img);
+                } else if (file.type === 'application/pdf') {
+                    const pdfThumb = $('<div>')
+                        .addClass('thumbnail-item pdf-thumbnail')
+                        .attr('data-index', index)
+                        .html('<i class="ri-file-pdf-line"></i>');
+
+                    thumbnail.append(pdfThumb);
+                }
+
+                thumbnailList.append(thumbnail);
             });
 
-            function updateActiveState(index) {
-                $('.thumbnail-item').removeClass('active');
-                $(`.thumbnail-item[data-index="${index}"]`).addClass('active');
-                currentFileIndex = index;
-                updateNavigationButtons();
-            }
+            thumbnailList.find('[data-index="0"]').addClass('active');
+        }
 
-            function showFile(index) {
-                if (index >= defaultFiles.length || index < 0) return;
+        function updateActiveState(index) {
+            $('.thumbnail-item').removeClass('active');
+            $(`.thumbnail-item[data-index="${index}"]`).addClass('active');
+            currentFileIndex = index;
+            updateNavigationButtons();
+        }
 
-                const file = defaultFiles[index];
-                const mainViewer = $('#mainViewer');
+        function showFile(index) {
+            if (index >= defaultFiles.length || index < 0) return;
 
-                mainViewer.html(`
+            const file = defaultFiles[index];
+            const mainViewer = $('#mainViewer');
+
+            mainViewer.html(`
                     <div class="loading-spinner">
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
@@ -172,12 +184,12 @@
                     </div>
                 `);
 
-                updateFileInfo(file, index);
-                loadFileInIframe(file, mainViewer);
-            }
+            updateFileInfo(file, index);
+            loadFileInIframe(file, mainViewer);
+        }
 
-            function loadFileInIframe(file, container) {
-                container.html(`
+        function loadFileInIframe(file, container) {
+            container.html(`
                     <div style="width:100%;height:100%;padding:0px;">
                         <iframe src="${file.url}" border="0" class="${file.type.startsWith('image/') ? 'image-viewer' : 'pdf-viewer'}"></iframe>
                     </div>
@@ -187,78 +199,124 @@
                         </button>
                     </div>
                 `);
+        }
+
+        function updateNavigationButtons() {
+            $('#prevBtn').prop('disabled', currentFileIndex === 0);
+            $('#nextBtn').prop('disabled', currentFileIndex === defaultFiles.length - 1);
+        }
+
+        function updateFileInfo(file, index) {
+            $('#fileName').text(file.name);
+            $('#fileType').text(file.type);
+            $('#fileIndex').text(`${index + 1} of ${defaultFiles.length}`);
+        }
+
+        $(document).on('click', '.thumbnail-item', function() {
+            const index = parseInt($(this).attr('data-index'));
+            showFile(index);
+            updateActiveState(index);
+        });
+
+        $(document).on('click', '.external-btn', function() {
+            const url = $(this).data('url');
+            window.open(url, '_blank');
+        });
+
+        $('#prevBtn').on('click', function() {
+            if (currentFileIndex > 0) {
+                showFile(currentFileIndex - 1);
+                updateActiveState(currentFileIndex - 1);
             }
+        });
 
-            $(document).on('click', '.external-btn', function () {
-                const url = $(this).data('url');
-                window.open(url, '_blank');
-            });
+        $('#nextBtn').on('click', function() {
+            if (currentFileIndex < defaultFiles.length - 1) {
+                showFile(currentFileIndex + 1);
+                updateActiveState(currentFileIndex + 1);
+            }
+        });
 
-            $('#prevBtn').on('click', function () {
-                if (currentFileIndex > 0) {
-                    showFile(currentFileIndex - 1);
-                    updateActiveState(currentFileIndex - 1);
+        $('#claimDetailModal').on('shown.bs.modal', function() {
+            loadDefaultFiles();
+            claimTypeList();
+        });
+
+        $(document).on('keydown', function(e) {
+            if ($('#claimDetailModal').hasClass('show')) {
+                if (e.key === 'ArrowLeft') {
+                    $('#prevBtn').click();
+                } else if (e.key === 'ArrowRight') {
+                    $('#nextBtn').click();
                 }
-            });
+            }
+        });
 
-            $('#nextBtn').on('click', function () {
-                if (currentFileIndex < defaultFiles.length - 1) {
-                    showFile(currentFileIndex + 1);
-                    updateActiveState(currentFileIndex + 1);
-                }
-            });
+        $('#saveBtn').on('click', function() {
+            const formData = {
+                currentFile: defaultFiles[currentFileIndex].name,
+                currentFileIndex: currentFileIndex + 1,
+                title: $('#documentTitle').val(),
+                date: $('#documentDate').val(),
+                category: $('#category').val(),
+                priority: $('#priority').val(),
+                description: $('#description').val(),
+                author: $('#author').val(),
+                department: $('#department').val(),
+                amount: $('#amount').val(),
+                reference: $('#reference').val(),
+                tags: $('#tags').val(),
+                confidential: $('#confidential').is(':checked'),
+                requiresApproval: $('#requiresApproval').is(':checked'),
+                notes: $('#notes').val()
+            };
 
-            function updateNavigationButtons() {
-                $('#prevBtn').prop('disabled', currentFileIndex === 0);
-                $('#nextBtn').prop('disabled', currentFileIndex === defaultFiles.length - 1);
+            console.log('Form data:', formData);
+            alert('Document saved successfully!\nCheck console for form data.');
+            $('#claimDetailModal').modal('hide');
+        });
+
+        $('#claimDetailModal').on('hidden.bs.modal', function() {
+            $('#dataEntryForm')[0].reset();
+            currentFileIndex = 0;
+        });
+
+        $(document).on("change", "#sltClaimTypeList", function() {
+            let claimId = $(this).val();
+            let expid = $("#expid").val();
+
+            if (!claimId || !expid) {
+                $("#dataEntryForm").html(
+                    '<div class="alert alert-warning">Please select a claim type and ensure ExpId is set.</div>'
+                );
+                return;
             }
 
-            function updateFileInfo(file, index) {
-                $('#fileName').text(file.name);
-                $('#fileType').text(file.type);
-                $('#fileIndex').text(`${index + 1} of ${defaultFiles.length}`);
-            }
-
-            $(document).on('keydown', function (e) {
-                if ($('#claimDetailModal').hasClass('show')) {
-                    if (e.key === 'ArrowLeft') {
-                        $('#prevBtn').click();
-                    } else if (e.key === 'ArrowRight') {
-                        $('#nextBtn').click();
+            $.ajax({
+                url: "claim-detail",
+                method: "GET",
+                data: {
+                    claim_id: claimId,
+                    expid: expid
+                },
+                success: function(response) {
+                    if (response.html) {
+                        $("#dataEntryForm").html(response.html);
+                    } else {
+                        $("#dataEntryForm").html(
+                            '<div class="alert alert-danger">No details found.</div>');
                     }
+                },
+                error: function(xhr) {
+                    $("#dataEntryForm").html(
+                        '<div class="alert alert-danger">Error loading claim details.</div>'
+                    );
+                    console.error("Claim detail fetch error:", xhr);
                 }
-            });
-
-            $('#saveBtn').on('click', function () {
-                const formData = {
-                    currentFile: defaultFiles[currentFileIndex].name,
-                    currentFileIndex: currentFileIndex + 1,
-                    title: $('#documentTitle').val(),
-                    date: $('#documentDate').val(),
-                    category: $('#category').val(),
-                    priority: $('#priority').val(),
-                    description: $('#description').val(),
-                    author: $('#author').val(),
-                    department: $('#department').val(),
-                    amount: $('#amount').val(),
-                    reference: $('#reference').val(),
-                    tags: $('#tags').val(),
-                    confidential: $('#confidential').is(':checked'),
-                    requiresApproval: $('#requiresApproval').is(':checked'),
-                    notes: $('#notes').val()
-                };
-
-                console.log('Form data:', formData);
-                alert('Document saved successfully!\nCheck console for form data.');
-                $('#claimDetailModal').modal('hide');
-            });
-
-            $('#claimDetailModal').on('hidden.bs.modal', function () {
-                $('#dataEntryForm')[0].reset();
-                currentFileIndex = 0;
             });
         });
-    </script>
+    });
+</script>
 </body>
 
 </html>

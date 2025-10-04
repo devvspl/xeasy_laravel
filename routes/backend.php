@@ -72,6 +72,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:claim_type_management')->group(function () {
         Route::resource('claim-types', ClaimTypeController::class);
         Route::get('claim-type/groups', [ClaimTypeController::class, 'getGroups']);
+        Route::post('claim-type-list', [ClaimTypeController::class, 'claimTypeList']);
+        
     });
 
     // User Management

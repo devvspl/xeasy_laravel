@@ -29,6 +29,12 @@ class ClaimTypeController extends Controller
         return view('admin.claim_type', compact('claimTypes', 'status'));
     }
 
+    public function claimTypeList()
+    {
+        $claimType = ClaimType::all();
+        return $this->jsonSuccess($claimType, 'Claim type fetched successfully.');
+    }
+
     public function store(Request $request)
     {
         $request->validate([

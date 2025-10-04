@@ -92,7 +92,6 @@ $(document).ready(function () {
         }
     });
 
-    
     $(document).on("click", ".select2-global-all", function (e) {
         e.preventDefault();
         const $select = $("#claimTypeSelect");
@@ -104,8 +103,6 @@ $(document).ready(function () {
 
         $select.val(allOptions).trigger("change.select2");
     });
-
-
 
     const selectConfigs = {
         "#functionSelect": "Select Function",

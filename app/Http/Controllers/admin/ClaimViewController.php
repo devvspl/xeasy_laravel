@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Http\Controllers\admin;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ExpenseClaim;
 use Illuminate\Support\Facades\DB;
+
 class ClaimViewController extends Controller
 {
     public function getClaimDetailView(Request $request)
@@ -50,8 +53,6 @@ class ClaimViewController extends Controller
                 'children' => $claims,
             ];
         }
-
-        return response()->json($result);
+        return $this->jsonSuccess($result, 'Claim type fetched successfully.');
     }
-
 }
