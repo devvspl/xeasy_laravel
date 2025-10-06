@@ -18,6 +18,12 @@ use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RolesController;
 use App\Http\Controllers\admin\SettingController;
 use App\Http\Controllers\admin\UsersController;
+use App\Http\Controllers\admin\ExpenseHeadCategoryController;
+use App\Http\Controllers\admin\ExpenseHeadMappingController;
+use App\Http\Controllers\admin\ActivityController;
+use App\Http\Controllers\admin\ActivityCategoryController;
+use App\Http\Controllers\admin\ActivityTypeController;
+use App\Http\Controllers\admin\ActivityNameController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DatabaseSwitchController;
 use App\Http\Controllers\HomeController;
@@ -62,18 +68,52 @@ Route::middleware('auth')->group(function () {
 
     // Role Management
     // Routes for managing roles
-    Route::middleware('permission:role_management')->group(function () {
+    Route::middleware('permission:master_roles')->group(function () {
         Route::resource('roles', RolesController::class);
         Route::get('get-roles-list', [RolesController::class, 'getRoles']);
     });
 
-
-    // Assuming this is in routes/web.php or similar
-    Route::middleware('permission:claim_type_management')->group(function () {
+    // Claim Types
+    // Routes for claim types
+    Route::middleware('permission:settings_claim_type')->group(function () {
         Route::resource('claim-types', ClaimTypeController::class);
         Route::get('claim-type/groups', [ClaimTypeController::class, 'getGroups']);
         Route::post('claim-type-list', [ClaimTypeController::class, 'claimTypeList']);
-        
+    });
+
+    Route::middleware('permission:settings_activity')->group(function () {
+        Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
+        Route::get('activity/tab-content', [ActivityController::class, 'getTabContent'])->name('activity.tab-content');
+    });
+
+    Route::middleware('permission:expense_head_management')->group(function () {
+        Route::resource('expense-heads', ExpenseHeadCategoryController::class);
+    });
+
+    Route::middleware('permission:activity_category_management')->group(function () {
+        Route::resource('activity-categories', ActivityCategoryController::class);
+    });
+
+    Route::middleware('permission:activity_type_management')->group(function () {
+        Route::resource('activity-types', ActivityTypeController::class);
+        Route::get('activity-type/categories', [ActivityTypeController::class, 'getCategories'])->name('activity.types.categories');
+        Route::get('activity-type/departments', [ActivityTypeController::class, 'getDepartments'])->name('activity.types.departments');
+    });
+
+    Route::middleware('permission:activity_name_management')->group(function () {
+        Route::resource('activity-names', ActivityNameController::class);
+        Route::get('activity-name/categories', [ActivityNameController::class, 'getCategories'])->name('activity.names.categories');
+        Route::get('activity-name/departments', [ActivityNameController::class, 'getDepartments'])->name('activity.names.departments');
+        Route::get('activity-name/verticals', [ActivityNameController::class, 'getVerticals'])->name('activity.names.verticals');
+        Route::get('activity-name/claim-types', [ActivityNameController::class, 'getClaimTypes'])->name('activity.names.claim-types');
+    });
+
+
+    Route::middleware('permission:expense_head_mapping_management')->group(function () {
+        Route::resource('expense-head-mappings', ExpenseHeadMappingController::class);
+        Route::post('expense-head-mappings/toggle', [ExpenseHeadMappingController::class, 'toggle'])->name('expense-head-mappings.toggle');
+        Route::get('expense-head-mappings/activities', [ExpenseHeadMappingController::class, 'getActivities'])->name('expense-head-mappings.activities');
+        Route::get('expense-head-mappings/expense-heads', [ExpenseHeadMappingController::class, 'getExpenseHeads'])->name('expense-head-mappings.expense-heads');
     });
 
     // User Management
@@ -93,7 +133,7 @@ Route::middleware('auth')->group(function () {
 
     // Menu Management
     // Routes for managing menus and their logs
-    Route::middleware('permission:menu_management')->group(function () {
+    Route::middleware('permission:master_menus')->group(function () {
         Route::resource('menu', MenuController::class);
         Route::get('menu-list', [MenuController::class, 'menuList']);
         Route::get('menu/log/{id}', [MenuController::class, 'getLogs']);
@@ -115,7 +155,7 @@ Route::middleware('auth')->group(function () {
 
     // Report Management
     // Routes for generating and exporting reports, including claims and daily activities
-    Route::middleware('permission:report_management')->group(function () {
+    Route::middleware('permission:section_reports')->group(function () {
         Route::get('claim-report', [ReportController::class, 'claimReport']);
         Route::get('daily-activity', [ReportController::class, 'dailyActivity']);
         Route::post('daily-activity/data', [ReportController::class, 'getDailyActivityData']);

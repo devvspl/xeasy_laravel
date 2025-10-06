@@ -126,7 +126,7 @@
                                                             Description</label>
                                                         <textarea class="form-control" id="siteDescription"
                                                             name="site_description" placeholder="Enter site description"
-                                                            rows="4"></textarea>
+                                                            rows="2"></textarea>
                                                     </div>
                                                     <div class="mb-3 col-md-12">
                                                         <button type="submit" class="btn btn-primary">Save

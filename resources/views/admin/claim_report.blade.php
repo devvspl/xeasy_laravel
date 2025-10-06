@@ -259,13 +259,14 @@
     <x-modal.claim_report />
 @endsection
 @push('styles')
-    <link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/classic.min.css" />
-    <link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/monolith.min.css" />
-    <link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/nano.min.css" />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/classic.min.css" />
+<link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/monolith.min.css" />
+<link rel="stylesheet" href="assets/libs/@simonwep/pickr/themes/nano.min.css" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="{{ asset('custom/js/pages/claim_report.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{{ asset('custom/js/pages/claim_report.js') }}"></script>
+<script src="{{ asset('custom/js/pages/claim.js') }}"></script>
 @endpush

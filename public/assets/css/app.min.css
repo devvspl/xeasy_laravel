@@ -3990,6 +3990,7 @@
     .navbar-nav
     .nav-item {
     position: relative;
+    width: 100% !important;
 }
 :is([data-layout="vertical"], [data-layout="semibox"])[data-sidebar-size="sm"]
     .navbar-menu

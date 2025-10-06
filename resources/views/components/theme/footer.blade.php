@@ -60,6 +60,7 @@
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -67,8 +68,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
 @stack('scripts')
 <script src="{{ URL::to('/') }}/assets/js/app.js"></script>
-<script>
+{{-- <script>
     $(document).ready(function() {
+
         const defaultFiles = [{
                 url: 'https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/2006/Img_2006_240925141433_1.jpg',
                 name: 'Expense_Receipt_2006.jpg',
@@ -89,6 +91,7 @@
         }
 
         function claimTypeList(id = null) {
+
             $.ajax({
                 url: "get-claim-types",
                 method: "GET",
@@ -239,7 +242,6 @@
 
         $('#claimDetailModal').on('shown.bs.modal', function() {
             loadDefaultFiles();
-            claimTypeList();
         });
 
         $(document).on('keydown', function(e) {
@@ -281,23 +283,30 @@
             currentFileIndex = 0;
         });
 
+        $(document).on("click", ".view-claim", function(e) {
+            e.preventDefault();
+            var claimId = $(this).data("claim-id");
+            var expId = $(this).data("expid");
+            $("#claimDetailModal").attr("data-modal-claimid", claimId);
+            $("#claimDetailModal").attr("data-modal-expid", expId);
+            claimTypeList(claimId);
+        });
+
         $(document).on("change", "#sltClaimTypeList", function() {
             let claimId = $(this).val();
-            let expid = $("#expid").val();
-
-            if (!claimId || !expid) {
+            let expId = $("#claimDetailModal").attr("data-modal-expid");
+            if (!claimId || !expId) {
                 $("#dataEntryForm").html(
                     '<div class="alert alert-warning">Please select a claim type and ensure ExpId is set.</div>'
                 );
                 return;
             }
-
             $.ajax({
                 url: "claim-detail",
                 method: "GET",
                 data: {
                     claim_id: claimId,
-                    expid: expid
+                    expid: expId
                 },
                 success: function(response) {
                     if (response.html) {
@@ -316,7 +325,7 @@
             });
         });
     });
-</script>
+</script> --}}
 </body>
 
 </html>

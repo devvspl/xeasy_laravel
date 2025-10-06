@@ -1,5 +1,5 @@
-    <div class="modal fade" id="claimDetailModal" data-expid="" tabindex="-1" aria-labelledby="claimDetailModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="claimDetailModal" data-bs-backdrop="static" data-modal-expid="" data-modal-claimid=""
+        tabindex="-1" aria-labelledby="claimDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -17,6 +17,7 @@
                                 <span><strong>Type:</strong> <span id="fileType">-</span></span>
                                 <span><strong>#</strong> <span id="fileIndex">1/2</span></span>
                             </div>
+
                             <div class="mb-3">
                                 <small><label class="form-label small fw-bold">Documents:</label></small>
                                 <div class="thumbnail-list" id="thumbnailList">
@@ -27,6 +28,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="main-viewer" id="mainViewer">
                                 <div class="loading-spinner">
                                     <div class="spinner-border" role="status">

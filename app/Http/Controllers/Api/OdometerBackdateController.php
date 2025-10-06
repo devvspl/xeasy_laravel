@@ -74,7 +74,7 @@ class OdometerBackdateController extends Controller
                     'R' => 'Rejected',
                     default => '',
                 };
-                return ['ExpId' => $item->ExpId, 'BillDate' => $item->BillDate, 'CrDate' => $item->CrDate, 'odomtr_opening' => $item->odomtr_opening, 'odomtr_closing' => $item->odomtr_closing, 'opening_filepath' => Storage::disk('s3')->url("Expense/{$item->ClaimYearId}/{$item->CrBy}/{$item->opening_filepath}"), 'closing_filepath' => Storage::disk('s3')->url("Expense/{$item->ClaimYearId}/{$item->CrBy}/{$item->closing_filepath}"), 'TotKm' => $item->TotKm, 'RatePerKM' => $item->RatePerKM, 'ClaimStatus' => $item->ClaimStatus, 'days_difference' => $item->days_difference, 'Backdate_Odometer_Status' => $status,];
+                return ['ExpId' => $item->ExpId, 'BillDate' => $item->BillDate, 'CrDate' => $item->CrDate, 'WType' => $item->WType, 'odomtr_opening' => $item->odomtr_opening, 'odomtr_closing' => $item->odomtr_closing, 'opening_filepath' => Storage::disk('s3')->url("Expense/{$item->ClaimYearId}/{$item->CrBy}/{$item->opening_filepath}"), 'closing_filepath' => Storage::disk('s3')->url("Expense/{$item->ClaimYearId}/{$item->CrBy}/{$item->closing_filepath}"), 'TotKm' => $item->TotKm, 'RatePerKM' => $item->RatePerKM, 'ClaimStatus' => $item->ClaimStatus, 'days_difference' => $item->days_difference, 'Backdate_Odometer_Status' => $status,];
             })->toArray(),];
         });
         return $this->jsonSuccess($grouped, 'Odometer backdate submission retrieved successfully.');

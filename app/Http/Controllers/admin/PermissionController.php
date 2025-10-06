@@ -62,7 +62,6 @@ class PermissionController extends Controller
         ]);
 
         Cache::forget('spatie.permission.cache');
-
         return $this->jsonSuccess($permission, 'Permission created successfully.');
     }
 
@@ -88,12 +87,11 @@ class PermissionController extends Controller
             'updated_at' => now(),
         ]);
         Menu::where('permission_id', $id)->update([
-            'permission_name' => $request->permission_name,
+            'permission_name' => $permissionKey,
             'updated_by' => Auth::id(),
             'updated_at' => now(),
         ]);
         Cache::forget('spatie.permission.cache');
-
         return $this->jsonSuccess($permission, 'Permission updated successfully.');
     }
 
