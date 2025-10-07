@@ -538,8 +538,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 employee.EmployeeName
             }</h6>
                         <span class="fs-11 mb-0 text-muted">
-                            ${employee.grade_name || "N/A"} - ${
-                employee.department_name || "N/A"
+                            ${employee.grade_name || "-"} - ${
+                employee.department_name || "-"
             }
                         </span>
                         <span style="float: right;" class="fs-11 mb-0 ${statusClass}">${statusLabel}</span>

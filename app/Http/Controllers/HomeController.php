@@ -58,9 +58,9 @@ class HomeController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error in getDashboardData', [
-                'bill_date_from' => $request->input('bill_date_from') ?? 'N/A',
-                'bill_date_to' => $request->input('bill_date_to') ?? 'N/A',
-                'year_id' => session('year_id') ?? 'N/A',
+                'bill_date_from' => $request->input('bill_date_from') ?? '-',
+                'bill_date_to' => $request->input('bill_date_to') ?? '-',
+                'year_id' => session('year_id') ?? '-',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -265,8 +265,8 @@ class HomeController extends Controller
             return response()->download($zipFileName)->deleteFileAfterSend(true);
         } catch (\Exception $e) {
             Log::error('Error in exportReports', [
-                'bill_date_from' => $request->input('bill_date_from') ?? 'N/A',
-                'bill_date_to' => $request->input('bill_date_to') ?? 'N/A',
+                'bill_date_from' => $request->input('bill_date_from') ?? '-',
+                'bill_date_to' => $request->input('bill_date_to') ?? '-',
                 'reports' => $request->input('reports') ?? [],
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),

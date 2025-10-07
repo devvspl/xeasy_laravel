@@ -413,7 +413,7 @@ $(function () {
                         }">
                           <td class="toggle-icon text-center" title="View"><i class="ri-add-circle-fill"></i></td>
                             <td class="text-center">${idx + 1}</td>
-                            <td class="text-start">${d.department ?? "N/A"}</td>
+                            <td class="text-start">${d.department ?? "-"}</td>
                             <td class="text-end">${formatCurrency(
                                 d.previousYear
                             )}</td>
@@ -656,7 +656,7 @@ $(function () {
                    
                         <td>${i + 1}</td>
                         <td class="text-start">${
-                            sd.sub_department_name || "N/A"
+                            sd.sub_department_name || "-"
                         }</td>
                         <td class="text-end">${formatCurrency(
                             sd.TotalFinancedTAmt_Y6
@@ -696,7 +696,7 @@ $(function () {
                         type: "bar",
                         data: {
                             labels: subData.map(
-                                (sd) => sd.sub_department_name || "N/A"
+                                (sd) => sd.sub_department_name || "-"
                             ),
                             datasets: [
                                 {
@@ -909,7 +909,7 @@ $(function () {
             rows += `<tr><td>${idx + 1}</td><td class="text-start">${
                 emp.employee_name
             } - ${emp.EmpCode}</td><td>${
-                emp.department_code ?? "N/A"
+                emp.department_code ?? "-"
             }</td><td class="text-end">${emp.claim_count}</td></tr>`;
         });
         $(`#${tableId} tbody`).html(rows);

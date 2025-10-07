@@ -44,17 +44,17 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="ri-close-line me-2"></i>Cancel
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancel
                     </button>
-                    <button type="button" class="btn btn-primary" id="prevBtn">
-                        <i class="ri-arrow-left-line me-2"></i>Previous
+                    <button type="button" class="btn btn-sm btn-primary" id="prevBtn">
+                        <i class="ri-arrow-left-line me-1"></i>Previous
                     </button>
-                    <button type="button" class="btn btn-primary" id="nextBtn">
-                        Next<i class="ri-arrow-right-line ms-2"></i>
+                    <button type="button" class="btn btn-sm btn-primary" id="nextBtn">
+                        Next<i class="ri-arrow-right-line ms-1"></i>
                     </button>
-                    <button type="button" class="btn btn-success" id="saveBtn">
-                        <i class="ri-save-line me-2"></i>Save Document
+                    <button type="button" class="btn btn-sm btn-success" id="saveBtn">
+                        <i class="ri-save-line me-1"></i>Save
                     </button>
                 </div>
             </div>

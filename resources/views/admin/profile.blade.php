@@ -67,7 +67,7 @@
                             <div class="mb-3">
                               <label for="phonenumberInput" class="form-label">Phone Number</label>
                               <input type="text" class="form-control" id="phonenumberInput"
-                                 placeholder="Enter your phone number" value="N/A">
+                                 placeholder="Enter your phone number" value="-">
                             </div>
                           </div>
                           <div class="col-lg-6">
@@ -113,35 +113,35 @@
                             <div class="mb-3">
                               <label for="websiteInput1" class="form-label">Website</label>
                               <input type="text" class="form-control" id="websiteInput1"
-                                 placeholder="www.example.com" value="N/A" />
+                                 placeholder="www.example.com" value="-" />
                             </div>
                           </div>
                           <div class="col-lg-4">
                             <div class="mb-3">
                               <label for="cityInput" class="form-label">City</label>
                               <input type="text" class="form-control" id="cityInput" placeholder="City"
-                                 value="N/A" />
+                                 value="-" />
                             </div>
                           </div>
                           <div class="col-lg-4">
                             <div class="mb-3">
                               <label for="countryInput" class="form-label">Country</label>
                               <input type="text" class="form-control" id="countryInput" placeholder="Country"
-                                 value="N/A" />
+                                 value="-" />
                             </div>
                           </div>
                           <div class="col-lg-4">
                             <div class="mb-3">
                               <label for="zipcodeInput" class="form-label">Zip Code</label>
                               <input type="text" class="form-control" minlength="5" maxlength="6"
-                                 id="zipcodeInput" placeholder="Enter zipcode" value="N/A">
+                                 id="zipcodeInput" placeholder="Enter zipcode" value="-">
                             </div>
                           </div>
                           <div class="col-lg-12">
                             <div class="mb-3 pb-2">
                               <label for="exampleFormControlTextarea" class="form-label">Description</label>
                               <textarea class="form-control" id="exampleFormControlTextarea"
-                                 placeholder="Enter your description" rows="3">N/A</textarea>
+                                 placeholder="Enter your description" rows="3">-</textarea>
                             </div>
                           </div>
                           <div class="col-lg-12">

@@ -161,7 +161,7 @@ $(document).ready(function () {
         $('#tokenLogins').text(stats.token_logins || 0);
         $('#uniqueIPs').text(stats.unique_ips || 0);
         $('#multiIPUsers').text(stats.multiple_ip_users || 0);
-        $('#peakHourDisplay').text(stats.peak_hour ? `${stats.peak_hour}:00` : 'N/A');
+        $('#peakHourDisplay').text(stats.peak_hour ? `${stats.peak_hour}:00` : '-');
 
         // Update method chart stats
         const total = (stats.token_logins || 0) + (stats.normal_logins || 0);
@@ -192,11 +192,11 @@ $(document).ready(function () {
     // Calculate growth trend
     function calculateGrowthTrend(dailyCounts) {
         const dates = Object.keys(dailyCounts).sort((a, b) => new Date(a) - new Date(b));
-        if (dates.length < 2) return 'N/A';
+        if (dates.length < 2) return '-';
         const firstHalf = dates.slice(0, Math.floor(dates.length / 2)).reduce((sum, date) => sum + dailyCounts[date], 0);
         const secondHalf = dates.slice(Math.floor(dates.length / 2)).reduce((sum, date) => sum + dailyCounts[date], 0);
         const trend = ((secondHalf - firstHalf) / firstHalf) * 100;
-        return isFinite(trend) ? (trend > 0 ? `+${trend.toFixed(1)}%` : `${trend.toFixed(1)}%`) : 'N/A';
+        return isFinite(trend) ? (trend > 0 ? `+${trend.toFixed(1)}%` : `${trend.toFixed(1)}%`) : '-';
     }
 
     // Sort and update table
@@ -231,18 +231,18 @@ $(document).ready(function () {
         }
 
         filteredData.forEach((login, index) => {
-            const employeeId = login.employee_id && login.employee_id !== 'N/A' ? login.employee_id : '--';
+            const employeeId = login.employee_id && login.employee_id !== '-' ? login.employee_id : '--';
             const row = `
                 <tr>
                     <td>${index + 1}</td>
                     <td>
                         <div class="d-flex flex-column">
                             <span class="fw-bold">${login.user_name || 'Unknown User'}</span>
-                            <small class="text-muted">${login.user_email || 'N/A'}</small>
+                            <small class="text-muted">${login.user_email || '-'}</small>
                         </div>
                     </td>
                     <td>${employeeId}</td>
-                    <td><code>${login.ip_address || 'N/A'}</code></td>
+                    <td><code>${login.ip_address || '-'}</code></td>
                     <td>
                         <span class="badge ${
                             login.login_method === 'token'
@@ -252,19 +252,19 @@ $(document).ready(function () {
                             ${
                                 login.login_method
                                     ? login.login_method.charAt(0).toUpperCase() + login.login_method.slice(1)
-                                    : 'N/A'
+                                    : '-'
                             }
                         </span>
                     </td>
                     <td>${
                         login.timestamp
                             ? new Date(login.timestamp).toLocaleString()
-                            : 'N/A'
+                            : '-'
                     }</td>
                     <td class="small text-muted" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;" title="${
                         login.user_agent || ''
                     }">
-                        ${login.user_agent || 'N/A'}
+                        ${login.user_agent || '-'}
                     </td>
                     <td class="text-center">
                         <span class="badge ${login.is_success ? 'bg-success' : 'bg-danger'}">
@@ -308,7 +308,7 @@ $(document).ready(function () {
                     <td>${index + 1}</td>
                     <td>${user}</td>
                     <td>${count}</td>
-                    <td>${userLastLogin[user] ? new Date(userLastLogin[user]).toLocaleString() : 'N/A'}</td>
+                    <td>${userLastLogin[user] ? new Date(userLastLogin[user]).toLocaleString() : '-'}</td>
                     <td>${userIPs[user].size}</td>
                 </tr>
             `;

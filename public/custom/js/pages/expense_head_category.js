@@ -9,6 +9,12 @@ $(document).ready(function () {
         lengthMenu: [10, 25, 50, 100],
     });
 
+    $("#field_type").select2({
+        dropdownParent: $("#expenseHeadModal"),
+        width: "100%",
+        allowClear: true,
+    });
+
     $("#saveExpenseHeadBtn").click(function (event) {
         event.preventDefault();
         const button = event.currentTarget;
@@ -138,7 +144,7 @@ $(document).ready(function () {
         $("#expenseHeadLabel").text("Add New Expense Head Category");
         $("#expense_head_name").val("");
         $("#short_code").val("");
-        $("#field_type").val("number");
+        $("#field_type").val("");
         $("#has_file").prop("checked", false);
         $("#file_required").prop("checked", false);
         $("#is_active").prop("checked", true);

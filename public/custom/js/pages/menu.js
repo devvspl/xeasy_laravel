@@ -239,7 +239,7 @@ $(document).ready(function () {
                 {
                     data: "created_at",
                     render: function (data) {
-                        return data ? new Date(data).toLocaleString() : "N/A";
+                        return data ? new Date(data).toLocaleString() : "-";
                     },
                 },
             ],

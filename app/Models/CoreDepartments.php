@@ -12,13 +12,13 @@ class CoreDepartments extends Model
     public $timestamps = false;
     protected $fillable = ['id', 'department_name', 'department_code', 'numeric_code', 'effective_date', 'is_active'];
 
-    /**
-     * Define the relationship with the HRMEmployees model.
-     * One department can have many employees.
-     */
     public function employees()
     {
-        return $this->hasMany(HRMEmployees::class, 'DepartmentId', 'id')
-                    ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID');
+        return $this->hasMany(HRMEmployees::class, 'DepartmentId', 'id')->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID');
+    }
+
+    public static function active()
+    {
+        return self::where('is_active', 1)->orderBy('department_name')->get(['id', 'department_name as name']);
     }
 }

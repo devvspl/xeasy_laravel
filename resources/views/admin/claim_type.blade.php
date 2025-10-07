@@ -59,7 +59,7 @@
                                                 <tr>
                                                     <td>{{ $key + 1 }}</td>
                                                     <td style="text-align: left">{{ $claim->ClaimName }}</td>
-                                                    <td>{{ $claim->group->cgName ?? 'N/A' }}</td>
+                                                    <td>{{ $claim->group->cgName ?? '-' }}</td>
                                                     <td>
                                                         @if ($claim->ClaimStatus == 'A' || $claim->ClaimStatus == 'B')
                                                             <span

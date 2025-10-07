@@ -67,12 +67,12 @@
                                                     <td>
                                                         @if ($category->mapped_activity == 'Y')
                                                             <span
-                                                                class="badge bg-success-subtle text-success badge-border">Yes</span>
+                                                                class="badge bg-primary-subtle text-primary">Yes</span>
                                                         @else
-                                                            <span class="badge bg-danger-subtle text-danger badge-border">No</span>
+                                                            <span class="badge bg-danger-subtle text-danger">No</span>
                                                         @endif
                                                     </td>
-                                                    <td>{{ $category->description ?? 'N/A' }}</td>
+                                                    <td>{{ $category->description ?? '-' }}</td>
                                                     <td>
                                                         @if ($category->status)
                                                             <span

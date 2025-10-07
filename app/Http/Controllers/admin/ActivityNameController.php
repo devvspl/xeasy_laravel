@@ -7,6 +7,7 @@ use App\Models\ActivityCategory;
 use App\Models\ActivityName;
 use App\Models\ClaimType;
 use App\Models\CoreDepartments;
+use App\Models\CoreVertical;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -163,7 +164,7 @@ class ActivityNameController extends Controller
 
     public function getDepartments()
     {
-        $departments = CoreDepartments::where('is_active', 1)->get(['id', 'department_name']);
+        $departments = CoreDepartments::active();
         return $this->jsonSuccess($departments, 'Departments retrieved successfully.');
     }
 
@@ -175,12 +176,7 @@ class ActivityNameController extends Controller
 
     public function getVerticals()
     {
-        // Placeholder; replace with actual logic if vertical refers to a table
-        $verticals = [
-            ['id' => 'vertical1', 'name' => 'Vertical 1'],
-            ['id' => 'vertical2', 'name' => 'Vertical 2'],
-            ['id' => 'vertical3', 'name' => 'Vertical 3'],
-        ];
+        $verticals = CoreVertical::active();
         return $this->jsonSuccess($verticals, 'Verticals retrieved successfully.');
     }
 }

@@ -226,7 +226,7 @@ class OdometerBackdateController extends Controller
     {
         $model = new ExpenseClaim;
         $model->setTable(ExpenseClaim::tableName($yearId));
-        $updatedCount = $model->where('CrBy', $empid)->where('ClaimId', 7)->where('Backdate_Odometer_Status', 'P')->update(['Backdate_Odometer_Status' => 'A', 'ClaimStatus' => 'Filled', 'ClaimAtStep' => 1, 'Backdate_Odometer_By' => $employeeId, 'Backdate_Odometer_Date' => date('Y-m-d'),]);
+        $updatedCount = $model->where('CrBy', $empid)->where('ClaimId', 7)->where('Backdate_Odometer_Status', 'P')->where('ClaimStatus', '!=', 'Deactivate')->where('ClaimAtStep', '<', 3)->update(['Backdate_Odometer_Status' => 'A', 'ClaimStatus' => 'Filled', 'ClaimAtStep' => 3, 'Backdate_Odometer_By' => $employeeId, 'Backdate_Odometer_Date' => date('Y-m-d'),]);
         return $this->jsonSuccess(
             ['updated_count' => $updatedCount],
             $updatedCount > 0 ? "{$updatedCount} backdated odometer record(s) have been approved successfully." : "No pending backdated odometer records were found for approval."
@@ -236,7 +236,7 @@ class OdometerBackdateController extends Controller
     {
         $model = new ExpenseClaim;
         $model->setTable(ExpenseClaim::tableName($yearId));
-        $updatedCount = $model->where('CrBy', $empid)->where('ClaimId', 7)->where('Backdate_Odometer_Status', 'P')->update(['Backdate_Odometer_Status' => 'R', 'Backdate_Odometer_By' => $employeeId, 'Backdate_Odometer_Date' => date('Y-m-d'),]);
+        $updatedCount = $model->where('CrBy', $empid)->where('ClaimId', 7)->where('Backdate_Odometer_Status', 'P')->where('ClaimStatus', '!=', 'Deactivate')->where('ClaimAtStep', '<', 3)->update(['Backdate_Odometer_Status' => 'R', 'Backdate_Odometer_By' => $employeeId, 'Backdate_Odometer_Date' => date('Y-m-d'),]);
         return $this->jsonSuccess(
             ['updated_count' => $updatedCount],
             $updatedCount > 0 ? "{$updatedCount} backdated odometer record(s) have been rejected successfully." : "No pending backdated odometer records were found for rejection."

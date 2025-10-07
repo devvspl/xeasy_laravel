@@ -52,13 +52,6 @@
                                         <th style="text-align: left">Activity Name</th>
                                         <th>Category</th>
                                         <th>Departments</th>
-                                        <th>Verticals</th>
-                                        <th>From Month</th>
-                                        <th>To Month</th>
-                                        <th>From Year</th>
-                                        <th>To Year</th>
-                                        <th>Approved Limit</th>
-                                        <th>Approved Amount</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -71,30 +64,7 @@
                                                     <td>{{ $key + 1 }}</td>
                                                     <td style="text-align: left">{{ $name->claim_name }}</td>
                                                     <td>{{ $name->category->category_name ?? '-' }}</td>
-                                                    <td>
-                                                        @php
-                                                            $deptIds = $name->dept_id
-                                                                ? explode(',', $name->dept_id)
-                                                                : [];
-                                                            $deptNames =
-                                                                App\Models\CoreDepartments::whereIn('id', $deptIds)
-                                                                    ->where('is_active', 1)
-                                                                    ->pluck('department_name')
-                                                                    ->implode(', ') ?:
-                                                                '-';
-                                                        @endphp
-                                                        {{ $deptNames }}
-                                                    </td>
-                                                    <td>{{ $name->vertical ? implode(', ', explode(',', $name->vertical)) : '-' }}
-                                                    </td>
-                                                    <td>{{ $name->from_month ? date('Y-m-d', strtotime($name->from_month)) : '-' }}
-                                                    </td>
-                                                    <td>{{ $name->to_month ? date('Y-m-d', strtotime($name->to_month)) : '-' }}
-                                                    </td>
-                                                    <td>{{ $name->from_year ?? '-' }}</td>
-                                                    <td>{{ $name->to_year ?? '-' }}</td>
-                                                    <td>{{ number_format($name->approved_limit, 0) }}</td>
-                                                    <td>{{ number_format($name->approved_amount, 0) }}</td>
+                                                    <td>{{ $name->departments }}</td>
                                                     <td>
                                                         @if ($name->status)
                                                             <span

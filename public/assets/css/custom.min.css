@@ -208,8 +208,8 @@ div.dataTables_wrapper div.dataTables_processing {
     width: 20px;
 }
 
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
-table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
     top: 50%;
     left: 5px;
     height: 1em;
@@ -281,7 +281,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
     transition: transform 0.3s ease;
 }
 
-#additionalFilters.show+.ri-equalizer-line {
+#additionalFilters.show + .ri-equalizer-line {
     transform: rotate(90deg);
 }
 
@@ -332,7 +332,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
     font-size: 12px;
 }
 
-.table> :not(caption)>*>* {
+.table > :not(caption) > * > * {
     padding: 5px 5px !important;
 }
 
@@ -545,11 +545,9 @@ table.table-bordered.dataTable td {
     color: #008080 !important;
 }
 
-
 :is([data-layout="vertical"], [data-layout="semibox"])[data-sidebar-size="sm"] .card.sticky-card {
     top: 0px;
 }
-
 
 [data-layout="horizontal"] .card.sticky-card {
     top: 64px;
@@ -575,7 +573,6 @@ table.table-bordered.dataTable td {
     cursor: pointer;
     border-radius: 6px;
 }
-
 
 .viewer-section {
     border-right: 1px solid #dee2e6;
@@ -639,7 +636,6 @@ table.table-bordered.dataTable td {
     position: relative;
     background-color: #f8f9fa;
     padding-bottom: 50px;
-    /* Add padding to prevent overlap with viewer-controls at bottom */
 }
 
 .pdf-viewer {
@@ -650,13 +646,11 @@ table.table-bordered.dataTable td {
 
 .image-container {
     width: 100%;
-    height: calc(100% - 50px);
-    /* Adjust height to account for bottom controls */
+    height: calc(100% - 10px);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: auto;
-    /* Allow scrolling for zoomed image */
     position: relative;
     background: #f8f9fa;
 }
@@ -687,32 +681,31 @@ table.table-bordered.dataTable td {
 .viewer-controls {
     position: absolute;
     bottom: 5px;
-    /* Moved to bottom */
+
     right: 5px;
     z-index: 1000;
-    /* Ensure controls are on top */
+
     background: rgba(0, 0, 0, 0.85);
-    /* Darker background for contrast */
+
     border-radius: 8px;
-    padding: 8px;
+    padding: 5px;
     display: flex;
-    gap: 6px;
+    gap: 0;
     align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    /* Subtle shadow */
 }
 
 .control-btn {
     background: transparent;
     border: none;
     color: #ffffff;
-    /* Pure white for icons */
-    padding: 8px;
+
+    padding: 5px;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    font-size: 20px;
-    /* Larger icons */
+    font-size: 15px;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -720,7 +713,6 @@ table.table-bordered.dataTable td {
 
 .control-btn:hover {
     background: rgba(255, 255, 255, 0.3);
-    /* Lighter hover effect */
 }
 
 .control-btn:disabled {
@@ -730,25 +722,20 @@ table.table-bordered.dataTable td {
 
 .zoom-display {
     color: #ffffff;
-    /* Pure white for readability */
-    font-size: 14px;
-    /* Larger font size */
+    font-size: 12px;
     font-weight: 600;
-    /* Bolder text */
-    padding: 4px 10px;
-    min-width: 60px;
-    /* Ensure enough space */
+    padding: 2px 5px;
+    min-width: 50px;
     text-align: center;
     background: rgba(255, 255, 255, 0.1);
-    /* Subtle background */
-    border-radius: 4px;
+    border-radius: 5px;
 }
 
 .control-divider {
     width: 1px;
     height: 24px;
     background: rgba(255, 255, 255, 0.4);
-    /* More opaque divider */
+
     margin: 0 6px;
 }
 
@@ -773,7 +760,6 @@ table.table-bordered.dataTable td {
 
     .main-viewer {
         padding-bottom: 40px;
-        /* Less padding for smaller screens */
     }
 
     .image-container {

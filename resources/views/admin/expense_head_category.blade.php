@@ -5,38 +5,40 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Expense Head Category List</h4>
-                            <div class="dropdown card-header-dropdown">
-                                <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false">
-                                    <span class="fw-semibold fs-12">Status: </span>
-                                    <span class="text-muted">
-                                        @if ($status === 'active')
-                                            Active
-                                        @elseif($status === 'inactive')
-                                            Inactive
-                                        @else
-                                            All
-                                        @endif
-                                        <i class="mdi mdi-chevron-down"></i>
-                                    </span>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="{{ url()->current() }}?status=all">All</a>
-                                    <a class="dropdown-item" href="{{ url()->current() }}?status=active">Active</a>
-                                    <a class="dropdown-item" href="{{ url()->current() }}?status=inactive">Inactive</a>
+                        <div class="card-header align-items-center d-flex" style="justify-content: space-between;">
+                            <x-redirect-button />
+                            <div style="display: flex;gap:8px;align-items: baseline;">
+                                <div class="dropdown card-header-dropdown">
+                                    <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        <span class="fw-semibold fs-12">Status: </span>
+                                        <span class="text-muted">
+                                            @if ($status === 'active')
+                                                Active
+                                            @elseif($status === 'inactive')
+                                                Inactive
+                                            @else
+                                                All
+                                            @endif
+                                            <i class="mdi mdi-chevron-down"></i>
+                                        </span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item" href="{{ url()->current() }}?status=all">All</a>
+                                        <a class="dropdown-item" href="{{ url()->current() }}?status=active">Active</a>
+                                        <a class="dropdown-item" href="{{ url()->current() }}?status=inactive">Inactive</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="flex-shrink-0">
-                                @can('create expensehead')
-                                    <button type="button"
-                                        class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
-                                        data-bs-toggle="modal" data-bs-target="#expenseHeadModal" id="addExpenseHeadBtn">
-                                        <i class="ri-add-circle-fill label-icon align-middle rounded-pill fs-16 me-2"></i> Add
-                                        New
-                                    </button>
-                                @endcan
+                                <div class="flex-shrink-0">
+                                    @can('create expensehead')
+                                        <button type="button"
+                                            class="btn btn-primary btn-label waves-effect waves-light rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#expenseHeadModal" id="addExpenseHeadBtn">
+                                            <i class="ri-add-circle-fill label-icon align-middle rounded-pill fs-16 me-2"></i>
+                                            Add New
+                                        </button>
+                                    @endcan
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">
@@ -62,24 +64,22 @@
                                                 <tr>
                                                     <td>{{ $key + 1 }}</td>
                                                     <td style="text-align: left">{{ $expenseHead->expense_head_name }}</td>
-                                                    <td>{{ $expenseHead->short_code ?? 'N/A' }}</td>
+                                                    <td>{{ $expenseHead->short_code ?? '-' }}</td>
                                                     <td>{{ ucfirst($expenseHead->field_type) }}</td>
                                                     <td>
                                                         @if ($expenseHead->has_file)
                                                             <span
-                                                                class="badge bg-success-subtle text-success badge-border">Yes</span>
+                                                                class="badge bg-primary-subtle text-primary">Yes</span>
                                                         @else
-                                                            <span
-                                                                class="badge bg-danger-subtle text-danger badge-border">No</span>
+                                                            <span class="badge bg-danger-subtle text-danger">No</span>
                                                         @endif
                                                     </td>
                                                     <td>
                                                         @if ($expenseHead->file_required)
                                                             <span
-                                                                class="badge bg-success-subtle text-success badge-border">Yes</span>
+                                                                class="badge bg-primary-subtle text-primary">Yes</span>
                                                         @else
-                                                            <span
-                                                                class="badge bg-danger-subtle text-danger badge-border">No</span>
+                                                            <span class="badge bg-danger-subtle text-danger">No</span>
                                                         @endif
                                                     </td>
                                                     <td>
@@ -110,7 +110,8 @@
                                     @else
                                         <tr>
                                             <td colspan="8" class="text-center">
-                                                <span class="text-danger">You do not have permission to view the Expense Head
+                                                <span class="text-danger">You do not have permission to view the Expense
+                                                    Head
                                                     Category List.</span>
                                             </td>
                                         </tr>

@@ -527,7 +527,7 @@ $(document).ready(function () {
                       .map(
                           (item) => `
                 <tr>
-                    <td>${item.MonthName || "N/A"}</td>
+                    <td>${item.MonthName || "-"}</td>
                     <td>${formatCurrency(item.FilledTotal)}</td>
                     <td>${formatCurrency(item.VerifiedTotal)}</td>
                     <td>${formatCurrency(item.ApprovedTotal)}</td>
@@ -933,7 +933,7 @@ $(document).ready(function () {
             },
             xaxis: {
                 categories: departmentTotals.map(
-                    (item) => item.department_code || "N/A"
+                    (item) => item.department_code || "-"
                 ),
                 labels: {
                     rotate: -45,

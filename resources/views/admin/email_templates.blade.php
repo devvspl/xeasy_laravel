@@ -59,7 +59,7 @@
                                                 <td>{{ $key + 1 }}</td>
                                                 <td style="text-align: left">{{ $template->name }}</td>
                                                 <td style="text-align: left">{{ $template->subject }}</td>
-                                                <td>{{ $template->category ?? 'N/A' }}</td>
+                                                <td>{{ $template->category ?? '-' }}</td>
                                                 <td>
                                                     @if ($template->is_active == 1)
                                                         <span class="badge bg-success-subtle text-success badge-border">Active</span>

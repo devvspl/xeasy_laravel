@@ -76,11 +76,11 @@
                                                                     ->where('is_active', 1)
                                                                     ->pluck('department_name')
                                                                     ->implode(', ') ?:
-                                                                'N/A';
+                                                                '-';
                                                         @endphp
                                                         {{ $departmentNames }}
                                                     </td>
-                                                    <td>{{ $type->description ?? 'N/A' }}</td>
+                                                    <td>{{ $type->description ?? '-' }}</td>
                                                     <td>
                                                         @if ($type->status)
                                                             <span
