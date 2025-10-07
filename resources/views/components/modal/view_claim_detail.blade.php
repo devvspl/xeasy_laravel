@@ -2,13 +2,37 @@
         tabindex="-1" aria-labelledby="claimDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header d-flex align-items-center justify-content-between">
                     <h5 class="modal-title" id="claimDetailModalLabel">
                         <i class="ri-file-text-line me-2"></i>Document Viewer & Data Entry
                     </h5>
-                    <select name="" style="width: 250px;" class="form-control" id="sltClaimTypeList">
-                    </select>
+
+                    <div class="d-flex align-items-center" style="gap: 10px;">
+                        <!-- Expense ID Display with Copy Icon -->
+                        <span id="expIdDisplay" class="fw-semibold d-flex align-items-center" style="gap: 5px;">
+                            Exp ID: <span id="expIdValue">12345</span>
+                            <span class="copy-wrapper"
+                                style="position: relative; display: flex; align-items: center; gap: 5px;">
+                                <i class="ri-file-copy-line copy-icon" style="cursor: pointer;"></i>
+                                <span class="copied-text"
+                                    style="
+                    display:none; 
+                    color: green; 
+                    font-size: 0.85rem;
+                ">Copied!</span>
+                            </span>
+                        </span>
+
+                        <!-- Claim Type Dropdown -->
+                        <select name="" style="width: 250px;" class="form-control" id="sltClaimTypeList">
+                        </select>
+                    </div>
                 </div>
+
+                <script>
+                   
+                </script>
+
                 <div class="modal-body p-0">
                     <div class="row g-0">
                         <div class="col-md-5 viewer-section p-2">

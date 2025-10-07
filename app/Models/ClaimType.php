@@ -16,4 +16,9 @@ class ClaimType extends Model
     {
         return $this->belongsTo(ClaimGroup::class, 'cgId', 'cgId');
     }
+
+    public static function getCgIdByClaimId($claimId)
+    {
+        return self::where('ClaimId', $claimId)->value('cgId');
+    }
 }

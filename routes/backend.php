@@ -189,6 +189,7 @@ Route::middleware('auth')->group(function () {
     Route::get('claim-detail', [ClaimViewController::class, 'getClaimDetailView']);
     Route::get('claims/detail-view', [ClaimViewController::class, 'getClaimDetailView']);
     Route::get('get-claim-types', [ClaimViewController::class, 'getActiveClaimTypes']);
+    Route::get('get-uploaded-files/{expid}/{claimid}', [ClaimViewController::class, 'viewUploadedFiles']);
 
     // Employee Management
     // Routes for employee-related operations, including search and filtering

@@ -1,17 +1,5 @@
 $(document).ready(function () {
-    const defaultFiles = [
-        {
-            url: 'https://s3.ap-south-1.amazonaws.com/developerinvnr.bkt/Expense/7/2006/Img_2006_240925141433_1.jpg',
-            name: 'Expense_Receipt_2006.jpg',
-            type: 'image/jpeg'
-        },
-        {
-            url: 'https://gate2024.iisc.ac.in/wp-content/uploads/2023/07/cs.pdf',
-            name: 'GATE_CS_Syllabus.pdf',
-            type: 'application/pdf'
-        }
-    ];
-
+    let uploadedFiles = [];
     let currentFileIndex = 0;
     let currentZoom = 1;
     let currentRotation = 0;
@@ -21,15 +9,26 @@ $(document).ready(function () {
     });
 
     function loadDefaultFiles() {
+        uploadedFiles = [];
+        currentFileIndex = 0;
         displayThumbnails();
-        showFile(0);
+        if (uploadedFiles.length > 0) {
+            showFile(0);
+        } else {
+            $('#mainViewer').html('<div class="text-center">No files available.</div>');
+        }
     }
 
     function displayThumbnails() {
         const thumbnailList = $('#thumbnailList');
         thumbnailList.empty();
 
-        defaultFiles.forEach((file, index) => {
+        if (uploadedFiles.length === 0) {
+            thumbnailList.append('<div class="text-center">No files to display.</div>');
+            return;
+        }
+
+        uploadedFiles.forEach((file, index) => {
             const thumbnail = $('<div>');
 
             if (file.type.startsWith('image/')) {
@@ -52,7 +51,9 @@ $(document).ready(function () {
             thumbnailList.append(thumbnail);
         });
 
-        thumbnailList.find('[data-index="0"]').addClass('active');
+        if (uploadedFiles.length > 0) {
+            thumbnailList.find('[data-index="0"]').addClass('active');
+        }
     }
 
     $(document).on('click', '.thumbnail-item', function () {
@@ -69,22 +70,21 @@ $(document).ready(function () {
     }
 
     function showFile(index) {
-        if (index >= defaultFiles.length || index < 0) return;
+        if (index >= uploadedFiles.length || index < 0) return;
 
-        const file = defaultFiles[index];
+        const file = uploadedFiles[index];
         const mainViewer = $('#mainViewer');
 
         mainViewer.html(`
-                    <div class="loading-spinner">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                `);
+            <div class="loading-spinner">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `);
 
         updateFileInfo(file, index);
 
-        // Reset zoom and rotation
         currentZoom = 1;
         currentRotation = 0;
 
@@ -97,56 +97,56 @@ $(document).ready(function () {
 
     function loadImage(file, container) {
         container.html(`
-                    <div class="image-container" id="imageContainer">
-                        <img src="${file.url}" id="mainImage" alt="${file.name}">
-                    </div>
-                    <div class="viewer-controls">
-                        <button class="control-btn" id="zoomOut" title="Zoom Out">
-                            <i class="ri-zoom-out-line"></i>
-                        </button>
-                        <div class="zoom-display" id="zoomDisplay">100%</div>
-                        <button class="control-btn" id="zoomIn" title="Zoom In">
-                            <i class="ri-zoom-in-line"></i>
-                        </button>
-                        <button class="control-btn" id="zoomReset" title="Reset Zoom">
-                            <i class="ri-focus-line"></i>
-                        </button>
-                        <div class="control-divider"></div>
-                        <button class="control-btn" id="rotateLeft" title="Rotate Left">
-                            <i class="ri-anticlockwise-line"></i>
-                        </button>
-                        <button class="control-btn" id="rotateRight" title="Rotate Right">
-                            <i class="ri-clockwise-line"></i>
-                        </button>
-                        <div class="control-divider"></div>
-                        <button class="control-btn" id="downloadImage" title="Download">
-                            <i class="ri-download-line"></i>
-                        </button>
-                        <button class="control-btn" id="openImage" title="Open in New Tab">
-                            <i class="ri-external-link-line"></i>
-                        </button>
-                    </div>
-                `);
+            <div class="image-container" id="imageContainer">
+                <img src="${file.url}" id="mainImage" alt="${file.name}">
+            </div>
+            <div class="viewer-controls">
+                <button class="control-btn" id="zoomOut" title="Zoom Out">
+                    <i class="ri-zoom-out-line"></i>
+                </button>
+                <div class="zoom-display" id="zoomDisplay">100%</div>
+                <button class="control-btn" id="zoomIn" title="Zoom In">
+                    <i class="ri-zoom-in-line"></i>
+                </button>
+                <button class="control-btn" id="zoomReset" title="Reset Zoom">
+                    <i class="ri-focus-line"></i>
+                </button>
+                <div class="control-divider"></div>
+                <button class="control-btn" id="rotateLeft" title="Rotate Left">
+                    <i class="ri-anticlockwise-line"></i>
+                </button>
+                <button class="control-btn" id="rotateRight" title="Rotate Right">
+                    <i class="ri-clockwise-line"></i>
+                </button>
+                <div class="control-divider"></div>
+                <button class="control-btn" id="downloadImage" title="Download">
+                    <i class="ri-download-line"></i>
+                </button>
+                <button class="control-btn" id="openImage" title="Open in New Tab">
+                    <i class="ri-external-link-line"></i>
+                </button>
+            </div>
+        `);
 
         updateImageTransform();
-        // Add mouse wheel event for zooming
+
         $('#imageContainer').on('wheel', handleMouseWheel);
     }
 
     function loadPDF(file, container) {
         container.html(`
-                    <div style="width:100%;height:100%;padding:0px;">
-                        <iframe src="${file.url}" border="0" class="pdf-viewer"></iframe>
-                    </div>
-                    <div class="viewer-controls">
-                        <button class="control-btn" id="downloadPDF" title="Download">
-                            <i class="ri-download-line"></i>
-                        </button>
-                        <button class="control-btn" id="openPDF" title="Open in New Tab">
-                            <i class="ri-external-link-line"></i>
-                        </button>
-                    </div>
-                `);
+            <div style="width:100%;height:100%;padding:0px;">
+                <iframe src="${file.url}" border="0" class="pdf-viewer"></iframe>
+            </div>
+            <div class="viewer-controls">
+                <button class="control-btn" id="downloadPDF" title="Download">
+                    <i class="ri-download-line"></i>
+                </button>
+                <button class="control-btn" id="openPDF" title="Open in New Tab">
+                    <i class="ri-external-link-line"></i>
+                </button>
+            </div>
+        `);
     }
 
     function updateImageTransform() {
@@ -155,24 +155,20 @@ $(document).ready(function () {
             transform: `scale(${currentZoom}) rotate(${currentRotation}deg)`,
             transformOrigin: 'center center'
         });
-        $('#zoomDisplay').text(`${Math.round(currentZoom * 100)}%`); // Clean percentage display
+        $('#zoomDisplay').text(`${Math.round(currentZoom * 100)}%`);
     }
 
-    // Mouse wheel zoom handler
     function handleMouseWheel(event) {
         event.preventDefault();
         const delta = event.originalEvent.deltaY;
         if (delta > 0) {
-            // Scroll down: zoom out
             currentZoom = Math.max(currentZoom / 1.1, 0.5);
         } else {
-            // Scroll up: zoom in
             currentZoom = Math.min(currentZoom * 1.1, 5);
         }
         updateImageTransform();
     }
 
-    // Image controls
     $(document).on('click', '#zoomIn', function () {
         currentZoom = Math.min(currentZoom * 1.2, 5);
         updateImageTransform();
@@ -200,7 +196,7 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '#downloadImage, #downloadPDF', function () {
-        const file = defaultFiles[currentFileIndex];
+        const file = uploadedFiles[currentFileIndex];
         const link = document.createElement('a');
         link.href = file.url;
         link.download = file.name;
@@ -211,11 +207,10 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '#openImage, #openPDF', function () {
-        const file = defaultFiles[currentFileIndex];
+        const file = uploadedFiles[currentFileIndex];
         window.open(file.url, '_blank');
     });
 
-    // Navigation buttons
     $('#prevBtn').on('click', function () {
         if (currentFileIndex > 0) {
             showFile(currentFileIndex - 1);
@@ -224,7 +219,7 @@ $(document).ready(function () {
     });
 
     $('#nextBtn').on('click', function () {
-        if (currentFileIndex < defaultFiles.length - 1) {
+        if (currentFileIndex < uploadedFiles.length - 1) {
             showFile(currentFileIndex + 1);
             updateActiveState(currentFileIndex + 1);
         }
@@ -232,16 +227,15 @@ $(document).ready(function () {
 
     function updateNavigationButtons() {
         $('#prevBtn').prop('disabled', currentFileIndex === 0);
-        $('#nextBtn').prop('disabled', currentFileIndex === defaultFiles.length - 1);
+        $('#nextBtn').prop('disabled', currentFileIndex === uploadedFiles.length - 1);
     }
 
     function updateFileInfo(file, index) {
         $('#fileName').text(file.name);
         $('#fileType').text(file.type);
-        $('#fileIndex').text(`${index + 1} of ${defaultFiles.length}`);
+        $('#fileIndex').text(`${index + 1} of ${uploadedFiles.length}`);
     }
 
-    // Keyboard navigation
     $(document).on('keydown', function (e) {
         if ($('#claimDetailModal').hasClass('show')) {
             if (e.key === 'ArrowLeft') {
@@ -260,7 +254,7 @@ $(document).ready(function () {
 
     $('#saveBtn').on('click', function () {
         const formData = {
-            currentFile: defaultFiles[currentFileIndex].name,
+            currentFile: uploadedFiles[currentFileIndex]?.name || 'No file selected',
             currentFileIndex: currentFileIndex + 1,
             title: $('#documentTitle').val(),
             date: $('#documentDate').val(),
@@ -287,13 +281,10 @@ $(document).ready(function () {
         currentFileIndex = 0;
         currentZoom = 1;
         currentRotation = 0;
-        // Remove wheel event listener to prevent memory leaks
         $('#imageContainer').off('wheel', handleMouseWheel);
     });
 
-
     function claimTypeList(id = null) {
-
         $.ajax({
             url: "get-claim-types",
             method: "GET",
@@ -338,7 +329,52 @@ $(document).ready(function () {
         });
     }
 
+    function fetchUploadedFiles(expid, claim_id) {
+        $.ajax({
+            url: `/get-uploaded-files/${expid}/${claim_id}`,
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                if (response.data && response.data.uploaded_files) {
+                    uploadedFiles = response.data.uploaded_files.map(file => {
+                        const ext = file.file_path.split('.').pop().toLowerCase();
+                        let type = 'application/octet-stream';
+                        if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext)) {
+                            type = 'image/' + ext;
+                        } else if (ext === 'pdf') {
+                            type = 'application/pdf';
+                        }
+                        return {
+                            url: file.file_url,
+                            name: file.file_path,
+                            type: type
+                        };
+                    });
+                    displayThumbnails();
+                    showFile(0);
+                } else {
+                    alert('No uploaded files found');
+                    uploadedFiles = [];
+                    displayThumbnails();
+                }
+            },
+            error: function (xhr) {
+                alert(xhr.responseText || 'Failed to fetch files');
+                uploadedFiles = [];
+                displayThumbnails();
+            }
+        });
+    }
 
+    $(document).on("click", ".copy-icon", function () {
+        var expId = $('#expIdValue').text();
+        navigator.clipboard.writeText(expId)
+            .then(() => {
+                var copiedText = $(this).siblings('.copied-text');
+                copiedText.fadeIn(200).delay(1000).fadeOut(500);
+            })
+            .catch(err => console.error('Failed to copy!', err));
+    });
 
     $(document).on("click", ".view-claim", function (e) {
         e.preventDefault();
@@ -346,7 +382,9 @@ $(document).ready(function () {
         var expId = $(this).data("expid");
         $("#claimDetailModal").attr("data-modal-claimid", claimId);
         $("#claimDetailModal").attr("data-modal-expid", expId);
+        $("#expIdValue").text(expId);
         claimTypeList(claimId);
+        fetchUploadedFiles(expId, claimId);
     });
 
     $(document).on("change", "#sltClaimTypeList", function () {
@@ -369,8 +407,7 @@ $(document).ready(function () {
                 if (response.html) {
                     $("#dataEntryForm").html(response.html);
                 } else {
-                    $("#dataEntryForm").html(
-                        '<div class="alert alert-danger">No details found.</div>');
+                    $("#dataEntryForm").html('<div class="alert alert-danger">No details found.</div>');
                 }
             },
             error: function (xhr) {
@@ -381,5 +418,4 @@ $(document).ready(function () {
             }
         });
     });
-
 });
