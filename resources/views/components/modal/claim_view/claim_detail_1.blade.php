@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row modal-ncgid" data-modal-ncgid="{{ $cgId }}">
     <div class="col-md-6 mb-3">
         <input type="text" class="form-control" id="billing_person" name="billing_person" placeholder="Billing Person" />
     </div>

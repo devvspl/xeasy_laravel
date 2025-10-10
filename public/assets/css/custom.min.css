@@ -169,12 +169,16 @@ div.dataTables_wrapper div.dataTables_processing {
     height: 32px !important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__rendered {
     color: #212529 !important;
     line-height: 32px !important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__clear {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__clear {
     cursor: pointer;
     color: #888888 !important;
     float: right;
@@ -184,7 +188,9 @@ div.dataTables_wrapper div.dataTables_processing {
     padding-right: 0px;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__clear {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__clear {
     cursor: pointer;
     float: right;
     font-weight: bold;
@@ -200,7 +206,9 @@ div.dataTables_wrapper div.dataTables_processing {
     border-radius: 4px;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__arrow {
     height: 32px !important;
     position: absolute;
     top: 1px;
@@ -208,8 +216,8 @@ div.dataTables_wrapper div.dataTables_processing {
     width: 20px;
 }
 
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
-table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
     top: 50%;
     left: 5px;
     height: 1em;
@@ -230,7 +238,9 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
     background-color: #001868 !important;
 }
 
-.select2-container--default .select2-selection--multiple .select2-selection__choice {
+.select2-container--default
+    .select2-selection--multiple
+    .select2-selection__choice {
     background-color: #001868 !important;
     border: 1px solid #001868 !important;
     color: #fff !important;
@@ -249,7 +259,9 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
     white-space: nowrap;
 }
 
-.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+.select2-container--default
+    .select2-selection--multiple
+    .select2-selection__choice__remove {
     background-color: transparent;
     border: none;
     border-right: 1px solid #aaa;
@@ -281,7 +293,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
     transition: transform 0.3s ease;
 }
 
-#additionalFilters.show+.ri-equalizer-line {
+#additionalFilters.show + .ri-equalizer-line {
     transform: rotate(90deg);
 }
 
@@ -332,7 +344,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
     font-size: 12px;
 }
 
-.table> :not(caption)>*>* {
+.table > :not(caption) > * > * {
     padding: 5px 5px !important;
 }
 
@@ -545,7 +557,8 @@ table.table-bordered.dataTable td {
     color: #008080 !important;
 }
 
-:is([data-layout="vertical"], [data-layout="semibox"])[data-sidebar-size="sm"] .card.sticky-card {
+:is([data-layout="vertical"], [data-layout="semibox"])[data-sidebar-size="sm"]
+    .card.sticky-card {
     top: 0px;
 }
 
@@ -616,6 +629,16 @@ table.table-bordered.dataTable td {
 .thumbnail-item.active {
     border-color: #0d6efd;
     box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+}
+
+.thumbnail-label {
+    font-size: 8px;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+    text-align: center;
 }
 
 .pdf-thumbnail {
@@ -765,4 +788,90 @@ table.table-bordered.dataTable td {
     .image-container {
         height: calc(100% - 40px);
     }
+}
+
+.expense-table th,
+.expense-table td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 4px 8px;
+    white-space: nowrap;
+}
+
+.expense-table th:first-child,
+.expense-table td:first-child {
+    text-align: left;
+    width: 18%;
+}
+
+.expense-table th:nth-child(2),
+.expense-table td:nth-child(2) {
+    width: 12%;
+}
+
+.expense-table th:nth-child(3),
+.expense-table td:nth-child(3),
+.expense-table th:nth-child(4),
+.expense-table td:nth-child(4),
+.expense-table th:nth-child(6),
+.expense-table td:nth-child(6),
+.expense-table th:nth-child(8),
+.expense-table td:nth-child(8) {
+    width: 9%;
+}
+
+.expense-table th:nth-child(5),
+.expense-table td:nth-child(5),
+.expense-table th:nth-child(7),
+.expense-table td:nth-child(7),
+.expense-table th:nth-child(9),
+.expense-table td:nth-child(9) {
+    width: 15%;
+}
+
+.expense-table input {
+    width: 100%;
+    text-align: right;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+.upload-icon {
+    font-size: 18px;
+    cursor: pointer;
+    color: #001868;
+    transition: color 0.2s;
+}
+
+.upload-icon:hover {
+    color: rgba(0, 24, 104, 0.68);
+}
+
+.file-list {
+    font-size: 11px;
+    margin-top: 4px;
+    text-align: left;
+}
+
+.file-list div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+}
+
+.file-list div span {
+    cursor: pointer;
+    color: #001868;
+    text-decoration: underline;
+}
+
+.remove-file {
+    color: red;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.remove-file:hover {
+    color: darkred;
 }

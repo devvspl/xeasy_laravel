@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityType;
 use Illuminate\Http\Request;
 use App\Models\ExpenseClaim;
 use App\Models\ClaimType;
+use App\Models\CoreVariety;
+use App\Models\CoreVertical;
+use App\Models\HRMEmployeeGeneral;
 use Illuminate\Support\Facades\DB;
 use Storage;
 
@@ -46,7 +50,10 @@ class ClaimViewController extends Controller
             $componentPath = resource_path("views/components/modal/claim_view/claim_detail_g7.blade.php");
             if (file_exists($componentPath)) {
                 $filledData = DB::connection('expense')->table("y{$yearId}_g7_expensefilldata")->where('ExpId', $expid)->first();
-                $html = view("components.modal.claim_view.claim_detail_g7", ['claimId' => $claimId, 'cgId' => $cgId, 'expense_detail' => $expense_detail, 'expenses' => $expenses, 'filledData' => $filledData, 'expId' => $expid])->render();
+                $employee = HRMEmployeeGeneral::find($expense_detail->CrBy);
+                $crops = CoreVertical::getCrops($employee->EmpVertical);
+                $activityTypesList = ActivityType::getByDepartment($employee->DepartmentId);
+                $html = view("components.modal.claim_view.claim_detail_g7", ['claimId' => $claimId, 'cgId' => $cgId, 'expense_detail' => $expense_detail, 'expenses' => $expenses, 'filledData' => $filledData, 'expId' => $expid, 'activity_types' => $activityTypesList, 'crops' => $crops, 'employee' => $employee])->render();
             } else {
                 $html = '<div class="alert alert-warning">Component for Claim ID ' . $claimId . ' not found.</div>';
             }
@@ -61,6 +68,7 @@ class ClaimViewController extends Controller
         $yearId = session('year_id');
         $uploadedFiles = [];
         if ($cgId == 1) {
+
             $uploadSequenceMap = ['File_Meeting_Hall' => 101, 'File_Lodging' => 102, 'File_Meals' => 103, 'File_Business_Entertainment' => 104, 'File_Others' => 105, 'File_Toll_Pass' => 106, 'File_Toll_Tax' => 107, 'File_International_Recharge' => 108, 'File_Printing_Stationery' => 109,];
             $uploadsTable = "y{$yearId}_claimuploads";
             $claimsTable = "y{$yearId}_expenseclaims";
@@ -71,6 +79,7 @@ class ClaimViewController extends Controller
                 $uploadedFiles[] = ['sequence' => $item->UploadSequence ?? 999, 'cuId' => $item->cuId, 'file_column' => $fileLabel, 'file_path' => $item->FileName, 'file_url' => Storage::disk('s3')->url("Expense/{$item->ClaimYearId}/{$item->CrBy}/{$item->FileName}"), 'created_at' => $item->created_at,];
             }
         } elseif ($cgId == 7) {
+
             $g7Table = "y{$yearId}_g7_expensefilldata";
             $claimsTable = "y{$yearId}_expenseclaims";
             $claim = DB::connection('expense')->table($claimsTable)->where('ExpId', $expid)->select('CrBy', 'ClaimYearId')->first();
@@ -78,13 +87,21 @@ class ClaimViewController extends Controller
                 return $this->jsonError('Claim not found', 404);
             }
             $data = DB::connection('expense')->table($g7Table)->where('ExpId', $expid)->first();
+
+            $categories = DB::table('adv_expense_head_category')->where('status', 1)->where('has_file', 1)->get()->keyBy(function ($cat) {
+                return 'file_' . strtolower($cat->short_code);
+            });
             if ($data) {
                 foreach ((array)$data as $column => $value) {
                     if (str_starts_with($column, 'file_') && !empty($value)) {
                         $filesArray = json_decode($value, true);
                         if (is_array($filesArray)) {
+
+                            $category = $categories[$column] ?? null;
                             foreach ($filesArray as $fileName) {
-                                $uploadedFiles[] = ['sequence' => 999, 'file_column' => $column, 'file_path' => $fileName, 'file_url' => Storage::disk('s3')->url("Expense/activity/{$claim->ClaimYearId}/{$claimid}/{$claim->CrBy}/{$fileName}"),];
+                                $uploadedFiles[$column]['category_name'] = $category->expense_head_name ?? 'Unknown';
+                                $uploadedFiles[$column]['short_code'] = $category->short_code ?? 'NA';
+                                $uploadedFiles[$column]['files'][] = ['sequence' => 999, 'file_column' => $column, 'file_path' => $fileName, 'file_url' => Storage::disk('s3')->url("Expense/activity/{$claim->ClaimYearId}/{$claimid}/{$claim->CrBy}/{$fileName}"),];
                             }
                         }
                     }
@@ -105,5 +122,14 @@ class ClaimViewController extends Controller
             $result[] = ['text' => $group, 'children' => $claims,];
         }
         return $this->jsonSuccess($result, 'Claim type fetched successfully.');
+    }
+    public function getVarieties(Request $request)
+    {
+        $cropIds = $request->input('crop_ids', []);
+        if (empty($cropIds)) {
+            return response()->json([]);
+        }
+        $varieties = CoreVariety::where('is_active', 1)->whereIn('crop_id', $cropIds)->orderBy('variety_name')->get(['id', 'variety_name']);
+        return response()->json($varieties);
     }
 }

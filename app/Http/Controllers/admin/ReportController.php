@@ -17,6 +17,7 @@ use App\Models\CoreVertical;
 use App\Models\EligibilityPolicy;
 use App\Models\ExpenseClaim;
 use App\Models\HRMEmployees;
+use App\Models\ClaimType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -211,7 +212,7 @@ class ReportController extends Controller
             }
         }
         if (!empty($filters['policy_ids']) || !empty($filters['vehicle_types']) || in_array('policy', $columns) || in_array('vehicle_type', $columns)) {
-            $query->leftJoin('hrims.hrm_employee_eligibility', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_eligibility.EmployeeID');
+            $query->leftJoin('hrims.hrm_employee_eligibility', 'hrims.hrm_employee.EmployeeID', '=', 'hrims.hrm_employee_eligibility.EmployeeID')->where('hrims.hrm_employee_eligibility.Status', 'A');
             if (in_array('policy', $columns)) {
                 $query->leftJoin('hrims.hrm_master_eligibility_policy', 'hrims.hrm_master_eligibility_policy.PolicyId', '=', 'hrims.hrm_employee_eligibility.VehiclePolicy');
             }
@@ -362,6 +363,7 @@ class ReportController extends Controller
                 return $row->ClaimMonth ? Carbon::create()->month($row->ClaimMonth)->format('F') : '';
             })->addColumn('action', function ($row) {
                 $dropdownId = 'dropdownMenuLink' . $row->ExpId;
+                $cgId = ClaimType::getCgIdByClaimId($row->ClaimId);
                 $html = '
                     <div class="dropdown">
                         <a href="#" role="button" id="' . $dropdownId . '" data-bs-toggle="dropdown" aria-expanded="false">
@@ -372,7 +374,8 @@ class ReportController extends Controller
                                 <a class="dropdown-item view-claim" href="#" 
                                 data-bs-toggle="modal" 
                                 data-bs-target="#claimDetailModal" 
-                                data-claim-id="' . $row->ClaimId . '" 
+                                data-claim-id="' . $row->ClaimId . '"
+                                data-cgid="' . $cgId . '" 
                                 data-expid="' . $row->ExpId . '">
                                 View
                                 </a>
@@ -382,6 +385,7 @@ class ReportController extends Controller
                             <li>
                                 <a class="dropdown-item return-claim" href="#" 
                                 data-claim-id="' . $row->ClaimId . '" 
+                                data-cgid="' . $cgId . '" 
                                 data-expid="' . $row->ExpId . '">
                                 Return
                                 </a>
